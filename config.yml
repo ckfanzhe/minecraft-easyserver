@@ -1,0 +1,33 @@
+# Bedrock EasyServer 配置文件
+
+# 服务器配置
+server:
+  # HTTP服务器监听地址
+  host: "localhost"
+  # HTTP服务器监听端口
+  port: 8080
+  # 是否启用调试模式
+  debug: false
+
+# Bedrock服务器配置
+bedrock:
+  # Bedrock服务器安装路径
+  path: "./bedrock-server/bedrock-server-1.21.95.1"
+  # 服务器可执行文件名
+  executable: "bedrock_server.exe"
+
+# Web界面配置
+web:
+  # 静态文件目录
+  static_dir: "./web"
+  # HTML模板文件
+  template_file: "./web/index.html"
+
+# 日志配置
+logging:
+  # 日志级别 (debug, info, warn, error)
+  level: "info"
+  # 是否输出到文件
+  file_output: false
+  # 日志文件路径
+  file_path: "./logs/server.log"
