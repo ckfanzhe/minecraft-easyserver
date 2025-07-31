@@ -1,128 +1,136 @@
-# Bedrock Web管理面板
+# Minecraft Server Web Management Panel
 
-一个基于 Go 语言开发的 **轻量级** Minecraft Bedrock 服务器 Web 管理面板，提供现代化的用户界面和完整的服务器管理功能。
+**[中文版本 (Chinese Version)](docs/README_CN.md)**
 
-**目前仅在Windows下做测试运行**
+A **lightweight** Minecraft server web management panel with modern UI and comprehensive server management features.
 
-## 🚀 功能特性
+**Currently Supported Platforms:**
+- ✅ Windows
+- Linux
+- macOS
 
-### 🎮 服务器控制
-- **一键启动/停止/重启** Minecraft Bedrock 服务器
- -**实时状态监控** 显示服务器运行状态和进程信息
-- **安全的进程管理** 确保服务器进程的稳定运行
+**Currently Supported Servers:**
+- ✅ Minecraft Bedrock Server
+- Minecraft Java Server
 
-### ⚙️ 配置管理
-- **支持所有主要配置项**：
-  - 服务器名称和描述
-  - 游戏模式（生存/创造/冒险）
-  - 难度设置（和平/简单/普通/困难）
-  - 最大玩家数量
-  - 服务器端口配置
-  - 作弊和白名单开关
-- **配置验证** 确保输入的配置值有效
-- **实时保存** 修改后立即保存到配置文件
+## 🚀 Features
 
-### 👥 白名单管理
-- **添加/删除玩家** 管理允许加入服务器的玩家列表
-- **实时同步** 修改后立即更新 `allowlist.json` 文件
+### 🎮 Server Control
+- **One-click Start/Stop/Restart** Minecraft Bedrock server
+- **Real-time Status Monitoring** Display server running status
 
-### 🛡️ 权限管理
-- **三级权限系统**：
-  - **访客 (Visitor)** - 基础游戏权限
-  - **成员 (Member)** - 标准玩家权限
-  - **管理员 (Operator)** - 完整管理权限
-- **玩家权限设置** 为特定玩家分配权限级别
-- **权限文件管理** 自动维护 `permissions.json` 文件
+### ⚙️ Configuration Management
+- **Support for all major configuration options**:
+  - Server name and description
+  - Game mode (Survival/Creative/Adventure)
+  - Difficulty settings (Peaceful/Easy/Normal/Hard)
+  - Maximum player count
+  - Server port configuration
+  - Cheats and whitelist toggles
+- **Server Configuration File Management** Automatically maintains `server.properties` file
 
-### 🌍 世界管理
-- **世界文件上传** 支持 `.zip` 和 `.mcworld` 格式
-- **世界切换** 一键激活不同的世界
-- **世界删除** 安全删除不需要的世界文件
-- **当前世界标识** 清晰显示正在使用的世界
+### 👥 Whitelist Management
+- **Add/Remove Players** Manage the list of players allowed to join the server
+- **Whitelist File Management** Automatically maintains `allowlist.json` file
 
-## 👀 管理端预览
-![管理端预览](resources/screenshot.png)
+### 🛡️ Permission Management
+- **Three-tier Permission System**:
+  - **Visitor** - Basic game permissions
+  - **Member** - Standard player permissions
+  - **Operator** - Full administrative permissions
+- **Player Permission Settings** Assign permission levels to specific players
+- **Permission File Management** Automatically maintains `permissions.json` file
 
-## 📋 系统要求
+### 🌍 World Management
+- **World File Upload** Support for `.zip` and `.mcworld` formats with automatic extraction
+- **World Switching** One-click activation of different worlds
+- **World Deletion** Safe deletion of unwanted world files
+- **Current World Identification** Clear display of the currently active world
 
-### 服务器环境 Windows
-- **操作系统**: Windows 10 或更高版本
-- **Go 语言**: 1.21 或更高版本
-- **内存**: 至少 2GB RAM
-- **存储**: 至少 2GB 可用空间
-- **网络**: 开放端口 8080（管理面板）和 19132（Minecraft 服务器）
+## 👀 Management Panel Preview
+![Management Panel Preview](docs/resources/screenshot.png)
 
-### Minecraft Bedrock 服务器
-- 已下载并解压的 Minecraft Bedrock Dedicated Server
-- 服务器文件应放置在 `./bedrock-server/bedrock-server-1.21.95.1/` 目录下
+## 📋 System Requirements
 
-## 🛠️ 安装指南
+### Server Environment (Windows)
+- **Operating System**: Windows 10 or higher
+- **Go Language**: 1.21 or higher
+- **Memory**: At least 2GB RAM
+- **Storage**: At least 10GB available space
+- **Network**: Open ports 8080 (management panel) and 19132 (Minecraft server)
 
-### 1. 环境准备
+### Minecraft Bedrock Server
+- Downloaded and extracted Minecraft Bedrock Dedicated Server
+- Server files should be placed in `./bedrock-server/bedrock-server-1.21.95.1/` directory
 
-#### 安装 Go 语言
-1. 访问 [Go 官网](https://golang.org/dl/) 下载 Windows 版本
-2. 运行安装程序并按照提示完成安装
-3. 验证安装：
+## 🛠️ Installation Guide
+
+### 1. Environment Setup
+
+#### Install Go Language
+1. Visit [Go Official Website](https://golang.org/dl/) to download Windows version
+2. Run the installer and follow the prompts to complete installation
+3. Verify installation:
    ```powershell
    go version
    ```
 
-#### 下载 Minecraft Bedrock 服务器
-1. 访问 [Minecraft 官网](https://www.minecraft.net/en-us/download/server/bedrock)
-2. 下载 Bedrock Dedicated Server
-3. 解压到项目目录的 `bedrock-server` 文件夹中
+#### Download Minecraft Bedrock Server
+1. Visit [Minecraft Official Website](https://www.minecraft.net/en-us/download/server/bedrock)
+2. Download Bedrock Dedicated Server
+3. Extract to the `bedrock-server` folder in the project directory
 
-### 2. 项目部署
+### 2. Project Deployment
 
-#### 克隆或下载项目
+#### Clone or Download Project
 ```powershell
-# 如果使用 Git
-git clone <repository-url>
+# If using Git
+git clone https://github.com/ckfanzhe/bedrock-easy-server.git
 cd bedrock-easyserver
 
-# 或者直接下载并解压项目文件
+# Or download and extract project files directly
 ```
 
-#### 安装依赖
+#### Install Dependencies
 ```powershell
 go mod tidy
 ```
 
-#### 构建项目
+#### Build Project
 ```powershell
-# 构建可执行文件
+# Build executable file
 go build -o bedrock-easyserver.exe
 
-# 或者直接运行
+# Or run directly
 go run main.go
 ```
 
-### 3. 目录结构确认
+### 3. Directory Structure Confirmation
 
-确保你的项目目录结构如下：
+Ensure your project directory structure is as follows:
 ```
 bedrock-easyserver/
-├── main.go                    # 主程序文件
-├── go.mod                     # Go 模块文件
-├── go.sum                     # Go 依赖校验文件
-├── config.yml                 # 应用配置文件
-├── readme.md                  # 项目说明文档
-├── .gitignore                 # Git 忽略文件配置
-├── config/                    # 配置模块
-│   └── config.go             # 配置处理逻辑
-├── handlers/                  # HTTP 处理器
-│   ├── handlers.go           # API 路由处理
-│   └── handlers_test.go      # 处理器单元测试
-├── models/                    # 数据模型
-│   └── models.go             # 数据结构定义
-├── services/                  # 业务逻辑服务
-│   ├── services.go           # 核心业务逻辑
-│   └── services_test.go      # 服务层单元测试
-├── web/                       # 前端文件
-│   ├── index.html            # 主页面
-│   └── app.js                # JavaScript 逻辑
-└── bedrock-server/           # Bedrock 服务器目录
+├── main.go                    # Main program file
+├── go.mod                     # Go module file
+├── go.sum                     # Go dependency verification file
+├── config.yml                 # Application configuration file
+├── README.md                  # Project documentation (English)
+├── README_CN.md               # Project documentation (Chinese)
+├── .gitignore                 # Git ignore file configuration
+├── config/                    # Configuration module
+│   └── config.go             # Configuration processing logic
+├── handlers/                  # HTTP handlers
+│   ├── handlers.go           # API route handling
+│   └── handlers_test.go      # Handler unit tests
+├── models/                    # Data models
+│   └── models.go             # Data structure definitions
+├── services/                  # Business logic services
+│   ├── services.go           # Core business logic
+│   └── services_test.go      # Service layer unit tests
+├── web/                       # Frontend files
+│   ├── index.html            # Main page
+│   └── app.js                # JavaScript logic
+└── bedrock-server/           # Bedrock server directory
     └── bedrock-server-1.21.95.1/
         ├── bedrock_server.exe
         ├── server.properties
@@ -131,65 +139,65 @@ bedrock-easyserver/
         └── worlds/
 ```
 
-## 🚀 使用指南
+## 🚀 Usage Guide
 
-### 启动管理面板
+### Start Management Panel
 
-1. **命令行启动**：
+1. **Command Line Startup**:
    ```powershell
-   # 方式一：直接运行源码
+   # Method 1: Run source code directly
    go run main.go
    
-   # 方式二：运行编译后的程序
+   # Method 2: Run compiled program
    ./bedrock-easyserver.exe
    ```
 
-2. **访问管理界面**：
-   - 打开浏览器访问：`http://localhost:8080`
-   - 管理面板将自动加载
+2. **Access Management Interface**:
+   - Open browser and visit: `http://localhost:8080`
+   - The management panel will load automatically
 
-### 防火墙配置
-确保以下端口在防火墙中开放：
-- **8080**: 管理面板访问端口
-- **19132**: Minecraft Bedrock 服务器默认端口
-- **19133**: Minecraft Bedrock 服务器 IPv6 端口
+### Firewall Configuration
+Ensure the following ports are open in the firewall:
+- **8080**: Management panel access port
+- **19132**: Minecraft Bedrock server default port
+- **19133**: Minecraft Bedrock server IPv6 port
 
-## 其他
+## 📝 Additional Information
 
-### TODO计划功能
-- 🔄 支持一键导入mcpackage模组
-- 🔄 支持Linux操作系统
-- 🔄 bedrock服务器日志实时查看
-- 🔄 直接通过页面执行命令到Bedrock服务器
-- 🔄 玩家在线状态监控
-- 🔄 服务器性能监控
-- 🔄 世界自动备份功能
-- 🔄 多语言界面支持
+### TODO Planned Features
+- 🔄 Support for one-click mcpackage mod import
+- 🔄 Linux operating system support
+- 🔄 Real-time Bedrock server log viewing
+- 🔄 Direct command execution to Bedrock server through web interface
+- 🔄 Player online status monitoring
+- 🔄 Server performance monitoring
+- 🔄 Automatic world backup functionality
+- 🔄 Multi-language interface support
 
-## 🤝 贡献指南
+## 🤝 Contributing
 
-欢迎提交问题报告、功能建议和代码贡献！
+Welcome to submit issue reports, feature suggestions, and code contributions!
 
-### 开发环境设置
-1. Fork 项目仓库
-2. 创建功能分支：`git checkout -b feature/new-feature`
-3. 提交更改：`git commit -am 'Add new feature'`
-4. 推送分支：`git push origin feature/new-feature`
-5. 创建 Pull Request
+### Development Environment Setup
+1. Fork the project repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit changes: `git commit -am 'Add new feature'`
+4. Push branch: `git push origin feature/new-feature`
+5. Create Pull Request
 
-### 代码规范
-- 使用 Go 标准代码格式
-- 添加适当的注释和文档
-- 确保代码通过测试
-- 遵循项目的架构模式
+### Code Standards
+- Use Go standard code formatting
+- Add appropriate comments and documentation
+- Ensure code passes tests
+- Follow the project's architectural patterns
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 致谢
+## 🙏 Acknowledgments
 
-- [Gin Web Framework](https://gin-gonic.com/) - 高性能的 Go Web 框架
-- [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
-- [Font Awesome](https://fontawesome.com/) - 图标库
-- [Minecraft Bedrock](https://www.minecraft.net/) - 游戏服务器
+- [Gin Web Framework](https://gin-gonic.com/) - High-performance Go web framework
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Font Awesome](https://fontawesome.com/) - Icon library
+- [Minecraft Bedrock](https://www.minecraft.net/) - Game server
