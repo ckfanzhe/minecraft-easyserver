@@ -1,7 +1,7 @@
-// API基础URL
+// API base URL
 const API_BASE = '/api';
 
-// DOM元素
+// DOM elements
 const elements = {
     serverStatus: document.getElementById('server-status'),
     startBtn: document.getElementById('start-btn'),
@@ -26,13 +26,18 @@ const elements = {
     cancelModalBtn: document.getElementById('cancel-modal-btn')
 };
 
-// 初始化应用
+// Initialize application
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize i18n first
+    if (window.i18n) {
+        window.i18n.init();
+    }
+    
     initializeApp();
     bindEvents();
 });
 
-// 初始化应用数据
+// Initialize application data
 async function initializeApp() {
     await loadServerStatus();
     await loadServerConfig();
@@ -41,18 +46,18 @@ async function initializeApp() {
     await loadWorlds();
 }
 
-// 绑定事件监听器
+// Bind event listeners
 function bindEvents() {
-    // 服务器控制按钮
+    // Server control buttons
     if (elements.startBtn) elements.startBtn.addEventListener('click', () => controlServer('start'));
     if (elements.stopBtn) elements.stopBtn.addEventListener('click', () => controlServer('stop'));
     if (elements.restartBtn) elements.restartBtn.addEventListener('click', () => controlServer('restart'));
     if (elements.refreshBtn) elements.refreshBtn.addEventListener('click', initializeApp);
 
-    // 配置表单
+    // Configuration form
     if (elements.configForm) elements.configForm.addEventListener('submit', saveServerConfig);
 
-    // 白名单管理
+    // Allowlist management
     if (elements.addPlayerBtn) elements.addPlayerBtn.addEventListener('click', addToAllowlist);
     if (elements.newPlayerInput) {
         elements.newPlayerInput.addEventListener('keypress', function(e) {
@@ -62,7 +67,7 @@ function bindEvents() {
         });
     }
 
-    // 权限管理
+    // Permission management
     if (elements.addPermissionBtn) elements.addPermissionBtn.addEventListener('click', showPermissionModal);
     if (elements.permissionPlayer) {
         elements.permissionPlayer.addEventListener('keypress', function(e) {
@@ -72,7 +77,7 @@ function bindEvents() {
         });
     }
 
-    // 弹窗事件 - 添加存在性检查
+    // Modal events - add existence check
     if (elements.closeModalBtn) {
         elements.closeModalBtn.addEventListener('click', hidePermissionModal);
     }
@@ -87,7 +92,7 @@ function bindEvents() {
         });
     }
 
-    // 权限选项点击事件
+    // Permission option click events
     document.addEventListener('click', function(e) {
         if (e.target.closest('.permission-option')) {
             const level = e.target.closest('.permission-option').dataset.level;
@@ -95,12 +100,12 @@ function bindEvents() {
         }
     });
 
-    // 世界上传
+    // World upload
     if (elements.uploadBtn) elements.uploadBtn.addEventListener('click', () => elements.worldUpload.click());
     if (elements.worldUpload) elements.worldUpload.addEventListener('change', uploadWorld);
 }
 
-// API请求封装
+// API request wrapper
 async function apiRequest(endpoint, options = {}) {
     try {
         const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -117,29 +122,29 @@ async function apiRequest(endpoint, options = {}) {
         
         return await response.json();
     } catch (error) {
-        console.error('API请求失败:', error);
-        showToast('请求失败: ' + error.message, 'error');
+        console.error('API request failed:', error);
+        showToast(window.i18n ? window.i18n.t('message.request-failed') : 'Request failed: ' + error.message, 'error');
         throw error;
     }
 }
 
-// 显示提示消息
+// Show toast message
 function showToast(message, type = 'success') {
     elements.toastMessage.textContent = message;
     elements.toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 ${
         type === 'error' ? 'bg-red-500' : 'bg-green-500'
     } text-white`;
     
-    // 显示toast
+    // Show toast
     elements.toast.style.transform = 'translateX(0)';
     
-    // 3秒后隐藏
+    // Hide after 3 seconds
     setTimeout(() => {
         elements.toast.style.transform = 'translateX(100%)';
     }, 3000);
 }
 
-// 加载服务器状态
+// Load server status
 async function loadServerStatus() {
     try {
         const data = await apiRequest('/status');
@@ -149,40 +154,40 @@ async function loadServerStatus() {
     }
 }
 
-// 更新服务器状态显示
+// Update server status display
 function updateServerStatus(status) {
     const statusElement = elements.serverStatus;
     statusElement.className = 'px-3 py-1 rounded-full text-sm';
     
     switch (status) {
         case 'running':
-            statusElement.textContent = '运行中';
+            statusElement.textContent = window.i18n ? window.i18n.t('nav.status.running') : 'Running';
             statusElement.classList.add('bg-green-500');
             break;
         case 'stopped':
-            statusElement.textContent = '已停止';
+            statusElement.textContent = window.i18n ? window.i18n.t('nav.status.stopped') : 'Stopped';
             statusElement.classList.add('bg-red-500');
             break;
         default:
-            statusElement.textContent = '未知';
+            statusElement.textContent = window.i18n ? window.i18n.t('nav.status.unknown') : 'Unknown';
             statusElement.classList.add('bg-gray-500');
     }
 }
 
-// 服务器控制
+// Server control
 async function controlServer(action) {
     try {
         const data = await apiRequest(`/${action}`, { method: 'POST' });
         showToast(data.message);
         
-        // 延迟刷新状态
+        // Delay status refresh
         setTimeout(loadServerStatus, 2000);
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 加载服务器配置
+// Load server configuration
 async function loadServerConfig() {
     try {
         const data = await apiRequest('/config');
@@ -190,11 +195,11 @@ async function loadServerConfig() {
             populateConfigForm(data.config);
         }
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 填充配置表单
+// Populate configuration form
 function populateConfigForm(config) {
     document.getElementById('server-name').value = config['server-name'] || '';
     document.getElementById('gamemode').value = config.gamemode || 'survival';
@@ -205,7 +210,7 @@ function populateConfigForm(config) {
     document.getElementById('allow-list').checked = config['allow-list'] === 'true';
 }
 
-// 保存服务器配置
+// Save server configuration
 async function saveServerConfig(e) {
     e.preventDefault();
     
@@ -226,11 +231,11 @@ async function saveServerConfig(e) {
         });
         showToast(data.message);
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 加载白名单
+// Load allowlist
 async function loadAllowlist() {
     try {
         const data = await apiRequest('/allowlist');
@@ -240,12 +245,15 @@ async function loadAllowlist() {
     }
 }
 
-// 渲染白名单
+// Render allowlist
 function renderAllowlist(allowlist) {
     elements.allowlistContainer.innerHTML = '';
     
     if (allowlist.length === 0) {
-        elements.allowlistContainer.innerHTML = '<p class="text-gray-500 text-center py-4">暂无白名单用户</p>';
+        const emptyMessage = window.i18n ? 
+            window.i18n.t('allowlist.empty') : 
+            'No allowlist users';
+        elements.allowlistContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${emptyMessage}</p>`;
         return;
     }
     
@@ -255,11 +263,14 @@ function renderAllowlist(allowlist) {
     });
 }
 
-// 添加到白名单
+// Add to allowlist
 async function addToAllowlist() {
     const playerName = elements.newPlayerInput.value.trim();
     if (!playerName) {
-        showToast('请输入玩家名称', 'error');
+        const errorMessage = window.i18n ? 
+            window.i18n.t('allowlist.error.empty-name') : 
+            'Please enter player name';
+        showToast(errorMessage, 'error');
         return;
     }
     
@@ -272,11 +283,11 @@ async function addToAllowlist() {
         elements.newPlayerInput.value = '';
         await loadAllowlist();
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 从白名单移除
+// Remove from allowlist
 async function removeFromAllowlist(playerName) {
     try {
         const data = await apiRequest(`/allowlist/${encodeURIComponent(playerName)}`, {
@@ -285,11 +296,11 @@ async function removeFromAllowlist(playerName) {
         showToast(data.message);
         await loadAllowlist();
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 加载权限
+// Load permissions
 async function loadPermissions() {
     try {
         const data = await apiRequest('/permissions');
@@ -299,12 +310,15 @@ async function loadPermissions() {
     }
 }
 
-// 渲染权限
+// Render permissions
 function renderPermissions(permissions) {
     elements.permissionsContainer.innerHTML = '';
     
     if (permissions.length === 0) {
-        elements.permissionsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">暂无权限设置</p>';
+        const emptyMessage = window.i18n ? 
+            window.i18n.t('permission.empty') : 
+            'No permission settings';
+        elements.permissionsContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${emptyMessage}</p>`;
         return;
     }
     
@@ -314,12 +328,15 @@ function renderPermissions(permissions) {
     });
 }
 
-// 显示权限选择弹窗
+// Show permission selection modal
 function showPermissionModal() {
     const playerName = elements.permissionPlayer.value.trim();
     
     if (!playerName) {
-        showToast('请输入玩家名称', 'error');
+        const errorMessage = window.i18n ? 
+            window.i18n.t('permission.error.empty-name') : 
+            'Please enter player name';
+        showToast(errorMessage, 'error');
         return;
     }
     
@@ -327,17 +344,20 @@ function showPermissionModal() {
     elements.permissionModal.classList.remove('hidden');
 }
 
-// 隐藏权限选择弹窗
+// Hide permission selection modal
 function hidePermissionModal() {
     elements.permissionModal.classList.add('hidden');
 }
 
-// 设置玩家权限
+// Set player permission
 async function setPlayerPermission(level) {
     const playerName = elements.permissionPlayer.value.trim();
     
     if (!playerName) {
-        showToast('请输入玩家名称', 'error');
+        const errorMessage = window.i18n ? 
+            window.i18n.t('permission.error.empty-name') : 
+            'Please enter player name';
+        showToast(errorMessage, 'error');
         return;
     }
     
@@ -351,11 +371,11 @@ async function setPlayerPermission(level) {
         hidePermissionModal();
         await loadPermissions();
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 加载世界列表
+// Load worlds list
 async function loadWorlds() {
     try {
         const data = await apiRequest('/worlds');
@@ -365,12 +385,15 @@ async function loadWorlds() {
     }
 }
 
-// 渲染世界列表
+// Render worlds list
 function renderWorlds(worlds) {
     elements.worldsContainer.innerHTML = '';
     
     if (worlds.length === 0) {
-        elements.worldsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">暂无世界文件</p>';
+        const emptyMessage = window.i18n ? 
+            window.i18n.t('world.empty') : 
+            'No world files';
+        elements.worldsContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${emptyMessage}</p>`;
         return;
     }
     
@@ -380,7 +403,7 @@ function renderWorlds(worlds) {
     });
 }
 
-// 上传世界
+// Upload world
 async function uploadWorld() {
     const file = elements.worldUpload.files[0];
     if (!file) return;
@@ -403,16 +426,19 @@ async function uploadWorld() {
         elements.worldUpload.value = '';
         await loadWorlds();
     } catch (error) {
-        showToast('上传失败: ' + error.message, 'error');
+        const errorMessage = window.i18n ? 
+            window.i18n.t('world.upload.error') : 
+            'Upload failed: ';
+        showToast(errorMessage + error.message, 'error');
     }
 }
 
-// 创建玩家元素
+// Create player element
 function createPlayerElement(playerName, type) {
     const div = document.createElement('div');
     div.className = 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded';
     
-    // 转义玩家名称中的特殊字符
+    // Escape special characters in player name
     const escapedName = playerName.replace(/'/g, "\\'").replace(/"/g, '\\"');
     
     div.innerHTML = `
@@ -426,15 +452,15 @@ function createPlayerElement(playerName, type) {
     return div;
 }
 
-// 创建权限元素
+// Create permission element
 function createPermissionElement(permission) {
     const div = document.createElement('div');
     div.className = 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded';
     
     const levelText = {
-        'visitor': '访客',
-        'member': '成员',
-        'operator': '管理员'
+        'visitor': window.i18n ? window.i18n.t('permission.level.visitor') : 'Visitor',
+        'member': window.i18n ? window.i18n.t('permission.level.member') : 'Member',
+        'operator': window.i18n ? window.i18n.t('permission.level.operator') : 'Operator'
     };
     
     const levelColor = {
@@ -443,7 +469,7 @@ function createPermissionElement(permission) {
         'operator': 'text-red-600'
     };
     
-    // 转义权限名称中的特殊字符
+    // Escape special characters in permission name
     const escapedName = permission.name.replace(/'/g, "\\'").replace(/"/g, '\\"');
     
     div.innerHTML = `
@@ -462,18 +488,20 @@ function createPermissionElement(permission) {
     return div;
 }
 
-// 创建世界元素
+// Create world element
 function createWorldElement(world) {
     const div = document.createElement('div');
     div.className = 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded';
     
-    // 转义世界名称中的特殊字符
+    // Escape special characters in world name
     const escapedName = world.name.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    
+    const currentWorldText = window.i18n ? window.i18n.t('world.current') : 'Current World';
     
     div.innerHTML = `
         <div>
             <span class="font-medium">${world.name}</span>
-            ${world.active ? '<span class="ml-2 px-2 py-1 text-xs rounded bg-green-200 text-green-800">当前世界</span>' : ''}
+            ${world.active ? `<span class="ml-2 px-2 py-1 text-xs rounded bg-green-200 text-green-800">${currentWorldText}</span>` : ''}
         </div>
         <div class="space-x-2">
             ${!world.active ? `<button onclick="activateWorld('${escapedName}')" 
@@ -490,9 +518,13 @@ function createWorldElement(world) {
     return div;
 }
 
-// 删除世界
+// Delete world
 async function deleteWorld(worldName) {
-    if (!confirm(`确定要删除世界 "${worldName}" 吗？此操作不可撤销！`)) {
+    const confirmMessage = window.i18n ? 
+        window.i18n.t('world.deleteConfirm', { worldName }) : 
+        `Are you sure you want to delete world "${worldName}"? This action cannot be undone!`;
+    
+    if (!confirm(confirmMessage)) {
         return;
     }
     
@@ -503,11 +535,11 @@ async function deleteWorld(worldName) {
         showToast(data.message);
         await loadWorlds();
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 激活世界
+// Activate world
 async function activateWorld(worldName) {
     try {
         const data = await apiRequest(`/worlds/${encodeURIComponent(worldName)}/activate`, {
@@ -516,11 +548,11 @@ async function activateWorld(worldName) {
         showToast(data.message);
         await loadWorlds();
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 移除权限
+// Remove permission
 async function removePermission(playerName) {
     try {
         const data = await apiRequest(`/permissions/${encodeURIComponent(playerName)}`, {
@@ -529,11 +561,11 @@ async function removePermission(playerName) {
         showToast(data.message);
         await loadPermissions();
     } catch (error) {
-        // 错误已在apiRequest中处理
+        // Error already handled in apiRequest
     }
 }
 
-// 将函数添加到全局作用域，以便onclick可以访问
+// add function to Global area
 window.removeFromAllowlist = removeFromAllowlist;
 window.removePermission = removePermission;
 window.deleteWorld = deleteWorld;

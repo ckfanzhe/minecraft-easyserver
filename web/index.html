@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bedrock EasyServer 管理面板</title>
+    <title data-i18n="title">Minecraft EasyServer</title>
     <link href="/static/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="/static/i18n.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -26,10 +27,10 @@
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-3">
                     <i class="fas fa-cube text-2xl"></i>
-                    <h1 class="text-xl font-bold">Bedrock EasyServer</h1>
+                    <h1 class="text-xl font-bold" data-i18n="nav.title">Minecraft EasyServer</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span id="server-status" class="px-3 py-1 rounded-full text-sm bg-red-500">离线</span>
+                    <span id="server-status" class="px-3 py-1 rounded-full text-sm bg-red-500" data-i18n="nav.status.offline">离线</span>
                     <button id="refresh-btn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded">
                         <i class="fas fa-sync-alt"></i>
                     </button>
@@ -43,17 +44,17 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-8 card-hover">
             <h2 class="text-2xl font-bold mb-4 flex items-center">
                 <i class="fas fa-server mr-3 text-blue-500"></i>
-                服务器控制
+                <span data-i18n="server.control.title">服务器控制</span>
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                    <i class="fas fa-play mr-2"></i>启动服务器
+                    <i class="fas fa-play mr-2"></i><span data-i18n="server.control.start">启动服务器</span>
                 </button>
                 <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                    <i class="fas fa-stop mr-2"></i>停止服务器
+                    <i class="fas fa-stop mr-2"></i><span data-i18n="server.control.stop">停止服务器</span>
                 </button>
                 <button id="restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                    <i class="fas fa-redo mr-2"></i>重启服务器
+                    <i class="fas fa-redo mr-2"></i><span data-i18n="server.control.restart">重启服务器</span>
                 </button>
             </div>
         </div>
@@ -64,48 +65,48 @@
             <div class="bg-white rounded-lg shadow-md p-6 card-hover">
                 <h3 class="text-xl font-bold mb-4 flex items-center">
                     <i class="fas fa-cog mr-3 text-purple-500"></i>
-                    服务器配置
+                    <span data-i18n="config.title">服务器配置</span>
                 </h3>
                 <form id="config-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">服务器名称</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.server-name">服务器名称</label>
                         <input type="text" id="server-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Dedicated Server">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">游戏模式</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.gamemode">游戏模式</label>
                         <select id="gamemode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="survival">生存模式</option>
-                            <option value="creative">创造模式</option>
-                            <option value="adventure">冒险模式</option>
+                            <option value="survival" data-i18n="config.gamemode.survival">生存模式</option>
+                            <option value="creative" data-i18n="config.gamemode.creative">创造模式</option>
+                            <option value="adventure" data-i18n="config.gamemode.adventure">冒险模式</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">难度</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.difficulty">难度</label>
                         <select id="difficulty" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="peaceful">和平</option>
-                            <option value="easy">简单</option>
-                            <option value="normal">普通</option>
-                            <option value="hard">困难</option>
+                            <option value="peaceful" data-i18n="config.difficulty.peaceful">和平</option>
+                            <option value="easy" data-i18n="config.difficulty.easy">简单</option>
+                            <option value="normal" data-i18n="config.difficulty.normal">普通</option>
+                            <option value="hard" data-i18n="config.difficulty.hard">困难</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">最大玩家数</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.max-players">最大玩家数</label>
                         <input type="number" id="max-players" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" max="100" value="10">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">服务器端口</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.server-port">服务器端口</label>
                         <input type="number" id="server-port" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" max="65535" value="19132">
                     </div>
                     <div class="flex items-center">
                         <input type="checkbox" id="allow-cheats" class="mr-2">
-                        <label for="allow-cheats" class="text-sm font-medium text-gray-700">允许作弊</label>
+                        <label for="allow-cheats" class="text-sm font-medium text-gray-700" data-i18n="config.allow-cheats">允许作弊</label>
                     </div>
                     <div class="flex items-center">
                         <input type="checkbox" id="allow-list" class="mr-2">
-                        <label for="allow-list" class="text-sm font-medium text-gray-700">启用白名单</label>
+                        <label for="allow-list" class="text-sm font-medium text-gray-700" data-i18n="config.allow-list">启用白名单</label>
                     </div>
                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300">
-                        <i class="fas fa-save mr-2"></i>保存配置
+                        <i class="fas fa-save mr-2"></i><span data-i18n="config.save">保存配置</span>
                     </button>
                 </form>
             </div>
@@ -114,11 +115,11 @@
             <div class="bg-white rounded-lg shadow-md p-6 card-hover">
                 <h3 class="text-xl font-bold mb-4 flex items-center">
                     <i class="fas fa-users mr-3 text-green-500"></i>
-                    白名单管理
+                    <span data-i18n="allowlist.title">白名单管理</span>
                 </h3>
                 <div class="mb-4">
                     <div class="flex space-x-2">
-                        <input type="text" id="new-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="输入玩家名称">
+                        <input type="text" id="new-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="allowlist.placeholder" placeholder="输入玩家名称">
                         <button id="add-player-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
                             <i class="fas fa-plus"></i>
                         </button>
@@ -133,13 +134,13 @@
             <div class="bg-white rounded-lg shadow-md p-6 card-hover">
                 <h3 class="text-xl font-bold mb-4 flex items-center">
                     <i class="fas fa-shield-alt mr-3 text-orange-500"></i>
-                    权限管理
+                    <span data-i18n="permission.title">权限管理</span>
                 </h3>
                 <div class="mb-4">
                     <div class="flex gap-2">
-                        <input type="text" id="permission-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="输入玩家名称">
+                        <input type="text" id="permission-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="permission.placeholder" placeholder="输入玩家名称">
                         <button id="add-permission-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
-                            <i class="fas fa-plus mr-1"></i>添加权限
+                            <i class="fas fa-plus mr-1"></i><span data-i18n="permission.add">添加权限</span>
                         </button>
                     </div>
                 </div>
@@ -152,16 +153,16 @@
             <div class="bg-white rounded-lg shadow-md p-6 card-hover">
                 <h3 class="text-xl font-bold mb-4 flex items-center">
                     <i class="fas fa-globe mr-3 text-indigo-500"></i>
-                    世界管理
+                    <span data-i18n="world.title">世界管理</span>
                 </h3>
                 <div class="mb-4">
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                         <input type="file" id="world-upload" accept=".zip,.mcworld" class="hidden">
                         <button id="upload-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-300">
-                            <i class="fas fa-upload mr-2"></i>上传世界文件
+                            <i class="fas fa-upload mr-2"></i><span data-i18n="world.upload">上传世界文件</span>
                         </button>
-                        <p class="text-sm text-gray-500 mt-2">支持 .zip 和 .mcworld 格式，自动解压并删除压缩包</p>
-                        <p class="text-xs text-gray-400 mt-1">上传后将自动解压到世界目录，原压缩文件会被删除</p>
+                        <p class="text-sm text-gray-500 mt-2" data-i18n="world.upload.desc">支持 .zip 和 .mcworld 格式，自动解压并删除压缩包</p>
+                        <p class="text-xs text-gray-400 mt-1" data-i18n="world.upload.note">上传后将自动解压到世界目录，原压缩文件会被删除</p>
                     </div>
                 </div>
                 <div id="worlds-container" class="space-y-2 max-h-64 overflow-y-auto">
@@ -180,20 +181,24 @@
     <div id="permission-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 w-96 max-w-90vw">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">选择权限级别</h3>
+                <h3 class="text-lg font-bold" data-i18n="permission.modal.title">选择权限级别</h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="mb-4">
-                <p class="text-sm text-gray-600 mb-3">为玩家 <span id="modal-player-name" class="font-medium"></span> 选择权限级别：</p>
+                <p class="text-sm text-gray-600 mb-3">
+                    <span data-i18n="permission.modal.description">为玩家</span> 
+                    <span id="modal-player-name" class="font-medium"></span> 
+                    <span data-i18n="permission.modal.description2">选择权限级别：</span>
+                </p>
                 <div class="space-y-3">
                     <button class="permission-option w-full text-left p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200" data-level="visitor">
                         <div class="flex items-center">
                             <i class="fas fa-eye text-gray-500 mr-3"></i>
                             <div>
-                                <div class="font-medium">访客</div>
-                                <div class="text-sm text-gray-500">只能查看，无法修改</div>
+                                <div class="font-medium" data-i18n="permission.level.visitor">访客</div>
+                                <div class="text-sm text-gray-500" data-i18n="permission.level.visitor.desc">只能查看，无法修改</div>
                             </div>
                         </div>
                     </button>
@@ -201,8 +206,8 @@
                         <div class="flex items-center">
                             <i class="fas fa-user text-blue-500 mr-3"></i>
                             <div>
-                                <div class="font-medium">成员</div>
-                                <div class="text-sm text-gray-500">可以进行基本操作</div>
+                                <div class="font-medium" data-i18n="permission.level.member">成员</div>
+                                <div class="text-sm text-gray-500" data-i18n="permission.level.member.desc">可以进行基本操作</div>
                             </div>
                         </div>
                     </button>
@@ -210,15 +215,15 @@
                         <div class="flex items-center">
                             <i class="fas fa-crown text-red-500 mr-3"></i>
                             <div>
-                                <div class="font-medium">管理员</div>
-                                <div class="text-sm text-gray-500">拥有完全管理权限</div>
+                                <div class="font-medium" data-i18n="permission.level.operator">管理员</div>
+                                <div class="text-sm text-gray-500" data-i18n="permission.level.operator.desc">拥有完全管理权限</div>
                             </div>
                         </div>
                     </button>
                 </div>
             </div>
             <div class="flex justify-end gap-2">
-                <button id="cancel-modal-btn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200">
+                <button id="cancel-modal-btn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200" data-i18n="permission.modal.cancel">
                     取消
                 </button>
             </div>

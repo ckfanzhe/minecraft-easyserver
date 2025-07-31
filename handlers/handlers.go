@@ -13,122 +13,122 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ServerHandler 服务器处理器
+// ServerHandler server handler
 type ServerHandler struct {
 	serverService *services.ServerService
 }
 
-// NewServerHandler 创建新的服务器处理器
+// NewServerHandler creates a new server handler
 func NewServerHandler() *ServerHandler {
 	return &ServerHandler{
 		serverService: services.NewServerService(),
 	}
 }
 
-// GetStatus 获取服务器状态
+// GetStatus gets server status
 func (h *ServerHandler) GetStatus(c *gin.Context) {
 	status := h.serverService.GetStatus()
 	c.JSON(200, status)
 }
 
-// StartServer 启动服务器
+// StartServer starts the server
 func (h *ServerHandler) StartServer(c *gin.Context) {
 	if err := h.serverService.Start(); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "服务器启动成功"})
+	c.JSON(200, gin.H{"message": "Server started successfully"})
 }
 
-// StopServer 停止服务器
+// StopServer stops the server
 func (h *ServerHandler) StopServer(c *gin.Context) {
 	if err := h.serverService.Stop(); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "服务器已停止"})
+	c.JSON(200, gin.H{"message": "Server stopped"})
 }
 
-// RestartServer 重启服务器
+// RestartServer restarts the server
 func (h *ServerHandler) RestartServer(c *gin.Context) {
 	if err := h.serverService.Restart(); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "服务器重启成功"})
+	c.JSON(200, gin.H{"message": "Server restarted successfully"})
 }
 
-// ConfigHandler 配置处理器
+// ConfigHandler configuration handler
 type ConfigHandler struct {
 	configService *services.ConfigService
 }
 
-// NewConfigHandler 创建新的配置处理器
+// NewConfigHandler creates a new configuration handler
 func NewConfigHandler() *ConfigHandler {
 	return &ConfigHandler{
 		configService: services.NewConfigService(),
 	}
 }
 
-// GetConfig 获取服务器配置
+// GetConfig gets server configuration
 func (h *ConfigHandler) GetConfig(c *gin.Context) {
 	config, err := h.configService.GetConfig()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "读取配置失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to read configuration: " + err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"config": config})
 }
 
-// UpdateConfig 更新服务器配置
+// UpdateConfig updates server configuration
 func (h *ConfigHandler) UpdateConfig(c *gin.Context) {
 	var request struct {
 		Config models.ServerConfig `json:"config"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": "无效的请求数据"})
+		c.JSON(400, gin.H{"error": "Invalid request data"})
 		return
 	}
 
 	if err := h.configService.UpdateConfig(request.Config); err != nil {
-		c.JSON(500, gin.H{"error": "保存配置失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to save configuration: " + err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "配置已保存，重启服务器后生效"})
+	c.JSON(200, gin.H{"message": "Configuration saved, restart server to take effect"})
 }
 
-// AllowlistHandler 白名单处理器
+// AllowlistHandler allowlist handler
 type AllowlistHandler struct {
 	allowlistService *services.AllowlistService
 }
 
-// NewAllowlistHandler 创建新的白名单处理器
+// NewAllowlistHandler creates a new allowlist handler
 func NewAllowlistHandler() *AllowlistHandler {
 	return &AllowlistHandler{
 		allowlistService: services.NewAllowlistService(),
 	}
 }
 
-// GetAllowlist 获取白名单
+// GetAllowlist gets allowlist
 func (h *AllowlistHandler) GetAllowlist(c *gin.Context) {
 	allowlist, err := h.allowlistService.GetAllowlist()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "读取白名单失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to read allowlist: " + err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"allowlist": allowlist})
 }
 
-// AddToAllowlist 添加到白名单
+// AddToAllowlist adds to allowlist
 func (h *AllowlistHandler) AddToAllowlist(c *gin.Context) {
 	var request struct {
 		Name string `json:"name"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": "无效的请求数据"})
+		c.JSON(400, gin.H{"error": "Invalid request data"})
 		return
 	}
 
@@ -137,48 +137,48 @@ func (h *AllowlistHandler) AddToAllowlist(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "已添加到白名单: " + request.Name})
+	c.JSON(200, gin.H{"message": "Added to allowlist: " + request.Name})
 }
 
-// RemoveFromAllowlist 从白名单移除
+// RemoveFromAllowlist removes from allowlist
 func (h *AllowlistHandler) RemoveFromAllowlist(c *gin.Context) {
 	name := c.Param("name")
 
 	if err := h.allowlistService.RemoveFromAllowlist(name); err != nil {
-		if strings.Contains(err.Error(), "不在白名单中") {
+		if strings.Contains(err.Error(), "not in allowlist") {
 			c.JSON(400, gin.H{"error": err.Error()})
 		} else {
-			c.JSON(500, gin.H{"error": "保存白名单失败: " + err.Error()})
+			c.JSON(500, gin.H{"error": "Failed to save allowlist: " + err.Error()})
 		}
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "已从白名单移除: " + name})
+	c.JSON(200, gin.H{"message": "Removed from allowlist: " + name})
 }
 
-// PermissionHandler 权限处理器
+// PermissionHandler permission handler
 type PermissionHandler struct {
 	permissionService *services.PermissionService
 }
 
-// NewPermissionHandler 创建新的权限处理器
+// NewPermissionHandler creates a new permission handler
 func NewPermissionHandler() *PermissionHandler {
 	return &PermissionHandler{
 		permissionService: services.NewPermissionService(),
 	}
 }
 
-// GetPermissions 获取权限
+// GetPermissions gets permissions
 func (h *PermissionHandler) GetPermissions(c *gin.Context) {
 	permissions, err := h.permissionService.GetPermissions()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "读取权限失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to read permissions: " + err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"permissions": permissions})
 }
 
-// UpdatePermission 更新权限
+// UpdatePermission updates permission
 func (h *PermissionHandler) UpdatePermission(c *gin.Context) {
 	var request struct {
 		Name  string `json:"name"`
@@ -186,7 +186,7 @@ func (h *PermissionHandler) UpdatePermission(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": "无效的请求数据"})
+		c.JSON(400, gin.H{"error": "Invalid request data"})
 		return
 	}
 
@@ -195,48 +195,48 @@ func (h *PermissionHandler) UpdatePermission(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": fmt.Sprintf("已设置 %s 的权限为 %s", request.Name, request.Level)})
+	c.JSON(200, gin.H{"message": fmt.Sprintf("Set %s permission to %s", request.Name, request.Level)})
 }
 
-// RemovePermission 移除权限
+// RemovePermission removes permission
 func (h *PermissionHandler) RemovePermission(c *gin.Context) {
 	name := c.Param("name")
 
 	if err := h.permissionService.RemovePermission(name); err != nil {
-		if strings.Contains(err.Error(), "权限不存在") {
+		if strings.Contains(err.Error(), "permission not found") {
 			c.JSON(400, gin.H{"error": err.Error()})
 		} else {
-			c.JSON(500, gin.H{"error": "保存权限失败: " + err.Error()})
+			c.JSON(500, gin.H{"error": "Failed to save permissions: " + err.Error()})
 		}
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "已移除权限: " + name})
+	c.JSON(200, gin.H{"message": "Permission removed: " + name})
 }
 
-// WorldHandler 世界处理器
+// WorldHandler world handler
 type WorldHandler struct {
 	worldService *services.WorldService
 }
 
-// NewWorldHandler 创建新的世界处理器
+// NewWorldHandler creates a new world handler
 func NewWorldHandler() *WorldHandler {
 	return &WorldHandler{
 		worldService: services.NewWorldService(),
 	}
 }
 
-// GetWorlds 获取世界列表
+// GetWorlds gets world list
 func (h *WorldHandler) GetWorlds(c *gin.Context) {
 	worlds, err := h.worldService.GetWorlds()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "读取世界列表失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to read world list: " + err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"worlds": worlds})
 }
 
-// extractZip 解压zip文件
+// extractZip extracts zip file
 func extractZip(src, dest string) error {
 	reader, err := zip.OpenReader(src)
 	if err != nil {
@@ -244,16 +244,16 @@ func extractZip(src, dest string) error {
 	}
 	defer reader.Close()
 
-	// 确保目标目录存在
+	// Ensure destination directory exists
 	os.MkdirAll(dest, 0755)
 
-	// 提取文件
+	// Extract files
 	for _, file := range reader.File {
 		path := filepath.Join(dest, file.Name)
 
-		// 检查路径安全性，防止目录遍历攻击
+		// Check path security to prevent directory traversal attacks
 		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return fmt.Errorf("无效的文件路径: %s", file.Name)
+			return fmt.Errorf("invalid file path: %s", file.Name)
 		}
 
 		if file.FileInfo().IsDir() {
@@ -261,12 +261,12 @@ func extractZip(src, dest string) error {
 			continue
 		}
 
-		// 创建文件目录
+		// Create file directory
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			return err
 		}
 
-		// 创建文件
+		// Create file
 		fileReader, err := file.Open()
 		if err != nil {
 			return err
@@ -288,106 +288,106 @@ func extractZip(src, dest string) error {
 	return nil
 }
 
-// UploadWorld 上传世界
+// UploadWorld uploads world
 func (h *WorldHandler) UploadWorld(c *gin.Context) {
 	file, header, err := c.Request.FormFile("world")
 	if err != nil {
-		c.JSON(400, gin.H{"error": "上传文件失败: " + err.Error()})
+		c.JSON(400, gin.H{"error": "Failed to upload file: " + err.Error()})
 		return
 	}
 	defer file.Close()
 
-	// 检查文件扩展名
+	// Check file extension
 	filename := header.Filename
 	if !strings.HasSuffix(strings.ToLower(filename), ".zip") &&
 		!strings.HasSuffix(strings.ToLower(filename), ".mcworld") {
-		c.JSON(400, gin.H{"error": "只支持 .zip 和 .mcworld 格式"})
+		c.JSON(400, gin.H{"error": "Only .zip and .mcworld formats are supported"})
 		return
 	}
 
-	// 获取bedrock路径
+	// Get bedrock path
 	wd, err := os.Getwd()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "获取工作目录失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to get working directory: " + err.Error()})
 		return
 	}
 	bedrockPath := filepath.Join(wd, "bedrock-server", "bedrock-server-1.21.95.1")
 
-	// 保存上传的文件
+	// Save uploaded file
 	worldsPath := filepath.Join(bedrockPath, "worlds")
 	os.MkdirAll(worldsPath, 0755)
 
 	uploadPath := filepath.Join(worldsPath, filename)
 	out, err := os.Create(uploadPath)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "保存文件失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to save file: " + err.Error()})
 		return
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "保存文件失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to save file: " + err.Error()})
 		return
 	}
 
-	// 关闭文件句柄以便后续操作
+	// Close file handle for subsequent operations
 	out.Close()
 
-	// 解压文件
+	// Extract file
 	var extractedWorldName string
 	if strings.HasSuffix(strings.ToLower(filename), ".zip") || strings.HasSuffix(strings.ToLower(filename), ".mcworld") {
-		// 获取不带扩展名的文件名作为世界名称
+		// Get filename without extension as world name
 		extractedWorldName = strings.TrimSuffix(filename, filepath.Ext(filename))
 		extractPath := filepath.Join(worldsPath, extractedWorldName)
 
-		// 解压文件
+		// Extract file
 		if err := extractZip(uploadPath, extractPath); err != nil {
-			// 如果解压失败，删除已上传的文件
+			// If extraction fails, delete uploaded file
 			os.Remove(uploadPath)
-			c.JSON(500, gin.H{"error": "解压文件失败: " + err.Error()})
+			c.JSON(500, gin.H{"error": "Failed to extract file: " + err.Error()})
 			return
 		}
 
-		// 解压成功后删除原始压缩文件
+		// Delete original compressed file after successful extraction
 		if err := os.Remove(uploadPath); err != nil {
-			// 记录警告但不影响主流程
-			fmt.Printf("警告: 删除压缩文件失败: %v\n", err)
+			// Log warning but don't affect main flow
+			fmt.Printf("Warning: Failed to delete compressed file: %v\n", err)
 		}
 
-		c.JSON(200, gin.H{"message": fmt.Sprintf("世界文件上传并解压成功: %s", extractedWorldName)})
+		c.JSON(200, gin.H{"message": fmt.Sprintf("World file uploaded and extracted successfully: %s", extractedWorldName)})
 	} else {
-		c.JSON(200, gin.H{"message": "世界文件上传成功: " + filename})
+		c.JSON(200, gin.H{"message": "World file uploaded successfully: " + filename})
 	}
 }
 
-// DeleteWorld 删除世界
+// DeleteWorld deletes world
 func (h *WorldHandler) DeleteWorld(c *gin.Context) {
 	worldName := c.Param("name")
 
 	if err := h.worldService.DeleteWorld(worldName); err != nil {
-		// 根据错误类型返回不同的状态码
-		if strings.Contains(err.Error(), "世界不存在") {
+		// Return different status codes based on error type
+		if strings.Contains(err.Error(), "world not found") {
 			c.JSON(404, gin.H{"error": err.Error()})
-		} else if strings.Contains(err.Error(), "世界名称不能为空") {
+		} else if strings.Contains(err.Error(), "world name cannot be empty") {
 			c.JSON(400, gin.H{"error": err.Error()})
 		} else {
-			c.JSON(500, gin.H{"error": "删除世界失败: " + err.Error()})
+			c.JSON(500, gin.H{"error": "Failed to delete world: " + err.Error()})
 		}
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "世界已删除: " + worldName + "，配置文件已同步更新"})
+	c.JSON(200, gin.H{"message": "World deleted: " + worldName + ", configuration file updated"})
 }
 
-// ActivateWorld 激活世界
+// ActivateWorld activates world
 func (h *WorldHandler) ActivateWorld(c *gin.Context) {
 	worldName := c.Param("name")
 
 	if err := h.worldService.ActivateWorld(worldName); err != nil {
-		c.JSON(500, gin.H{"error": "激活世界失败: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to activate world: " + err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "世界已激活: " + worldName + "，重启服务器后生效"})
+	c.JSON(200, gin.H{"message": "World activated: " + worldName + ", restart server to take effect"})
 }

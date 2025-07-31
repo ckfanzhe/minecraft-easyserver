@@ -9,11 +9,11 @@ import (
 )
 
 func TestConfigService(t *testing.T) {
-	// 创建临时测试目录
+	// Create temporary test directory
 	tempDir := t.TempDir()
 	bedrockPath = tempDir
 
-	// 创建测试配置文件
+	// Create test configuration file
 	configPath := filepath.Join(tempDir, "server.properties")
 	testConfig := `# Minecraft Bedrock Server Configuration
 server-name=Test Server
@@ -30,7 +30,7 @@ default-player-permission-level=member
 
 	err := os.WriteFile(configPath, []byte(testConfig), 0644)
 	if err != nil {
-		t.Fatalf("创建测试配置文件失败: %v", err)
+		t.Fatalf("Failed to create test configuration file: %v", err)
 	}
 
 	configService := NewConfigService()
@@ -38,23 +38,23 @@ default-player-permission-level=member
 	t.Run("GetConfig", func(t *testing.T) {
 		config, err := configService.GetConfig()
 		if err != nil {
-			t.Fatalf("获取配置失败: %v", err)
+			t.Fatalf("Failed to get configuration: %v", err)
 		}
 
 		if config.ServerName != "Test Server" {
-			t.Errorf("期望服务器名称为 'Test Server', 实际为 '%s'", config.ServerName)
+			t.Errorf("Expected server name 'Test Server', got '%s'", config.ServerName)
 		}
 
 		if config.Gamemode != "survival" {
-			t.Errorf("期望游戏模式为 'survival', 实际为 '%s'", config.Gamemode)
+			t.Errorf("Expected gamemode 'survival', got '%s'", config.Gamemode)
 		}
 
 		if config.MaxPlayers != 10 {
-			t.Errorf("期望最大玩家数为 10, 实际为 %d", config.MaxPlayers)
+			t.Errorf("Expected max players 10, got %d", config.MaxPlayers)
 		}
 
 		if !config.AllowList {
-			t.Error("期望白名单开启")
+			t.Error("Expected allowlist to be enabled")
 		}
 	})
 
@@ -74,31 +74,31 @@ default-player-permission-level=member
 
 		err := configService.UpdateConfig(newConfig)
 		if err != nil {
-			t.Fatalf("更新配置失败: %v", err)
+			t.Fatalf("Failed to update configuration: %v", err)
 		}
 
-		// 验证配置是否正确保存
+		// Verify configuration is saved correctly
 		savedConfig, err := configService.GetConfig()
 		if err != nil {
-			t.Fatalf("读取保存的配置失败: %v", err)
+			t.Fatalf("Failed to read saved configuration: %v", err)
 		}
 
 		if savedConfig.ServerName != "Updated Server" {
-			t.Errorf("期望服务器名称为 'Updated Server', 实际为 '%s'", savedConfig.ServerName)
+			t.Errorf("Expected server name 'Updated Server', got '%s'", savedConfig.ServerName)
 		}
 
 		if savedConfig.Gamemode != "creative" {
-			t.Errorf("期望游戏模式为 'creative', 实际为 '%s'", savedConfig.Gamemode)
+			t.Errorf("Expected gamemode 'creative', got '%s'", savedConfig.Gamemode)
 		}
 
 		if savedConfig.MaxPlayers != 20 {
-			t.Errorf("期望最大玩家数为 20, 实际为 %d", savedConfig.MaxPlayers)
+			t.Errorf("Expected max players 20, got %d", savedConfig.MaxPlayers)
 		}
 	})
 }
 
 func TestAllowlistService(t *testing.T) {
-	// 创建临时测试目录
+	// Create temporary test directory
 	tempDir := t.TempDir()
 	bedrockPath = tempDir
 
@@ -107,29 +107,29 @@ func TestAllowlistService(t *testing.T) {
 	t.Run("AddToAllowlist", func(t *testing.T) {
 		err := allowlistService.AddToAllowlist("TestPlayer1")
 		if err != nil {
-			t.Fatalf("添加玩家到白名单失败: %v", err)
+			t.Fatalf("Failed to add player to allowlist: %v", err)
 		}
 
 		err = allowlistService.AddToAllowlist("TestPlayer2")
 		if err != nil {
-			t.Fatalf("添加玩家到白名单失败: %v", err)
+			t.Fatalf("Failed to add player to allowlist: %v", err)
 		}
 
-		// 测试重复添加
+		// Test duplicate addition
 		err = allowlistService.AddToAllowlist("TestPlayer1")
 		if err == nil {
-			t.Error("期望重复添加玩家时返回错误")
+			t.Error("Expected error when adding duplicate player")
 		}
 	})
 
 	t.Run("GetAllowlist", func(t *testing.T) {
 		allowlist, err := allowlistService.GetAllowlist()
 		if err != nil {
-			t.Fatalf("获取白名单失败: %v", err)
+			t.Fatalf("Failed to get allowlist: %v", err)
 		}
 
 		if len(allowlist) != 2 {
-			t.Errorf("期望白名单有2个玩家, 实际为 %d", len(allowlist))
+			t.Errorf("Expected 2 players in allowlist, got %d", len(allowlist))
 		}
 
 		expectedPlayers := map[string]bool{
@@ -139,7 +139,7 @@ func TestAllowlistService(t *testing.T) {
 
 		for _, player := range allowlist {
 			if !expectedPlayers[player] {
-				t.Errorf("意外的玩家在白名单中: %s", player)
+				t.Errorf("Unexpected player in allowlist: %s", player)
 			}
 		}
 	})
@@ -147,44 +147,44 @@ func TestAllowlistService(t *testing.T) {
 	t.Run("RemoveFromAllowlist", func(t *testing.T) {
 		err := allowlistService.RemoveFromAllowlist("TestPlayer1")
 		if err != nil {
-			t.Fatalf("从白名单移除玩家失败: %v", err)
+			t.Fatalf("Failed to remove player from allowlist: %v", err)
 		}
 
 		allowlist, err := allowlistService.GetAllowlist()
 		if err != nil {
-			t.Fatalf("获取白名单失败: %v", err)
+			t.Fatalf("Failed to get allowlist: %v", err)
 		}
 
 		if len(allowlist) != 1 {
-			t.Errorf("期望白名单有1个玩家, 实际为 %d", len(allowlist))
+			t.Errorf("Expected 1 player in allowlist, got %d", len(allowlist))
 		}
 
 		if allowlist[0] != "TestPlayer2" {
-			t.Errorf("期望剩余玩家为 'TestPlayer2', 实际为 '%s'", allowlist[0])
+			t.Errorf("Expected remaining player 'TestPlayer2', got '%s'", allowlist[0])
 		}
 
-		// 测试移除不存在的玩家
+		// Test removing non-existent player
 		err = allowlistService.RemoveFromAllowlist("NonExistentPlayer")
 		if err == nil {
-			t.Error("期望移除不存在的玩家时返回错误")
+			t.Error("Expected error when removing non-existent player")
 		}
 	})
 
 	t.Run("EmptyName", func(t *testing.T) {
 		err := allowlistService.AddToAllowlist("")
 		if err == nil {
-			t.Error("期望添加空名称时返回错误")
+			t.Error("Expected error when adding empty name")
 		}
 
 		err = allowlistService.RemoveFromAllowlist("")
 		if err == nil {
-			t.Error("期望移除空名称时返回错误")
+			t.Error("Expected error when removing empty name")
 		}
 	})
 }
 
 func TestPermissionService(t *testing.T) {
-	// 创建临时测试目录
+	// Create temporary test directory
 	tempDir := t.TempDir()
 	bedrockPath = tempDir
 
@@ -193,45 +193,45 @@ func TestPermissionService(t *testing.T) {
 	t.Run("UpdatePermission", func(t *testing.T) {
 		err := permissionService.UpdatePermission("TestPlayer1", "operator")
 		if err != nil {
-			t.Fatalf("更新权限失败: %v", err)
+			t.Fatalf("Failed to update permission: %v", err)
 		}
 
 		err = permissionService.UpdatePermission("TestPlayer2", "member")
 		if err != nil {
-			t.Fatalf("更新权限失败: %v", err)
+			t.Fatalf("Failed to update permission: %v", err)
 		}
 
-		// 测试无效权限级别
+		// Test invalid permission level
 		err = permissionService.UpdatePermission("TestPlayer3", "invalid")
 		if err == nil {
-			t.Error("期望设置无效权限级别时返回错误")
+			t.Error("Expected error when setting invalid permission level")
 		}
 	})
 
 	t.Run("GetPermissions", func(t *testing.T) {
 		permissions, err := permissionService.GetPermissions()
 		if err != nil {
-			t.Fatalf("获取权限失败: %v", err)
+			t.Fatalf("Failed to get permissions: %v", err)
 		}
 
 		if len(permissions) != 2 {
-			t.Errorf("期望有2个权限条目, 实际为 %d", len(permissions))
+			t.Errorf("Expected 2 permission entries, got %d", len(permissions))
 		}
 
-		// 验证权限内容
+		// Verify permission content
 		foundPlayer1 := false
 		foundPlayer2 := false
 
 		for _, perm := range permissions {
 			name, ok := perm["name"].(string)
 			if !ok {
-				t.Error("权限条目缺少name字段")
+				t.Error("Permission entry missing name field")
 				continue
 			}
 
 			level, ok := perm["level"].(string)
 			if !ok {
-				t.Error("权限条目缺少level字段")
+				t.Error("Permission entry missing level field")
 				continue
 			}
 
@@ -243,70 +243,70 @@ func TestPermissionService(t *testing.T) {
 		}
 
 		if !foundPlayer1 {
-			t.Error("未找到TestPlayer1的operator权限")
+			t.Error("TestPlayer1 operator permission not found")
 		}
 
 		if !foundPlayer2 {
-			t.Error("未找到TestPlayer2的member权限")
+			t.Error("TestPlayer2 member permission not found")
 		}
 	})
 
 	t.Run("RemovePermission", func(t *testing.T) {
 		err := permissionService.RemovePermission("TestPlayer1")
 		if err != nil {
-			t.Fatalf("移除权限失败: %v", err)
+			t.Fatalf("Failed to remove permission: %v", err)
 		}
 
 		permissions, err := permissionService.GetPermissions()
 		if err != nil {
-			t.Fatalf("获取权限失败: %v", err)
+			t.Fatalf("Failed to get permissions: %v", err)
 		}
 
 		if len(permissions) != 1 {
-			t.Errorf("期望有1个权限条目, 实际为 %d", len(permissions))
+			t.Errorf("Expected 1 permission entry, got %d", len(permissions))
 		}
 
-		// 测试移除不存在的权限
+		// Test removing non-existent permission
 		err = permissionService.RemovePermission("NonExistentPlayer")
 		if err == nil {
-			t.Error("期望移除不存在的权限时返回错误")
+			t.Error("Expected error when removing non-existent permission")
 		}
 	})
 
 	t.Run("EmptyName", func(t *testing.T) {
 		err := permissionService.UpdatePermission("", "operator")
 		if err == nil {
-			t.Error("期望设置空名称权限时返回错误")
+			t.Error("Expected error when setting permission for empty name")
 		}
 
 		err = permissionService.RemovePermission("")
 		if err == nil {
-			t.Error("期望移除空名称权限时返回错误")
+			t.Error("Expected error when removing permission for empty name")
 		}
 	})
 }
 
 func TestWorldService(t *testing.T) {
-	// 创建临时测试目录
+	// Create temporary test directory
 	tempDir := t.TempDir()
 	bedrockPath = tempDir
 
-	// 创建测试世界目录
+	// Create test world directory
 	worldsPath := filepath.Join(tempDir, "worlds")
 	os.MkdirAll(worldsPath, 0755)
 
-	// 创建测试世界
+	// Create test worlds
 	world1Path := filepath.Join(worldsPath, "TestWorld1")
 	world2Path := filepath.Join(worldsPath, "TestWorld2")
 	os.MkdirAll(world1Path, 0755)
 	os.MkdirAll(world2Path, 0755)
 
-	// 创建测试配置文件
+	// Create test configuration file
 	configPath := filepath.Join(tempDir, "server.properties")
 	testConfig := `level-name=TestWorld1`
 	err := os.WriteFile(configPath, []byte(testConfig), 0644)
 	if err != nil {
-		t.Fatalf("创建测试配置文件失败: %v", err)
+		t.Fatalf("Failed to create test configuration file: %v", err)
 	}
 
 	worldService := NewWorldService()
@@ -314,14 +314,14 @@ func TestWorldService(t *testing.T) {
 	t.Run("GetWorlds", func(t *testing.T) {
 		worlds, err := worldService.GetWorlds()
 		if err != nil {
-			t.Fatalf("获取世界列表失败: %v", err)
+			t.Fatalf("Failed to get world list: %v", err)
 		}
 
 		if len(worlds) != 2 {
-			t.Errorf("期望有2个世界, 实际为 %d", len(worlds))
+			t.Errorf("Expected 2 worlds, got %d", len(worlds))
 		}
 
-		// 验证激活状态
+		// Verify active status
 		foundActiveWorld := false
 		for _, world := range worlds {
 			if world.Name == "TestWorld1" && world.Active {
@@ -330,22 +330,22 @@ func TestWorldService(t *testing.T) {
 		}
 
 		if !foundActiveWorld {
-			t.Error("未找到激活的世界TestWorld1")
+			t.Error("Active world TestWorld1 not found")
 		}
 	})
 
 	t.Run("ActivateWorld", func(t *testing.T) {
 		err := worldService.ActivateWorld("TestWorld2")
 		if err != nil {
-			t.Fatalf("激活世界失败: %v", err)
+			t.Fatalf("Failed to activate world: %v", err)
 		}
 
 		worlds, err := worldService.GetWorlds()
 		if err != nil {
-			t.Fatalf("获取世界列表失败: %v", err)
+			t.Fatalf("Failed to get world list: %v", err)
 		}
 
-		// 验证新的激活状态
+		// Verify new active status
 		foundActiveWorld := false
 		for _, world := range worlds {
 			if world.Name == "TestWorld2" && world.Active {
@@ -354,39 +354,39 @@ func TestWorldService(t *testing.T) {
 		}
 
 		if !foundActiveWorld {
-			t.Error("TestWorld2未被正确激活")
+			t.Error("TestWorld2 was not activated correctly")
 		}
 	})
 
 	t.Run("DeleteWorld", func(t *testing.T) {
 		err := worldService.DeleteWorld("TestWorld1")
 		if err != nil {
-			t.Fatalf("删除世界失败: %v", err)
+			t.Fatalf("Failed to delete world: %v", err)
 		}
 
 		worlds, err := worldService.GetWorlds()
 		if err != nil {
-			t.Fatalf("获取世界列表失败: %v", err)
+			t.Fatalf("Failed to get world list: %v", err)
 		}
 
 		if len(worlds) != 1 {
-			t.Errorf("期望有1个世界, 实际为 %d", len(worlds))
+			t.Errorf("Expected 1 world, got %d", len(worlds))
 		}
 
 		if worlds[0].Name != "TestWorld2" {
-			t.Errorf("期望剩余世界为 'TestWorld2', 实际为 '%s'", worlds[0].Name)
+			t.Errorf("Expected remaining world 'TestWorld2', got '%s'", worlds[0].Name)
 		}
 	})
 
 	t.Run("EmptyWorldName", func(t *testing.T) {
 		err := worldService.DeleteWorld("")
 		if err == nil {
-			t.Error("期望删除空名称世界时返回错误")
+			t.Error("Expected error when deleting world with empty name")
 		}
 
 		err = worldService.ActivateWorld("")
 		if err == nil {
-			t.Error("期望激活空名称世界时返回错误")
+			t.Error("Expected error when activating world with empty name")
 		}
 	})
 }

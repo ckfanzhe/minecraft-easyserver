@@ -21,13 +21,13 @@ var (
 	bedrockPath   string
 )
 
-// InitBedrockPath 初始化bedrock路径
+// InitBedrockPath initializes bedrock path
 func InitBedrockPath(path string) error {
 	if path == "" {
-		return fmt.Errorf("bedrock路径不能为空")
+		return fmt.Errorf("bedrock path cannot be empty")
 	}
 	
-	// 如果是相对路径，转换为绝对路径
+	// If it's a relative path, convert to absolute path
 	if !filepath.IsAbs(path) {
 		wd, err := os.Getwd()
 		if err != nil {
@@ -36,29 +36,29 @@ func InitBedrockPath(path string) error {
 		path = filepath.Join(wd, path)
 	}
 	
-	// 检查路径是否存在
+	// Check if path exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return fmt.Errorf("bedrock路径不存在: %s", path)
+		return fmt.Errorf("bedrock path does not exist: %s", path)
 	}
 	
 	bedrockPath = path
 	return nil
 }
 
-// SetBedrockPath 设置bedrock路径（主要用于测试）
+// SetBedrockPath sets bedrock path (mainly for testing)
 func SetBedrockPath(path string) {
 	bedrockPath = path
 }
 
-// ServerService 服务器服务
+// ServerService server service
 type ServerService struct{}
 
-// NewServerService 创建新的服务器服务实例
+// NewServerService creates a new server service instance
 func NewServerService() *ServerService {
 	return &ServerService{}
 }
 
-// GetStatus 获取服务器状态
+// GetStatus gets server status
 func (s *ServerService) GetStatus() models.ServerStatus {
 	serverMutex.Lock()
 	defer serverMutex.Unlock()
@@ -66,27 +66,27 @@ func (s *ServerService) GetStatus() models.ServerStatus {
 	if serverProcess == nil || serverProcess.Process == nil {
 		return models.ServerStatus{
 			Status:  "stopped",
-			Message: "服务器未运行",
+			Message: "Server not running",
 		}
 	}
 
-	// 检查进程是否仍在运行
+	// Check if process is still running
 	process, err := os.FindProcess(serverProcess.Process.Pid)
 	if err != nil {
 		serverProcess = nil
 		return models.ServerStatus{
 			Status:  "stopped",
-			Message: "服务器未运行",
+			Message: "Server not running",
 		}
 	}
 
-	// 在Windows上，简单检查进程是否存在
-	// 如果进程已经结束，FindProcess仍然会返回一个Process对象
-	// 我们可以尝试发送信号0来检查进程是否真的在运行
+	// On Windows, simply check if process exists
+	// If process has ended, FindProcess will still return a Process object
+	// We can try sending signal 0 to check if process is really running
 	if process != nil {
 		return models.ServerStatus{
 			Status:  "running",
-			Message: "服务器正在运行",
+			Message: "Server is running",
 			PID:     serverProcess.Process.Pid,
 		}
 	}
@@ -94,45 +94,45 @@ func (s *ServerService) GetStatus() models.ServerStatus {
 	serverProcess = nil
 	return models.ServerStatus{
 		Status:  "stopped",
-		Message: "服务器未运行",
+		Message: "Server not running",
 	}
 }
 
-// Start 启动服务器
+// Start starts server
 func (s *ServerService) Start() error {
 	serverMutex.Lock()
 	defer serverMutex.Unlock()
 
 	if serverProcess != nil && serverProcess.Process != nil {
-		return fmt.Errorf("服务器已在运行")
+		return fmt.Errorf("server is already running")
 	}
 
 	exePath := filepath.Join(bedrockPath, "bedrock_server.exe")
 	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("找不到bedrock_server.exe文件")
+		return fmt.Errorf("bedrock_server.exe file not found")
 	}
 
 	serverProcess = exec.Command(exePath)
 	serverProcess.Dir = bedrockPath
 
 	if err := serverProcess.Start(); err != nil {
-		return fmt.Errorf("启动服务器失败: %v", err)
+		return fmt.Errorf("failed to start server: %v", err)
 	}
 
 	return nil
 }
 
-// Stop 停止服务器
+// Stop stops server
 func (s *ServerService) Stop() error {
 	serverMutex.Lock()
 	defer serverMutex.Unlock()
 
 	if serverProcess == nil || serverProcess.Process == nil {
-		return fmt.Errorf("服务器未运行")
+		return fmt.Errorf("server not running")
 	}
 
 	if err := serverProcess.Process.Kill(); err != nil {
-		return fmt.Errorf("停止服务器失败: %v", err)
+		return fmt.Errorf("failed to stop server: %v", err)
 	}
 
 	serverProcess.Wait()
@@ -140,58 +140,58 @@ func (s *ServerService) Stop() error {
 	return nil
 }
 
-// Restart 重启服务器
+// Restart restarts server
 func (s *ServerService) Restart() error {
 	serverMutex.Lock()
 	defer serverMutex.Unlock()
 
-	// 先停止
+	// Stop first
 	if serverProcess != nil && serverProcess.Process != nil {
 		serverProcess.Process.Kill()
 		serverProcess.Wait()
 		serverProcess = nil
 	}
 
-	// 等待一秒
+	// Wait one second
 	time.Sleep(time.Second)
 
-	// 重新启动
+	// Restart
 	exePath := filepath.Join(bedrockPath, "bedrock_server.exe")
 	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("找不到bedrock_server.exe文件")
+		return fmt.Errorf("bedrock_server.exe file not found")
 	}
 
 	serverProcess = exec.Command(exePath)
 	serverProcess.Dir = bedrockPath
 
 	if err := serverProcess.Start(); err != nil {
-		return fmt.Errorf("重启服务器失败: %v", err)
+		return fmt.Errorf("failed to restart server: %v", err)
 	}
 
 	return nil
 }
 
-// ConfigService 配置服务
+// ConfigService configuration service
 type ConfigService struct{}
 
-// NewConfigService 创建新的配置服务实例
+// NewConfigService creates a new configuration service instance
 func NewConfigService() *ConfigService {
 	return &ConfigService{}
 }
 
-// GetConfig 获取服务器配置
+// GetConfig gets server configuration
 func (c *ConfigService) GetConfig() (models.ServerConfig, error) {
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	return readServerProperties(configPath)
 }
 
-// UpdateConfig 更新服务器配置
+// UpdateConfig updates server configuration
 func (c *ConfigService) UpdateConfig(config models.ServerConfig) error {
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	return writeServerProperties(configPath, config)
 }
 
-// 读取server.properties
+// Read server.properties
 func readServerProperties(path string) (models.ServerConfig, error) {
 	config := models.ServerConfig{}
 
@@ -247,9 +247,9 @@ func readServerProperties(path string) (models.ServerConfig, error) {
 	return config, scanner.Err()
 }
 
-// 写入server.properties
+// Write server.properties
 func writeServerProperties(path string, config models.ServerConfig) error {
-	// 读取原文件保持注释
+	// Read original file to preserve comments
 	originalLines := []string{}
 	if file, err := os.Open(path); err == nil {
 		scanner := bufio.NewScanner(file)
@@ -259,7 +259,7 @@ func writeServerProperties(path string, config models.ServerConfig) error {
 		file.Close()
 	}
 
-	// 创建新文件
+	// Create new file
 	file, err := os.Create(path)
 	if err != nil {
 		return err
@@ -269,7 +269,7 @@ func writeServerProperties(path string, config models.ServerConfig) error {
 	writer := bufio.NewWriter(file)
 	defer writer.Flush()
 
-	// 写入配置
+	// Write configuration
 	configMap := map[string]string{
 		"server-name":                     config.ServerName,
 		"gamemode":                        config.Gamemode,
@@ -283,7 +283,7 @@ func writeServerProperties(path string, config models.ServerConfig) error {
 		"default-player-permission-level": config.DefaultPlayerPermission,
 	}
 
-	// 处理每一行
+	// Process each line
 	for _, line := range originalLines {
 		if strings.TrimSpace(line) == "" || strings.HasPrefix(strings.TrimSpace(line), "#") {
 			writer.WriteString(line + "\n")
@@ -305,7 +305,7 @@ func writeServerProperties(path string, config models.ServerConfig) error {
 		}
 	}
 
-	// 添加任何新的配置项
+	// Add any new configuration items
 	for key, value := range configMap {
 		writer.WriteString(key + "=" + value + "\n")
 	}
@@ -313,15 +313,15 @@ func writeServerProperties(path string, config models.ServerConfig) error {
 	return nil
 }
 
-// AllowlistService 白名单服务
+// AllowlistService allowlist service
 type AllowlistService struct{}
 
-// NewAllowlistService 创建新的白名单服务实例
+// NewAllowlistService creates a new allowlist service instance
 func NewAllowlistService() *AllowlistService {
 	return &AllowlistService{}
 }
 
-// GetAllowlist 获取白名单
+// GetAllowlist gets allowlist
 func (a *AllowlistService) GetAllowlist() ([]string, error) {
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
 	allowlist, err := readAllowlist(allowlistPath)
@@ -337,10 +337,10 @@ func (a *AllowlistService) GetAllowlist() ([]string, error) {
 	return names, nil
 }
 
-// AddToAllowlist 添加到白名单
+// AddToAllowlist adds to allowlist
 func (a *AllowlistService) AddToAllowlist(name string) error {
 	if name == "" {
-		return fmt.Errorf("玩家名称不能为空")
+		return fmt.Errorf("player name cannot be empty")
 	}
 
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
@@ -349,14 +349,14 @@ func (a *AllowlistService) AddToAllowlist(name string) error {
 		allowlist = []models.AllowlistEntry{}
 	}
 
-	// 检查是否已存在
+	// Check if already exists
 	for _, entry := range allowlist {
 		if entry.Name == name {
-			return fmt.Errorf("玩家已在白名单中")
+			return fmt.Errorf("player already in allowlist")
 		}
 	}
 
-	// 添加新条目
+	// Add new entry
 	newEntry := models.AllowlistEntry{
 		Name:               name,
 		IgnoresPlayerLimit: false,
@@ -366,10 +366,10 @@ func (a *AllowlistService) AddToAllowlist(name string) error {
 	return writeAllowlist(allowlistPath, allowlist)
 }
 
-// RemoveFromAllowlist 从白名单移除
+// RemoveFromAllowlist removes from allowlist
 func (a *AllowlistService) RemoveFromAllowlist(name string) error {
 	if name == "" {
-		return fmt.Errorf("玩家名称不能为空")
+		return fmt.Errorf("player name cannot be empty")
 	}
 
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
@@ -378,7 +378,7 @@ func (a *AllowlistService) RemoveFromAllowlist(name string) error {
 		return err
 	}
 
-	// 移除条目
+	// Remove entry
 	var newAllowlist []models.AllowlistEntry
 	found := false
 	for _, entry := range allowlist {
@@ -390,13 +390,13 @@ func (a *AllowlistService) RemoveFromAllowlist(name string) error {
 	}
 
 	if !found {
-		return fmt.Errorf("玩家不在白名单中")
+		return fmt.Errorf("player not in allowlist")
 	}
 
 	return writeAllowlist(allowlistPath, newAllowlist)
 }
 
-// 读取allowlist.json
+// Read allowlist.json
 func readAllowlist(path string) ([]models.AllowlistEntry, error) {
 	var allowlist []models.AllowlistEntry
 
@@ -415,7 +415,7 @@ func readAllowlist(path string) ([]models.AllowlistEntry, error) {
 	return allowlist, nil
 }
 
-// 写入allowlist.json
+// Write allowlist.json
 func writeAllowlist(path string, allowlist []models.AllowlistEntry) error {
 	data, err := json.MarshalIndent(allowlist, "", "  ")
 	if err != nil {
@@ -425,24 +425,24 @@ func writeAllowlist(path string, allowlist []models.AllowlistEntry) error {
 	return os.WriteFile(path, data, 0644)
 }
 
-// PermissionService 权限服务
+// PermissionService permission service
 type PermissionService struct{}
 
-// NewPermissionService 创建新的权限服务实例
+// NewPermissionService creates a new permission service instance
 func NewPermissionService() *PermissionService {
 	return &PermissionService{}
 }
 
-// GetPermissions 获取权限
+// GetPermissions gets permissions
 func (p *PermissionService) GetPermissions() ([]map[string]interface{}, error) {
 	permissionsPath := filepath.Join(bedrockPath, "permissions.json")
 	return readPermissions(permissionsPath)
 }
 
-// UpdatePermission 更新权限
+// UpdatePermission updates permission
 func (p *PermissionService) UpdatePermission(name, level string) error {
 	if name == "" {
-		return fmt.Errorf("玩家名称不能为空")
+		return fmt.Errorf("player name cannot be empty")
 	}
 
 	validLevels := map[string]bool{
@@ -452,7 +452,7 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 	}
 
 	if !validLevels[level] {
-		return fmt.Errorf("无效的权限级别")
+		return fmt.Errorf("invalid permission level")
 	}
 
 	permissionsPath := filepath.Join(bedrockPath, "permissions.json")
@@ -461,7 +461,7 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 		permissions = []map[string]interface{}{}
 	}
 
-	// 查找并更新或添加权限
+	// Find and update or add permission
 	found := false
 	for i, perm := range permissions {
 		if playerName, ok := perm["name"].(string); ok && playerName == name {
@@ -482,10 +482,10 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 	return writePermissions(permissionsPath, permissions)
 }
 
-// RemovePermission 移除权限
+// RemovePermission removes permission
 func (p *PermissionService) RemovePermission(name string) error {
 	if name == "" {
-		return fmt.Errorf("玩家名称不能为空")
+		return fmt.Errorf("player name cannot be empty")
 	}
 
 	permissionsPath := filepath.Join(bedrockPath, "permissions.json")
@@ -494,7 +494,7 @@ func (p *PermissionService) RemovePermission(name string) error {
 		return err
 	}
 
-	// 移除权限
+	// Remove permission
 	var newPermissions []map[string]interface{}
 	found := false
 	for _, perm := range permissions {
@@ -506,13 +506,13 @@ func (p *PermissionService) RemovePermission(name string) error {
 	}
 
 	if !found {
-		return fmt.Errorf("玩家权限不存在")
+		return fmt.Errorf("player permission not found")
 	}
 
 	return writePermissions(permissionsPath, newPermissions)
 }
 
-// 读取permissions.json
+// Read permissions.json
 func readPermissions(path string) ([]map[string]interface{}, error) {
 	var permissions []map[string]interface{}
 
@@ -531,7 +531,7 @@ func readPermissions(path string) ([]map[string]interface{}, error) {
 	return permissions, nil
 }
 
-// 写入permissions.json
+// Write permissions.json
 func writePermissions(path string, permissions []map[string]interface{}) error {
 	data, err := json.MarshalIndent(permissions, "", "  ")
 	if err != nil {
@@ -541,33 +541,33 @@ func writePermissions(path string, permissions []map[string]interface{}) error {
 	return os.WriteFile(path, data, 0644)
 }
 
-// WorldService 世界服务
+// WorldService world service
 type WorldService struct{}
 
-// NewWorldService 创建新的世界服务实例
+// NewWorldService creates a new world service instance
 func NewWorldService() *WorldService {
 	return &WorldService{}
 }
 
-// GetWorlds 获取世界列表
+// GetWorlds gets world list
 func (w *WorldService) GetWorlds() ([]models.WorldInfo, error) {
 	worldsPath := filepath.Join(bedrockPath, "worlds")
 	return getWorldsList(worldsPath)
 }
 
-// DeleteWorld 删除世界
+// DeleteWorld deletes world
 func (w *WorldService) DeleteWorld(worldName string) error {
 	if worldName == "" {
-		return fmt.Errorf("世界名称不能为空")
+		return fmt.Errorf("world name cannot be empty")
 	}
 
-	// 检查世界是否存在
+	// Check if world exists
 	worldPath := filepath.Join(bedrockPath, "worlds", worldName)
 	if _, err := os.Stat(worldPath); os.IsNotExist(err) {
-		return fmt.Errorf("世界不存在: %s", worldName)
+		return fmt.Errorf("world not found: %s", worldName)
 	}
 
-	// 检查是否是当前激活的世界
+	// Check if it's the currently active world
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	config, err := readServerProperties(configPath)
 	isActiveWorld := false
@@ -575,44 +575,44 @@ func (w *WorldService) DeleteWorld(worldName string) error {
 		isActiveWorld = true
 	}
 
-	// 删除世界文件夹
+	// Delete world folder
 	if err := os.RemoveAll(worldPath); err != nil {
-		return fmt.Errorf("删除世界文件失败: %v", err)
+		return fmt.Errorf("failed to delete world files: %v", err)
 	}
 
-	// 如果删除的是当前激活的世界，需要更新配置文件
+	// If deleting the currently active world, need to update configuration file
 	if isActiveWorld {
-		// 获取剩余的世界列表
+		// Get remaining world list
 		worldsPath := filepath.Join(bedrockPath, "worlds")
 		remainingWorlds, err := getWorldsList(worldsPath)
 		if err != nil {
-			return fmt.Errorf("获取剩余世界列表失败: %v", err)
+			return fmt.Errorf("failed to get remaining world list: %v", err)
 		}
 
-		// 如果还有其他世界，激活第一个；否则设置为默认世界名
+		// If there are other worlds, activate the first one; otherwise set to default world name
 		if len(remainingWorlds) > 0 {
 			config.LevelName = remainingWorlds[0].Name
 		} else {
-			// 没有其他世界时，设置为默认世界名
+			// When no other worlds exist, set to default world name
 			config.LevelName = "Bedrock level"
 		}
 
-		// 更新配置文件
+		// Update configuration file
 		if err := writeServerProperties(configPath, config); err != nil {
-			return fmt.Errorf("更新配置文件失败: %v", err)
+			return fmt.Errorf("failed to update configuration file: %v", err)
 		}
 	}
 
 	return nil
 }
 
-// ActivateWorld 激活世界
+// ActivateWorld activates world
 func (w *WorldService) ActivateWorld(worldName string) error {
 	if worldName == "" {
-		return fmt.Errorf("世界名称不能为空")
+		return fmt.Errorf("world name cannot be empty")
 	}
 
-	// 更新server.properties中的level-name
+	// Update level-name in server.properties
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	config, err := readServerProperties(configPath)
 	if err != nil {
@@ -623,11 +623,11 @@ func (w *WorldService) ActivateWorld(worldName string) error {
 	return writeServerProperties(configPath, config)
 }
 
-// 获取世界列表
+// Get world list
 func getWorldsList(worldsPath string) ([]models.WorldInfo, error) {
 	var worlds []models.WorldInfo
 
-	// 读取当前激活的世界
+	// Read currently active world
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	config, err := readServerProperties(configPath)
 	activeWorld := ""

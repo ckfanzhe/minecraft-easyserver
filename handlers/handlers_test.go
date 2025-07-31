@@ -20,7 +20,7 @@ func setupTestEnvironment(t *testing.T) string {
 	tempDir, err := os.MkdirTemp("", "bedrock-test-*")
 	assert.NoError(t, err)
 
-	// 设置测试环境的bedrock路径
+	// Set bedrock path for test environment
 	services.SetBedrockPath(tempDir)
 
 	t.Cleanup(func() {
@@ -59,7 +59,7 @@ func TestConfigHandler(t *testing.T) {
 	
 	tempDir := setupTestEnvironment(t)
 	
-	// 创建测试配置文件
+	// Create test configuration file
 	configPath := filepath.Join(tempDir, "server.properties")
 	testConfig := `server-name=Test Server
 gamemode=survival
@@ -131,7 +131,7 @@ default-player-permission-level=member
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "配置已保存")
+		assert.Contains(t, response["message"], "Configuration saved")
 	})
 
 	t.Run("UpdateConfig_InvalidJSON", func(t *testing.T) {
@@ -174,7 +174,7 @@ func TestAllowlistHandler(t *testing.T) {
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "已添加到白名单")
+		assert.Contains(t, response["message"], "Added to allowlist")
 	})
 
 	t.Run("GetAllowlist", func(t *testing.T) {
@@ -211,7 +211,7 @@ func TestAllowlistHandler(t *testing.T) {
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "已从白名单移除")
+		assert.Contains(t, response["message"], "Removed from allowlist")
 	})
 
 	t.Run("AddToAllowlist_EmptyName", func(t *testing.T) {
@@ -273,7 +273,7 @@ func TestPermissionHandler(t *testing.T) {
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "已设置")
+		assert.Contains(t, response["message"], "Permission set")
 	})
 
 	t.Run("GetPermissions", func(t *testing.T) {
@@ -328,7 +328,7 @@ func TestPermissionHandler(t *testing.T) {
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "已移除权限")
+		assert.Contains(t, response["message"], "Permission removed")
 	})
 }
 
@@ -337,15 +337,15 @@ func TestWorldHandler(t *testing.T) {
 	
 	tempDir := setupTestEnvironment(t)
 
-	// 创建测试世界目录
+	// Create test world directory
 	worldsPath := filepath.Join(tempDir, "worlds")
 	os.MkdirAll(worldsPath, 0755)
 
-	// 创建测试世界
+	// Create test world
 	world1Path := filepath.Join(worldsPath, "TestWorld1")
 	os.MkdirAll(world1Path, 0755)
 
-	// 创建测试配置文件
+	// Create test configuration file
 	configPath := filepath.Join(tempDir, "server.properties")
 	testConfig := `level-name=TestWorld1`
 	err := os.WriteFile(configPath, []byte(testConfig), 0644)
@@ -386,11 +386,11 @@ func TestWorldHandler(t *testing.T) {
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "世界已删除")
+		assert.Contains(t, response["message"], "World deleted")
 	})
 
 	t.Run("ActivateWorld", func(t *testing.T) {
-		// 重新创建世界用于激活测试
+		// Recreate world for activation test
 		world2Path := filepath.Join(worldsPath, "TestWorld2")
 		os.MkdirAll(world2Path, 0755)
 
@@ -406,6 +406,6 @@ func TestWorldHandler(t *testing.T) {
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "世界已激活")
+		assert.Contains(t, response["message"], "World activated")
 	})
 }
