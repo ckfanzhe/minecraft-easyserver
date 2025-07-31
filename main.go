@@ -50,6 +50,7 @@ func main() {
 	allowlistHandler := handlers.NewAllowlistHandler()
 	permissionHandler := handlers.NewPermissionHandler()
 	worldHandler := handlers.NewWorldHandler()
+	resourcePackHandler := handlers.NewResourcePackHandler()
 
 	// API routes
 	api := r.Group("/api")
@@ -79,6 +80,13 @@ func main() {
 		api.POST("/worlds/upload", worldHandler.UploadWorld)
 		api.DELETE("/worlds/:name", worldHandler.DeleteWorld)
 		api.PUT("/worlds/:name/activate", worldHandler.ActivateWorld)
+
+		// Resource pack management
+		api.GET("/resource-packs", resourcePackHandler.GetResourcePacks)
+		api.POST("/resource-packs/upload", resourcePackHandler.UploadResourcePack)
+		api.PUT("/resource-packs/:uuid/activate", resourcePackHandler.ActivateResourcePack)
+		api.PUT("/resource-packs/:uuid/deactivate", resourcePackHandler.DeactivateResourcePack)
+		api.DELETE("/resource-packs/:uuid", resourcePackHandler.DeleteResourcePack)
 	}
 
 	// Start server

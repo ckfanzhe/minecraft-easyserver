@@ -169,6 +169,27 @@
                     <!-- 世界项目将在这里动态添加 -->
                 </div>
             </div>
+
+            <!-- 资源包管理 -->
+            <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-cube mr-3 text-pink-500"></i>
+                    <span data-i18n="resourcepack.title">资源包管理</span>
+                </h3>
+                <div class="mb-4">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                        <input type="file" id="resourcepack-upload" accept=".zip,.mcpack" class="hidden">
+                        <button id="resourcepack-upload-btn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md transition duration-300">
+                            <i class="fas fa-upload mr-2"></i><span data-i18n="resourcepack.upload">上传资源包</span>
+                        </button>
+                        <p class="text-sm text-gray-500 mt-2" data-i18n="resourcepack.upload.desc">支持 .zip 和 .mcpack 格式，自动解压并读取配置</p>
+                        <p class="text-xs text-gray-400 mt-1" data-i18n="resourcepack.upload.note">上传后将自动解压到资源包目录，原压缩文件会被删除</p>
+                    </div>
+                </div>
+                <div id="resourcepacks-container" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- 资源包项目将在这里动态添加 -->
+                </div>
+            </div>
         </div>
     </div>
 

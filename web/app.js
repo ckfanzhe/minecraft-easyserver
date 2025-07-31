@@ -18,6 +18,9 @@ const elements = {
     uploadBtn: document.getElementById('upload-btn'),
     worldUpload: document.getElementById('world-upload'),
     worldsContainer: document.getElementById('worlds-container'),
+    resourcepackUploadBtn: document.getElementById('resourcepack-upload-btn'),
+    resourcepackUpload: document.getElementById('resourcepack-upload'),
+    resourcepacksContainer: document.getElementById('resourcepacks-container'),
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toast-message'),
     permissionModal: document.getElementById('permission-modal'),
@@ -44,6 +47,7 @@ async function initializeApp() {
     await loadAllowlist();
     await loadPermissions();
     await loadWorlds();
+    await loadResourcePacks();
 }
 
 // Bind event listeners
@@ -103,6 +107,10 @@ function bindEvents() {
     // World upload
     if (elements.uploadBtn) elements.uploadBtn.addEventListener('click', () => elements.worldUpload.click());
     if (elements.worldUpload) elements.worldUpload.addEventListener('change', uploadWorld);
+
+    // Resource pack upload
+    if (elements.resourcepackUploadBtn) elements.resourcepackUploadBtn.addEventListener('click', () => elements.resourcepackUpload.click());
+    if (elements.resourcepackUpload) elements.resourcepackUpload.addEventListener('change', uploadResourcePack);
 }
 
 // API request wrapper
@@ -570,3 +578,150 @@ window.removeFromAllowlist = removeFromAllowlist;
 window.removePermission = removePermission;
 window.deleteWorld = deleteWorld;
 window.activateWorld = activateWorld;
+window.activateResourcePack = activateResourcePack;
+window.deactivateResourcePack = deactivateResourcePack;
+window.deleteResourcePack = deleteResourcePack;
+
+// Resource pack management functions
+
+// Load resource packs list
+async function loadResourcePacks() {
+    try {
+        const data = await apiRequest('/resource-packs');
+        renderResourcePacks(data.resource_packs || []);
+    } catch (error) {
+        renderResourcePacks([]);
+    }
+}
+
+// Render resource packs list
+function renderResourcePacks(resourcePacks) {
+    elements.resourcepacksContainer.innerHTML = '';
+    
+    if (resourcePacks.length === 0) {
+        const emptyMessage = window.i18n ? 
+            window.i18n.t('resourcepack.empty') : 
+            'No resource packs';
+        elements.resourcepacksContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${emptyMessage}</p>`;
+        return;
+    }
+    
+    resourcePacks.forEach(pack => {
+        const packElement = createResourcePackElement(pack);
+        elements.resourcepacksContainer.appendChild(packElement);
+    });
+}
+
+// Upload resource pack
+async function uploadResourcePack() {
+    const file = elements.resourcepackUpload.files[0];
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('resource_pack', file);
+    
+    try {
+        const response = await fetch(`${API_BASE}/resource-packs/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        showToast(data.message);
+        elements.resourcepackUpload.value = '';
+        await loadResourcePacks();
+    } catch (error) {
+        const errorMessage = window.i18n ? 
+            window.i18n.t('resourcepack.upload.error') : 
+            'Upload failed: ';
+        showToast(errorMessage + error.message, 'error');
+    }
+}
+
+// Create resource pack element
+function createResourcePackElement(pack) {
+    const div = document.createElement('div');
+    div.className = 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded';
+    
+    // Escape special characters in pack uuid
+    const escapedUuid = pack.uuid.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    
+    const activeText = window.i18n ? window.i18n.t('resourcepack.active') : 'Active';
+    const activateText = window.i18n ? window.i18n.t('resourcepack.activate') : 'Activate';
+    const deactivateText = window.i18n ? window.i18n.t('resourcepack.deactivate') : 'Deactivate';
+    const deleteText = window.i18n ? window.i18n.t('resourcepack.delete') : 'Delete';
+    
+    div.innerHTML = `
+        <div>
+            <span class="font-medium">${pack.name}</span>
+            <span class="ml-2 text-sm text-gray-500">v${pack.version.join('.')}</span>
+            ${pack.active ? `<span class="ml-2 px-2 py-1 text-xs rounded bg-green-200 text-green-800">${activeText}</span>` : ''}
+        </div>
+        <div class="space-x-2">
+            ${!pack.active ? `<button onclick="activateResourcePack('${escapedUuid}')" 
+                class="text-blue-500 hover:text-blue-700 transition duration-200" title="${activateText}">
+                <i class="fas fa-play"></i>
+            </button>` : `<button onclick="deactivateResourcePack('${escapedUuid}')" 
+                class="text-orange-500 hover:text-orange-700 transition duration-200" title="${deactivateText}">
+                <i class="fas fa-pause"></i>
+            </button>`}
+            <button onclick="deleteResourcePack('${escapedUuid}')" 
+                    class="text-red-500 hover:text-red-700 transition duration-200" title="${deleteText}">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    return div;
+}
+
+// Activate resource pack
+async function activateResourcePack(uuid) {
+    try {
+        const data = await apiRequest(`/resource-packs/${encodeURIComponent(uuid)}/activate`, {
+            method: 'PUT'
+        });
+        showToast(data.message);
+        await loadResourcePacks();
+    } catch (error) {
+        // Error already handled in apiRequest
+    }
+}
+
+// Deactivate resource pack
+async function deactivateResourcePack(uuid) {
+    try {
+        const data = await apiRequest(`/resource-packs/${encodeURIComponent(uuid)}/deactivate`, {
+            method: 'PUT'
+        });
+        showToast(data.message);
+        await loadResourcePacks();
+    } catch (error) {
+        // Error already handled in apiRequest
+    }
+}
+
+// Delete resource pack
+async function deleteResourcePack(uuid) {
+    const confirmMessage = window.i18n ? 
+        window.i18n.t('resourcepack.deleteConfirm') : 
+        'Are you sure you want to delete this resource pack? This action cannot be undone!';
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        const data = await apiRequest(`/resource-packs/${encodeURIComponent(uuid)}`, {
+            method: 'DELETE'
+        });
+        showToast(data.message);
+        await loadResourcePacks();
+    } catch (error) {
+        // Error already handled in apiRequest
+    }
+}
