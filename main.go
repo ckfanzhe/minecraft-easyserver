@@ -32,6 +32,7 @@ func main() {
 
 	// Static file service
 	r.Static("/static", config.AppConfig.Web.StaticDir)
+	r.Static("/webfonts", config.AppConfig.Web.WebfontsDir)
 	r.LoadHTMLFiles(config.AppConfig.Web.TemplateFile)
 
 	// Home page
