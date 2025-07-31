@@ -1,9 +1,11 @@
 package services
 
 import (
+	"archive/zip"
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -425,6 +427,17 @@ func writeAllowlist(path string, allowlist []models.AllowlistEntry) error {
 	return os.WriteFile(path, data, 0644)
 }
 
+// isOfficialResourcePack checks if a resource pack is an official preset pack
+func isOfficialResourcePack(folderName string) bool {
+	officialPacks := []string{"chemistry", "editor", "vanilla"}
+	for _, pack := range officialPacks {
+		if strings.EqualFold(folderName, pack) {
+			return true
+		}
+	}
+	return false
+}
+
 // PermissionService permission service
 type PermissionService struct{}
 
@@ -654,4 +667,370 @@ func getWorldsList(worldsPath string) ([]models.WorldInfo, error) {
 	}
 
 	return worlds, nil
+}
+
+// ResourcePackService resource pack service
+type ResourcePackService struct{}
+
+// NewResourcePackService creates a new resource pack service instance
+func NewResourcePackService() *ResourcePackService {
+	return &ResourcePackService{}
+}
+
+// UploadResourcePack uploads and extracts resource pack
+func (r *ResourcePackService) UploadResourcePack(zipPath, fileName string) (*models.ResourcePackInfo, error) {
+	// Create resource_packs directory if it doesn't exist
+	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
+	if err := os.MkdirAll(resourcePacksPath, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create resource_packs directory: %v", err)
+	}
+
+	// Extract zip file
+	extractPath := filepath.Join(resourcePacksPath, strings.TrimSuffix(fileName, filepath.Ext(fileName)))
+	if err := extractZip(zipPath, extractPath); err != nil {
+		return nil, fmt.Errorf("failed to extract resource pack: %v", err)
+	}
+
+	// Read manifest.json
+	manifestPath := filepath.Join(extractPath, "manifest.json")
+	manifest, err := readResourcePackManifest(manifestPath)
+	if err != nil {
+		// Clean up extracted files if manifest reading fails
+		os.RemoveAll(extractPath)
+		return nil, fmt.Errorf("failed to read manifest.json: %v", err)
+	}
+
+	// Delete original zip file
+	os.Remove(zipPath)
+
+	// Return resource pack information
+	packInfo := &models.ResourcePackInfo{
+		Name:        manifest.Header.Name,
+		UUID:        manifest.Header.UUID,
+		Version:     manifest.Header.Version,
+		Description: manifest.Header.Description,
+		FolderName:  filepath.Base(extractPath),
+		Active:      false, // Initially not active
+	}
+
+	return packInfo, nil
+}
+
+// GetResourcePacks gets resource pack list
+func (r *ResourcePackService) GetResourcePacks() ([]models.ResourcePackInfo, error) {
+	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
+	var packs []models.ResourcePackInfo
+
+	// Get currently active world
+	configPath := filepath.Join(bedrockPath, "server.properties")
+	config, err := readServerProperties(configPath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Read active resource packs from world configuration
+	activePackUUIDs := make(map[string]bool)
+	if config.LevelName != "" {
+		worldResourcePacksPath := filepath.Join(bedrockPath, "worlds", config.LevelName, "world_resource_packs.json")
+		activePacks, err := readWorldResourcePacks(worldResourcePacksPath)
+		if err == nil {
+			for _, pack := range activePacks {
+				activePackUUIDs[pack.PackID] = true
+			}
+		}
+	}
+
+	// Read all resource pack directories
+	entries, err := os.ReadDir(resourcePacksPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return packs, nil
+		}
+		return nil, err
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			// Skip official preset resource packs
+			if isOfficialResourcePack(entry.Name()) {
+				continue
+			}
+
+			manifestPath := filepath.Join(resourcePacksPath, entry.Name(), "manifest.json")
+			manifest, err := readResourcePackManifest(manifestPath)
+			if err != nil {
+				continue // Skip invalid resource packs
+			}
+
+			packInfo := models.ResourcePackInfo{
+				Name:        manifest.Header.Name,
+				UUID:        manifest.Header.UUID,
+				Version:     manifest.Header.Version,
+				Description: manifest.Header.Description,
+				FolderName:  entry.Name(),
+				Active:      activePackUUIDs[manifest.Header.UUID],
+			}
+			packs = append(packs, packInfo)
+		}
+	}
+
+	return packs, nil
+}
+
+// ActivateResourcePack activates resource pack for current world
+func (r *ResourcePackService) ActivateResourcePack(packUUID string) error {
+	// Get current world
+	configPath := filepath.Join(bedrockPath, "server.properties")
+	config, err := readServerProperties(configPath)
+	if err != nil {
+		return err
+	}
+
+	if config.LevelName == "" {
+		return fmt.Errorf("no active world found")
+	}
+
+	// Find resource pack by UUID
+	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
+	entries, err := os.ReadDir(resourcePacksPath)
+	if err != nil {
+		return fmt.Errorf("failed to read resource packs directory: %v", err)
+	}
+
+	var targetPack *models.ResourcePackManifest
+	for _, entry := range entries {
+		if entry.IsDir() {
+			// Skip official preset resource packs
+			if isOfficialResourcePack(entry.Name()) {
+				continue
+			}
+
+			manifestPath := filepath.Join(resourcePacksPath, entry.Name(), "manifest.json")
+			manifest, err := readResourcePackManifest(manifestPath)
+			if err != nil {
+				continue
+			}
+			if manifest.Header.UUID == packUUID {
+				targetPack = &manifest
+				break
+			}
+		}
+	}
+
+	if targetPack == nil {
+		return fmt.Errorf("resource pack not found: %s", packUUID)
+	}
+
+	// Read current world resource packs configuration
+	worldResourcePacksPath := filepath.Join(bedrockPath, "worlds", config.LevelName, "world_resource_packs.json")
+	activePacks, err := readWorldResourcePacks(worldResourcePacksPath)
+	if err != nil {
+		activePacks = []models.WorldResourcePack{}
+	}
+
+	// Check if already activated
+	for _, pack := range activePacks {
+		if pack.PackID == packUUID {
+			return fmt.Errorf("resource pack already activated")
+		}
+	}
+
+	// Add new resource pack
+	newPack := models.WorldResourcePack{
+		PackID:  targetPack.Header.UUID,
+		Version: targetPack.Header.Version,
+	}
+	activePacks = append(activePacks, newPack)
+
+	// Write back to file
+	return writeWorldResourcePacks(worldResourcePacksPath, activePacks)
+}
+
+// DeactivateResourcePack deactivates resource pack for current world
+func (r *ResourcePackService) DeactivateResourcePack(packUUID string) error {
+	// Get current world
+	configPath := filepath.Join(bedrockPath, "server.properties")
+	config, err := readServerProperties(configPath)
+	if err != nil {
+		return err
+	}
+
+	if config.LevelName == "" {
+		return fmt.Errorf("no active world found")
+	}
+
+	// Read current world resource packs configuration
+	worldResourcePacksPath := filepath.Join(bedrockPath, "worlds", config.LevelName, "world_resource_packs.json")
+	activePacks, err := readWorldResourcePacks(worldResourcePacksPath)
+	if err != nil {
+		return fmt.Errorf("failed to read world resource packs configuration: %v", err)
+	}
+
+	// Remove resource pack
+	var newActivePacks []models.WorldResourcePack
+	found := false
+	for _, pack := range activePacks {
+		if pack.PackID != packUUID {
+			newActivePacks = append(newActivePacks, pack)
+		} else {
+			found = true
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("resource pack not activated")
+	}
+
+	// Write back to file
+	return writeWorldResourcePacks(worldResourcePacksPath, newActivePacks)
+}
+
+// DeleteResourcePack deletes resource pack
+func (r *ResourcePackService) DeleteResourcePack(packUUID string) error {
+	// First deactivate if active
+	r.DeactivateResourcePack(packUUID) // Ignore error as pack might not be active
+
+	// Find and delete resource pack directory
+	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
+	entries, err := os.ReadDir(resourcePacksPath)
+	if err != nil {
+		return fmt.Errorf("failed to read resource packs directory: %v", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			// Skip official preset resource packs
+			if isOfficialResourcePack(entry.Name()) {
+				continue
+			}
+
+			manifestPath := filepath.Join(resourcePacksPath, entry.Name(), "manifest.json")
+			manifest, err := readResourcePackManifest(manifestPath)
+			if err != nil {
+				continue
+			}
+			if manifest.Header.UUID == packUUID {
+				packPath := filepath.Join(resourcePacksPath, entry.Name())
+				return os.RemoveAll(packPath)
+			}
+		}
+	}
+
+	return fmt.Errorf("resource pack not found: %s", packUUID)
+}
+
+// Helper functions
+
+// extractZip extracts zip file to target directory
+func extractZip(src, dest string) error {
+	// Open zip file for reading
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return fmt.Errorf("failed to open zip file: %v", err)
+	}
+	defer r.Close()
+
+	// Create destination directory
+	if err := os.MkdirAll(dest, 0755); err != nil {
+		return fmt.Errorf("failed to create destination directory: %v", err)
+	}
+
+	// Extract files
+	for _, f := range r.File {
+		// Construct full path
+		path := filepath.Join(dest, f.Name)
+
+		// Check for ZipSlip vulnerability
+		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("invalid file path: %s", f.Name)
+		}
+
+		if f.FileInfo().IsDir() {
+			// Create directory
+			if err := os.MkdirAll(path, f.FileInfo().Mode()); err != nil {
+				return fmt.Errorf("failed to create directory %s: %v", path, err)
+			}
+			continue
+		}
+
+		// Create parent directories if needed
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			return fmt.Errorf("failed to create parent directory for %s: %v", path, err)
+		}
+
+		// Open file in zip
+		rc, err := f.Open()
+		if err != nil {
+			return fmt.Errorf("failed to open file %s in zip: %v", f.Name, err)
+		}
+
+		// Create destination file
+		outFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.FileInfo().Mode())
+		if err != nil {
+			rc.Close()
+			return fmt.Errorf("failed to create file %s: %v", path, err)
+		}
+
+		// Copy file contents
+		_, err = io.Copy(outFile, rc)
+		outFile.Close()
+		rc.Close()
+
+		if err != nil {
+			return fmt.Errorf("failed to copy file %s: %v", path, err)
+		}
+	}
+
+	return nil
+}
+
+// readResourcePackManifest reads resource pack manifest.json
+func readResourcePackManifest(path string) (models.ResourcePackManifest, error) {
+	var manifest models.ResourcePackManifest
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return manifest, err
+	}
+
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return manifest, err
+	}
+
+	return manifest, nil
+}
+
+// readWorldResourcePacks reads world_resource_packs.json
+func readWorldResourcePacks(path string) ([]models.WorldResourcePack, error) {
+	var packs []models.WorldResourcePack
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return packs, nil
+		}
+		return nil, err
+	}
+
+	if err := json.Unmarshal(data, &packs); err != nil {
+		return nil, err
+	}
+
+	return packs, nil
+}
+
+// writeWorldResourcePacks writes world_resource_packs.json
+func writeWorldResourcePacks(path string, packs []models.WorldResourcePack) error {
+	// Create directory if it doesn't exist
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+
+	data, err := json.MarshalIndent(packs, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, data, 0644)
 }

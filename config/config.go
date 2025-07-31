@@ -23,6 +23,7 @@ type Config struct {
 
 	Web struct {
 		StaticDir    string `yaml:"static_dir"`
+		WebfontsDir  string `yaml:"webfonts_dir"`
 		TemplateFile string `yaml:"template_file"`
 	} `yaml:"web"`
 
@@ -79,6 +80,7 @@ func createDefaultConfig(configPath string) error {
 	defaultConfig.Bedrock.Executable = "bedrock_server.exe"
 	
 	defaultConfig.Web.StaticDir = "./web"
+	defaultConfig.Web.WebfontsDir = "./web/webfonts"
 	defaultConfig.Web.TemplateFile = "./web/index.html"
 	
 	defaultConfig.Logging.Level = "info"

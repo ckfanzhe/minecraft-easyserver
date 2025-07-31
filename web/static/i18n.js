@@ -74,6 +74,19 @@ class I18n {
                 'world.upload-failed': '上传失败',
                 'world.delete-confirm': '确定要删除世界 "{worldName}" 吗？此操作不可撤销！',
                 
+                // Resource Pack Management
+                'resourcepack.title': '资源包管理',
+                'resourcepack.upload': '上传资源包',
+                'resourcepack.upload.desc': '支持 .zip 和 .mcpack 格式，自动解压并读取配置',
+                'resourcepack.upload.note': '上传后将自动解压到资源包目录，原压缩文件会被删除',
+                'resourcepack.upload.error': '上传失败',
+                'resourcepack.activate': '激活',
+                'resourcepack.deactivate': '停用',
+                'resourcepack.delete': '删除',
+                'resourcepack.active': '已激活',
+                'resourcepack.empty': '暂无资源包',
+                'resourcepack.deleteConfirm': '确定要删除此资源包吗？此操作不可撤销！',
+                
                 // Messages
                 'message.request-failed': '请求失败',
                 'message.config-saved': '配置已保存',
@@ -159,6 +172,19 @@ class I18n {
                 'world.no-worlds': 'No world files',
                 'world.upload-failed': 'Upload failed',
                 'world.delete-confirm': 'Are you sure you want to delete world "{worldName}"? This action cannot be undone!',
+                
+                // Resource Pack Management
+                'resourcepack.title': 'Resource Pack Management',
+                'resourcepack.upload': 'Upload Resource Pack',
+                'resourcepack.upload.desc': 'Supports .zip and .mcpack formats, auto-extract and read configuration',
+                'resourcepack.upload.note': 'Files will be auto-extracted to resource packs directory, original archive will be deleted',
+                'resourcepack.upload.error': 'Upload failed',
+                'resourcepack.activate': 'Activate',
+                'resourcepack.deactivate': 'Deactivate',
+                'resourcepack.delete': 'Delete',
+                'resourcepack.active': 'Active',
+                'resourcepack.empty': 'No resource packs',
+                'resourcepack.deleteConfirm': 'Are you sure you want to delete this resource pack? This action cannot be undone!',
                 
                 // Messages
                 'message.request-failed': 'Request failed',

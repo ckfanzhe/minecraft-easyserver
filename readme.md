@@ -47,8 +47,13 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **World Deletion** Safe deletion of unwanted world files
 - **Current World Identification** Clear display of the currently active world
 
+### 🌍 Resource Pack Management
+- **Resource File Upload** Support for `.zip` and `.mcpack` formats
+- **Resource Activation** One-click activation of different resource packs
+- **Resource Deletion** Safe deletion of unwanted resource packs
+
 ## 👀 Management Panel Preview
-![Management Panel Preview](docs/resources/screenshot.png)
+![Management Panel Preview](docs/resources/screenshot-en.png)
 
 ## 📋 System Requirements
 

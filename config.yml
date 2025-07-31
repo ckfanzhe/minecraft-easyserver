@@ -5,7 +5,7 @@ server:
   # HTTP服务器监听地址
   host: "localhost"
   # HTTP服务器监听端口
-  port: 8080
+  port: 8081
   # 是否启用调试模式
   debug: false
 
@@ -19,7 +19,9 @@ bedrock:
 # Web界面配置
 web:
   # 静态文件目录
-  static_dir: "./web"
+  static_dir: "./web/static"
+  # 字体文件目录
+  webfonts_dir: "./web/webfonts"
   # HTML模板文件
   template_file: "./web/index.html"
 

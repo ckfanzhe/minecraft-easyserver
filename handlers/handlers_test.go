@@ -409,3 +409,249 @@ func TestWorldHandler(t *testing.T) {
 		assert.Contains(t, response["message"], "World activated")
 	})
 }
+
+func TestResourcePackHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	
+	tempDir := setupTestEnvironment(t)
+
+	// Create resource_packs directory
+	resourcePacksPath := filepath.Join(tempDir, "resource_packs")
+	os.MkdirAll(resourcePacksPath, 0755)
+
+	// Create test resource pack directory
+	testPackPath := filepath.Join(resourcePacksPath, "test_pack")
+	os.MkdirAll(testPackPath, 0755)
+
+	// Create test manifest.json
+	manifest := map[string]interface{}{
+		"format_version": 2,
+		"header": map[string]interface{}{
+			"description": "Test Resource Pack",
+			"name":        "Test Pack",
+			"uuid":        "12345678-1234-1234-1234-123456789012",
+			"version":     []int{1, 0, 0},
+		},
+		"modules": []map[string]interface{}{
+			{
+				"description": "Test Module",
+				"type":        "resources",
+				"uuid":        "87654321-4321-4321-4321-210987654321",
+				"version":     []int{1, 0, 0},
+			},
+		},
+	}
+
+	manifestData, err := json.MarshalIndent(manifest, "", "  ")
+	assert.NoError(t, err)
+
+	manifestPath := filepath.Join(testPackPath, "manifest.json")
+	err = os.WriteFile(manifestPath, manifestData, 0644)
+	assert.NoError(t, err)
+
+	// Create test server.properties
+	configPath := filepath.Join(tempDir, "server.properties")
+	testConfig := `level-name=test_world`
+	err = os.WriteFile(configPath, []byte(testConfig), 0644)
+	assert.NoError(t, err)
+
+	// Create test world directory
+	worldsPath := filepath.Join(tempDir, "worlds", "test_world")
+	os.MkdirAll(worldsPath, 0755)
+
+	handler := NewResourcePackHandler()
+
+	t.Run("GetResourcePacks", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("GET", "/api/resource-packs", nil)
+
+		handler.GetResourcePacks(c)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		
+		resourcePacks, exists := response["resource_packs"]
+		assert.True(t, exists)
+		
+		packsSlice := resourcePacks.([]interface{})
+		assert.Len(t, packsSlice, 1)
+		
+		pack := packsSlice[0].(map[string]interface{})
+		assert.Equal(t, "Test Pack", pack["name"])
+		assert.Equal(t, "12345678-1234-1234-1234-123456789012", pack["uuid"])
+		assert.Equal(t, false, pack["active"])
+	})
+
+	t.Run("ActivateResourcePack", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("PUT", "/api/resource-packs/12345678-1234-1234-1234-123456789012/activate", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "12345678-1234-1234-1234-123456789012"}}
+
+		handler.ActivateResourcePack(c)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["message"], "Resource pack activated")
+
+		// Verify world_resource_packs.json was created
+		worldResourcePacksPath := filepath.Join(worldsPath, "world_resource_packs.json")
+		_, err = os.Stat(worldResourcePacksPath)
+		assert.NoError(t, err)
+	})
+
+	t.Run("GetResourcePacks_AfterActivation", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("GET", "/api/resource-packs", nil)
+
+		handler.GetResourcePacks(c)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		
+		resourcePacks, exists := response["resource_packs"]
+		assert.True(t, exists)
+		
+		packsSlice := resourcePacks.([]interface{})
+		assert.Len(t, packsSlice, 1)
+		
+		pack := packsSlice[0].(map[string]interface{})
+		assert.Equal(t, true, pack["active"])
+	})
+
+	t.Run("ActivateResourcePack_AlreadyActivated", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("PUT", "/api/resource-packs/12345678-1234-1234-1234-123456789012/activate", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "12345678-1234-1234-1234-123456789012"}}
+
+		handler.ActivateResourcePack(c)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["error"], "already activated")
+	})
+
+	t.Run("DeactivateResourcePack", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("PUT", "/api/resource-packs/12345678-1234-1234-1234-123456789012/deactivate", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "12345678-1234-1234-1234-123456789012"}}
+
+		handler.DeactivateResourcePack(c)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["message"], "Resource pack deactivated")
+	})
+
+	t.Run("DeactivateResourcePack_NotActivated", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("PUT", "/api/resource-packs/12345678-1234-1234-1234-123456789012/deactivate", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "12345678-1234-1234-1234-123456789012"}}
+
+		handler.DeactivateResourcePack(c)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["error"], "not activated")
+	})
+
+	t.Run("DeleteResourcePack", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("DELETE", "/api/resource-packs/12345678-1234-1234-1234-123456789012", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "12345678-1234-1234-1234-123456789012"}}
+
+		handler.DeleteResourcePack(c)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["message"], "Resource pack deleted")
+
+		// Verify directory was deleted
+		_, err = os.Stat(testPackPath)
+		assert.True(t, os.IsNotExist(err))
+	})
+
+	t.Run("GetResourcePacks_AfterDeletion", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("GET", "/api/resource-packs", nil)
+
+		handler.GetResourcePacks(c)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		
+		resourcePacks, exists := response["resource_packs"]
+		assert.True(t, exists)
+		
+		if resourcePacks != nil {
+			packsSlice := resourcePacks.([]interface{})
+			assert.Len(t, packsSlice, 0)
+		} else {
+			// resourcePacks is nil, which is also acceptable for empty result
+			assert.Nil(t, resourcePacks)
+		}
+	})
+
+	t.Run("ActivateResourcePack_NotFound", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("PUT", "/api/resource-packs/non-existent-uuid/activate", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "non-existent-uuid"}}
+
+		handler.ActivateResourcePack(c)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["error"], "not found")
+	})
+
+	t.Run("DeleteResourcePack_NotFound", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest("DELETE", "/api/resource-packs/non-existent-uuid", nil)
+		c.Params = gin.Params{gin.Param{Key: "uuid", Value: "non-existent-uuid"}}
+
+		handler.DeleteResourcePack(c)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response["error"], "not found")
+	})
+}
