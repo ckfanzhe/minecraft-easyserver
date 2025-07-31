@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config 应用程序配置结构
+// Config application configuration structure
 type Config struct {
 	Server struct {
 		Host  string `yaml:"host"`
@@ -34,43 +34,43 @@ type Config struct {
 }
 
 var (
-	// AppConfig 全局配置实例
+	// AppConfig global configuration instance
 	AppConfig *Config
 )
 
-// LoadConfig 从文件加载配置
+// LoadConfig loads configuration from file
 func LoadConfig(configPath string) error {
-	// 如果配置文件不存在，创建默认配置文件
+	// If configuration file doesn't exist, create default configuration file
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		if err := createDefaultConfig(configPath); err != nil {
-			return fmt.Errorf("创建默认配置文件失败: %v", err)
+			return fmt.Errorf("failed to create default configuration file: %v", err)
 		}
 	}
 
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return fmt.Errorf("读取配置文件失败: %v", err)
+		return fmt.Errorf("failed to read configuration file: %v", err)
 	}
 
 	config := &Config{}
 	if err := yaml.Unmarshal(data, config); err != nil {
-		return fmt.Errorf("解析配置文件失败: %v", err)
+		return fmt.Errorf("failed to parse configuration file: %v", err)
 	}
 
-	// 验证配置
+	// Validate configuration
 	if err := validateConfig(config); err != nil {
-		return fmt.Errorf("配置验证失败: %v", err)
+		return fmt.Errorf("configuration validation failed: %v", err)
 	}
 
 	AppConfig = config
 	return nil
 }
 
-// createDefaultConfig 创建默认配置文件
+// createDefaultConfig creates default configuration file
 func createDefaultConfig(configPath string) error {
 	defaultConfig := &Config{}
 	
-	// 设置默认值
+	// Set default values
 	defaultConfig.Server.Host = "localhost"
 	defaultConfig.Server.Port = 8080
 	defaultConfig.Server.Debug = false
@@ -90,7 +90,7 @@ func createDefaultConfig(configPath string) error {
 		return err
 	}
 
-	// 确保目录存在
+	// Ensure directory exists
 	dir := filepath.Dir(configPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
@@ -99,34 +99,34 @@ func createDefaultConfig(configPath string) error {
 	return os.WriteFile(configPath, data, 0644)
 }
 
-// validateConfig 验证配置
+// validateConfig validates configuration
 func validateConfig(config *Config) error {
 	if config.Server.Port <= 0 || config.Server.Port > 65535 {
-		return fmt.Errorf("无效的服务器端口: %d", config.Server.Port)
+		return fmt.Errorf("invalid server port: %d", config.Server.Port)
 	}
 
 	if config.Bedrock.Path == "" {
-		return fmt.Errorf("Bedrock路径不能为空")
+		return fmt.Errorf("Bedrock path cannot be empty")
 	}
 
 	if config.Bedrock.Executable == "" {
-		return fmt.Errorf("Bedrock可执行文件名不能为空")
+		return fmt.Errorf("Bedrock executable name cannot be empty")
 	}
 
 	return nil
 }
 
-// GetServerAddress 获取服务器地址
+// GetServerAddress gets server address
 func (c *Config) GetServerAddress() string {
 	return fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port)
 }
 
-// GetBedrockExecutablePath 获取Bedrock可执行文件完整路径
+// GetBedrockExecutablePath gets Bedrock executable full path
 func (c *Config) GetBedrockExecutablePath() string {
 	return filepath.Join(c.Bedrock.Path, c.Bedrock.Executable)
 }
 
-// GetBedrockPath 获取Bedrock路径
+// GetBedrockPath gets Bedrock path
 func (c *Config) GetBedrockPath() string {
 	return c.Bedrock.Path
 }

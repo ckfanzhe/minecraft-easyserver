@@ -1,6 +1,6 @@
 package models
 
-// ServerConfig 服务器配置结构
+// ServerConfig server configuration structure
 type ServerConfig struct {
 	ServerName              string `json:"server-name"`
 	Gamemode                string `json:"gamemode"`
@@ -14,25 +14,25 @@ type ServerConfig struct {
 	DefaultPlayerPermission string `json:"default-player-permission-level"`
 }
 
-// AllowlistEntry 白名单条目
+// AllowlistEntry allowlist entry
 type AllowlistEntry struct {
 	Name               string `json:"name"`
 	IgnoresPlayerLimit bool   `json:"ignoresPlayerLimit"`
 }
 
-// PermissionEntry 权限条目
+// PermissionEntry permission entry
 type PermissionEntry struct {
 	Name  string `json:"name"`
 	Level string `json:"level"`
 }
 
-// WorldInfo 世界信息
+// WorldInfo world information
 type WorldInfo struct {
 	Name   string `json:"name"`
 	Active bool   `json:"active"`
 }
 
-// ServerStatus 服务器状态
+// ServerStatus server status
 type ServerStatus struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
