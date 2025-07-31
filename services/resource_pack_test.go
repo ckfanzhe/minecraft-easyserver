@@ -227,6 +227,66 @@ func TestResourcePackService(t *testing.T) {
 			t.Error("Expected error when deleting non-existent pack")
 		}
 	})
+
+	// Test official preset pack filtering
+	t.Run("OfficialPresetPacks_Filtered", func(t *testing.T) {
+		// Create official preset pack directories
+		officialPacks := []string{"chemistry", "editor", "vanilla"}
+		for _, packName := range officialPacks {
+			officialPackPath := filepath.Join(resourcePacksPath, packName)
+			if err := os.MkdirAll(officialPackPath, 0755); err != nil {
+				t.Fatal("Failed to create official pack directory:", err)
+			}
+
+			// Create manifest for official pack
+			officialManifest := models.ResourcePackManifest{
+				FormatVersion: 2,
+				Header: models.ResourcePackHeader{
+					Description: "Official " + packName + " Pack",
+					Name:        packName,
+					UUID:        "official-" + packName + "-uuid",
+					Version:     [3]int{1, 0, 0},
+				},
+			}
+
+			manifestData, err := json.MarshalIndent(officialManifest, "", "  ")
+			if err != nil {
+				t.Fatal("Failed to marshal official manifest:", err)
+			}
+
+			manifestPath := filepath.Join(officialPackPath, "manifest.json")
+			if err := os.WriteFile(manifestPath, manifestData, 0644); err != nil {
+				t.Fatal("Failed to write official manifest file:", err)
+			}
+		}
+
+		// Test that official packs are filtered out
+		packs, err := service.GetResourcePacks()
+		if err != nil {
+			t.Fatal("Failed to get resource packs:", err)
+		}
+
+		// Should only return 0 packs (official packs should be filtered out)
+		if len(packs) != 0 {
+			t.Errorf("Expected 0 resource packs (official packs filtered), got %d", len(packs))
+		}
+
+		// Test that official packs cannot be activated
+		for _, packName := range officialPacks {
+			err := service.ActivateResourcePack("official-" + packName + "-uuid")
+			if err == nil {
+				t.Errorf("Expected error when trying to activate official pack %s", packName)
+			}
+		}
+
+		// Test that official packs cannot be deleted
+		for _, packName := range officialPacks {
+			err := service.DeleteResourcePack("official-" + packName + "-uuid")
+			if err == nil {
+				t.Errorf("Expected error when trying to delete official pack %s", packName)
+			}
+		}
+	})
 }
 
 func TestResourcePackHelperFunctions(t *testing.T) {

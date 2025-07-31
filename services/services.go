@@ -427,6 +427,17 @@ func writeAllowlist(path string, allowlist []models.AllowlistEntry) error {
 	return os.WriteFile(path, data, 0644)
 }
 
+// isOfficialResourcePack checks if a resource pack is an official preset pack
+func isOfficialResourcePack(folderName string) bool {
+	officialPacks := []string{"chemistry", "editor", "vanilla"}
+	for _, pack := range officialPacks {
+		if strings.EqualFold(folderName, pack) {
+			return true
+		}
+	}
+	return false
+}
+
 // PermissionService permission service
 type PermissionService struct{}
 
@@ -740,6 +751,11 @@ func (r *ResourcePackService) GetResourcePacks() ([]models.ResourcePackInfo, err
 
 	for _, entry := range entries {
 		if entry.IsDir() {
+			// Skip official preset resource packs
+			if isOfficialResourcePack(entry.Name()) {
+				continue
+			}
+
 			manifestPath := filepath.Join(resourcePacksPath, entry.Name(), "manifest.json")
 			manifest, err := readResourcePackManifest(manifestPath)
 			if err != nil {
@@ -784,6 +800,11 @@ func (r *ResourcePackService) ActivateResourcePack(packUUID string) error {
 	var targetPack *models.ResourcePackManifest
 	for _, entry := range entries {
 		if entry.IsDir() {
+			// Skip official preset resource packs
+			if isOfficialResourcePack(entry.Name()) {
+				continue
+			}
+
 			manifestPath := filepath.Join(resourcePacksPath, entry.Name(), "manifest.json")
 			manifest, err := readResourcePackManifest(manifestPath)
 			if err != nil {
@@ -878,6 +899,11 @@ func (r *ResourcePackService) DeleteResourcePack(packUUID string) error {
 
 	for _, entry := range entries {
 		if entry.IsDir() {
+			// Skip official preset resource packs
+			if isOfficialResourcePack(entry.Name()) {
+				continue
+			}
+
 			manifestPath := filepath.Join(resourcePacksPath, entry.Name(), "manifest.json")
 			manifest, err := readResourcePackManifest(manifestPath)
 			if err != nil {
