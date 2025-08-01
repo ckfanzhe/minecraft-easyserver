@@ -352,6 +352,11 @@
         </main>
     </div>
 
+    <!-- Toast Notifications -->
+    <div id="toast" class="fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-x-full z-50">
+        <span id="toast-message"></span>
+    </div>
+
     <!-- Message Notifications -->
     <div id="message-container" class="fixed top-20 right-4 z-50 space-y-2">
         <!-- Messages will be dynamically added here -->
@@ -363,26 +368,26 @@
             <h3 class="text-lg font-bold mb-4" data-i18n="permission.modal.title">选择权限级别</h3>
             <p class="text-gray-600 mb-4">
                 <span data-i18n="permission.modal.description">为玩家</span>
-                <span id="permission-player-name" class="font-semibold"></span>
+                <span id="modal-player-name" class="font-semibold"></span>
                 <span data-i18n="permission.modal.description2">选择权限级别：</span>
             </p>
             <div class="space-y-3">
-                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-permission="visitor">
+                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-level="visitor">
                     <div class="font-semibold" data-i18n="permission.level.visitor">访客</div>
                     <div class="text-sm text-gray-600" data-i18n="permission.level.visitor.desc">只能查看，无法修改</div>
                 </div>
-                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-permission="member">
+                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-level="member">
                     <div class="font-semibold" data-i18n="permission.level.member">成员</div>
                     <div class="text-sm text-gray-600" data-i18n="permission.level.member.desc">可以进行基本操作</div>
                 </div>
-                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-permission="operator">
+                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-level="operator">
                     <div class="font-semibold" data-i18n="permission.level.operator">管理员</div>
                     <div class="text-sm text-gray-600" data-i18n="permission.level.operator.desc">拥有完全管理权限</div>
                 </div>
             </div>
             <div class="flex justify-end space-x-2 mt-6">
-                <button id="permission-cancel" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded" data-i18n="permission.modal.cancel">取消</button>
-                <button id="permission-confirm" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" disabled>确认</button>
+                <button id="cancel-modal-btn" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded" data-i18n="permission.modal.cancel">取消</button>
+                <button id="close-modal-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" disabled>确认</button>
             </div>
         </div>
     </div>
