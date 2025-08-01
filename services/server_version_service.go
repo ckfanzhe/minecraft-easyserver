@@ -2,6 +2,7 @@ package services
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"minecraft-easyserver/models"
@@ -28,23 +29,28 @@ func NewServerVersionService() *ServerVersionService {
 	}
 }
 
-// GetAvailableVersions returns available server versions
+// GetAvailableVersions returns available server versions from config file
 func (s *ServerVersionService) GetAvailableVersions() []models.ServerVersion {
-	versions := []models.ServerVersion{
-		{
-			Version:     "1.21.94.1",
-			DownloadURL: "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.1.zip",
+	// Load versions from config file
+	configPath := "./config/server_versions.json"
+	versionConfig, err := s.loadVersionConfig(configPath)
+	if err != nil {
+		// Fallback to hardcoded versions if config file is not available
+		return s.getFallbackVersions()
+	}
+
+	var versions []models.ServerVersion
+	for _, versionInfo := range versionConfig.Versions {
+		version := models.ServerVersion{
+			Version:     versionInfo.Version,
+			DownloadURL: versionInfo.DownloadURL,
 			Active:      false,
 			Downloaded:  false,
-			Path:        "./bedrock-server/bedrock-server-1.21.94.1",
-		},
-		{
-			Version:     "1.21.95.1",
-			DownloadURL: "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip",
-			Active:      false,
-			Downloaded:  false,
-			Path:        "./bedrock-server/bedrock-server-1.21.95.1",
-		},
+			Path:        fmt.Sprintf("./bedrock-server/bedrock-server-%s", versionInfo.Version),
+			ReleaseDate: versionInfo.ReleaseDate,
+			Description: versionInfo.Description,
+		}
+		versions = append(versions, version)
 	}
 
 	// Check which versions are downloaded and which is active
@@ -352,4 +358,52 @@ func (pr *progressReader) Read(p []byte) (int, error) {
 		pr.onProgress(pr.downloaded)
 	}
 	return n, err
+}
+
+// loadVersionConfig loads server version configuration from JSON file
+func (s *ServerVersionService) loadVersionConfig(configPath string) (*models.ServerVersionConfig, error) {
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read config file: %v", err)
+	}
+
+	var config models.ServerVersionConfig
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse config file: %v", err)
+	}
+
+	return &config, nil
+}
+
+// getFallbackVersions returns hardcoded versions as fallback
+func (s *ServerVersionService) getFallbackVersions() []models.ServerVersion {
+	versions := []models.ServerVersion{
+		{
+			Version:     "1.21.94.1",
+			DownloadURL: "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.1.zip",
+			Active:      false,
+			Downloaded:  false,
+			Path:        "./bedrock-server/bedrock-server-1.21.94.1",
+			ReleaseDate: "2024-12-10",
+			Description: "Minecraft Bedrock Server 1.21.94.1",
+		},
+		{
+			Version:     "1.21.95.1",
+			DownloadURL: "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip",
+			Active:      false,
+			Downloaded:  false,
+			Path:        "./bedrock-server/bedrock-server-1.21.95.1",
+			ReleaseDate: "2024-12-17",
+			Description: "Minecraft Bedrock Server 1.21.95.1",
+		},
+	}
+
+	// Check which versions are downloaded and which is active
+	for i := range versions {
+		versions[i].Downloaded = s.isVersionDownloaded(versions[i].Version)
+		versions[i].Active = s.isVersionActive(versions[i].Version)
+	}
+
+	return versions
 }

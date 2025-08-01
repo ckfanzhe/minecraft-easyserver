@@ -95,6 +95,21 @@ type ServerVersion struct {
 	Active      bool   `json:"active"`
 	Downloaded  bool   `json:"downloaded"`
 	Path        string `json:"path"`
+	ReleaseDate string `json:"release_date,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// ServerVersionConfig configuration structure for server versions
+type ServerVersionConfig struct {
+	Versions []ServerVersionInfo `json:"versions"`
+}
+
+// ServerVersionInfo version information from config file
+type ServerVersionInfo struct {
+	Version     string `json:"version"`
+	DownloadURL string `json:"download_url"`
+	ReleaseDate string `json:"release_date"`
+	Description string `json:"description"`
 }
 
 // DownloadProgress download progress information
