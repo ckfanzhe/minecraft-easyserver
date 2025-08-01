@@ -87,3 +87,22 @@ type WorldResourcePack struct {
 	PackID  string `json:"pack_id"`
 	Version [3]int `json:"version"`
 }
+
+// ServerVersion server version information
+type ServerVersion struct {
+	Version     string `json:"version"`
+	DownloadURL string `json:"download_url"`
+	Active      bool   `json:"active"`
+	Downloaded  bool   `json:"downloaded"`
+	Path        string `json:"path"`
+}
+
+// DownloadProgress download progress information
+type DownloadProgress struct {
+	Version     string  `json:"version"`
+	Progress    float64 `json:"progress"`
+	Status      string  `json:"status"`
+	Message     string  `json:"message"`
+	TotalBytes  int64   `json:"total_bytes"`
+	DownloadedBytes int64 `json:"downloaded_bytes"`
+}

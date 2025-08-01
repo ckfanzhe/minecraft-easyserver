@@ -15,6 +15,7 @@ func SetupRoutes(r *gin.Engine) {
 	permissionHandler := handlers.NewPermissionHandler()
 	worldHandler := handlers.NewWorldHandler()
 	resourcePackHandler := handlers.NewResourcePackHandler()
+	serverVersionHandler := handlers.NewServerVersionHandler()
 
 	// API routes
 	api := r.Group("/api")
@@ -36,6 +37,9 @@ func SetupRoutes(r *gin.Engine) {
 		
 		// Resource pack routes
 		setupResourcePackRoutes(api, resourcePackHandler)
+		
+		// Server version routes
+		setupServerVersionRoutes(api, serverVersionHandler)
 	}
 }
 
@@ -82,4 +86,12 @@ func setupResourcePackRoutes(api *gin.RouterGroup, handler *handlers.ResourcePac
 	api.PUT("/resource-packs/:uuid/activate", handler.ActivateResourcePack)
 	api.PUT("/resource-packs/:uuid/deactivate", handler.DeactivateResourcePack)
 	api.DELETE("/resource-packs/:uuid", handler.DeleteResourcePack)
+}
+
+// setupServerVersionRoutes sets up server version routes
+func setupServerVersionRoutes(api *gin.RouterGroup, handler *handlers.ServerVersionHandler) {
+	api.GET("/server-versions", handler.GetVersions)
+	api.POST("/server-versions/:version/download", handler.DownloadVersion)
+	api.GET("/server-versions/:version/progress", handler.GetDownloadProgress)
+	api.PUT("/server-versions/:version/activate", handler.ActivateVersion)
 }
