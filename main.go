@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"minecraft-easyserver/config"
-	"minecraft-easyserver/handlers"
+	"minecraft-easyserver/routes"
 	"minecraft-easyserver/services"
 
 	"github.com/gin-gonic/gin"
@@ -44,50 +44,8 @@ func main() {
 		c.Status(204) // Return 204 No Content
 	})
 
-	// Create handler instances
-	serverHandler := handlers.NewServerHandler()
-	configHandler := handlers.NewConfigHandler()
-	allowlistHandler := handlers.NewAllowlistHandler()
-	permissionHandler := handlers.NewPermissionHandler()
-	worldHandler := handlers.NewWorldHandler()
-	resourcePackHandler := handlers.NewResourcePackHandler()
-
-	// API routes
-	api := r.Group("/api")
-	{
-		// Server control
-		api.GET("/status", serverHandler.GetStatus)
-		api.POST("/start", serverHandler.StartServer)
-		api.POST("/stop", serverHandler.StopServer)
-		api.POST("/restart", serverHandler.RestartServer)
-
-		// Configuration management
-		api.GET("/config", configHandler.GetConfig)
-		api.PUT("/config", configHandler.UpdateConfig)
-
-		// Allowlist management
-		api.GET("/allowlist", allowlistHandler.GetAllowlist)
-		api.POST("/allowlist", allowlistHandler.AddToAllowlist)
-		api.DELETE("/allowlist/:name", allowlistHandler.RemoveFromAllowlist)
-
-		// Permission management
-		api.GET("/permissions", permissionHandler.GetPermissions)
-		api.PUT("/permissions", permissionHandler.UpdatePermission)
-		api.DELETE("/permissions/:name", permissionHandler.RemovePermission)
-
-		// World management
-		api.GET("/worlds", worldHandler.GetWorlds)
-		api.POST("/worlds/upload", worldHandler.UploadWorld)
-		api.DELETE("/worlds/:name", worldHandler.DeleteWorld)
-		api.PUT("/worlds/:name/activate", worldHandler.ActivateWorld)
-
-		// Resource pack management
-		api.GET("/resource-packs", resourcePackHandler.GetResourcePacks)
-		api.POST("/resource-packs/upload", resourcePackHandler.UploadResourcePack)
-		api.PUT("/resource-packs/:uuid/activate", resourcePackHandler.ActivateResourcePack)
-		api.PUT("/resource-packs/:uuid/deactivate", resourcePackHandler.DeactivateResourcePack)
-		api.DELETE("/resource-packs/:uuid", resourcePackHandler.DeleteResourcePack)
-	}
+	// Setup API routes
+	routes.SetupRoutes(r)
 
 	// Start server
 	serverAddr := config.AppConfig.GetServerAddress()
