@@ -57,76 +57,59 @@
 
 ### 服务器环境
 - **操作系统**: Windows 10+ 或 Ubuntu 18.04+ (Linux)
-- **Go 语言**: 1.21 或更高版本
 - **内存**: 至少 2GB RAM
 - **存储**: 至少 10GB 可用空间
 - **网络**: 开放端口 8081（管理面板）和 19132（Minecraft 服务器）
 
 ## 🛠️ 安装指南
 
-### 1. 环境准备
+### 快速开始（推荐）
 
-#### 安装 Go 语言
+1. **下载预编译版本**：
+   - 从 [Releases](https://github.com/ckfanzhe/bedrock-easy-server/releases) 页面下载适合您操作系统的版本
+   - `minecraft-server-manager-windows.exe` 适用于 Windows
+   - `minecraft-server-manager-linux` 适用于 Linux
 
-**Windows 系统：**
-1. 访问 [Go 官网](https://golang.org/dl/) 下载 Windows 版本
-2. 运行安装程序并按照提示完成安装
-3. 验证安装：
-   ```powershell
-   go version
-   ```
 
-**Ubuntu/Linux 系统：**
-1. 更新软件包列表：
+2. **运行应用程序**：
    ```bash
-   sudo apt update
+   # Linux 系统
+   chmod +x minecraft-server-manager-linux
+   ./minecraft-server-manager-linux
+   
+   # Windows 系统
+   minecraft-server-manager-windows.exe
    ```
-2. 安装 Go：
+
+### 从源码构建（开发者）
+
+1. **前置要求**: Go 1.21 或更高版本
+2. **克隆仓库**：
    ```bash
-   sudo apt install golang-go
+   git clone https://github.com/ckfanzhe/bedrock-easy-server.git
+   cd minecraft-easy-server
    ```
-   或从 [Go 官网](https://golang.org/dl/) 下载最新版本
-3. 验证安装：
+3. **构建所有平台版本**：
    ```bash
-   go version
+   chmod +x build.sh
+   ./build.sh
    ```
-
-### 2. 项目部署
-
-#### 克隆或下载项目
-```powershell
-# 如果使用 Git
-git clone <repository-url>
-cd bedrock-easyserver
-
-# 或者直接下载并解压项目文件
-```
-
-#### 安装依赖
-```powershell
-go mod tidy
-```
-
-#### 构建项目
-```powershell
-# 构建可执行文件
-go build -o bedrock-easyserver.exe
-
-# 或者直接运行
-go run main.go
-```
+4. **或构建单一平台**：
+   ```bash
+   go build -o minecraft-server-manager
+   ```
 
 ## 🚀 使用指南
 
 ### 启动管理面板
 
-1. **命令行启动**：
-   ```powershell
-   # 方式一：直接运行源码
-   go run .
+1. **运行应用程序**：
+   ```bash
+   # Linux 系统
+   ./minecraft-server-manager-linux
    
-   # 方式二：运行编译后的程序
-   ./bedrock-easyserver.exe
+   # Windows 系统
+   minecraft-server-manager-windows.exe
    ```
 
 2. **访问管理界面**：
