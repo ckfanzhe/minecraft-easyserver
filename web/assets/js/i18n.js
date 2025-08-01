@@ -6,11 +6,30 @@ class I18n {
             zh: {
                 // Navigation
                 'nav.title': 'Minecraft 控制面板',
+                'nav.status': '状态：',
                 'nav.status.offline': '离线',
                 'nav.status.online': '在线',
                 'nav.status.unknown': '未知',
                 'nav.status.running': '运行中',
                 'nav.status.stopped': '已停止',
+                'nav.menu.dashboard': '仪表板',
+                'nav.menu.server': '服务器',
+                'nav.menu.management': '管理',
+                'nav.menu.server.control': '服务器控制',
+                'nav.menu.server.config': '服务器配置',
+                'nav.menu.management.allowlist': '白名单管理',
+                'nav.menu.management.permission': '权限管理',
+                'nav.menu.management.world': '世界管理',
+                'nav.menu.management.resourcepack': '资源包管理',
+                
+                // Dashboard
+                'dashboard.title': '仪表板',
+                'dashboard.status.title': '服务器状态',
+                'dashboard.quick-actions.title': '快速操作',
+                'dashboard.quick-actions.start': '启动服务器',
+                'dashboard.quick-actions.stop': '停止服务器',
+                'dashboard.recent-activity.title': '最近活动',
+                'dashboard.recent-activity.empty': '暂无活动记录',
                 
                 // Server Control
                 'server.control.title': '服务器控制',
@@ -105,11 +124,30 @@ class I18n {
             en: {
                 // Navigation
                 'nav.title': 'Minecraft EasyServer',
+                'nav.status': 'Status:',
                 'nav.status.offline': 'Offline',
                 'nav.status.online': 'Online',
                 'nav.status.unknown': 'Unknown',
                 'nav.status.running': 'Running',
                 'nav.status.stopped': 'Stopped',
+                'nav.menu.dashboard': 'Dashboard',
+                'nav.menu.server': 'Server',
+                'nav.menu.management': 'Management',
+                'nav.menu.server.control': 'Server Control',
+                'nav.menu.server.config': 'Server Configuration',
+                'nav.menu.management.allowlist': 'Allowlist Management',
+                'nav.menu.management.permission': 'Permission Management',
+                'nav.menu.management.world': 'World Management',
+                'nav.menu.management.resourcepack': 'Resource Pack Management',
+                
+                // Dashboard
+                'dashboard.title': 'Dashboard',
+                'dashboard.status.title': 'Server Status',
+                'dashboard.quick-actions.title': 'Quick Actions',
+                'dashboard.quick-actions.start': 'Start Server',
+                'dashboard.quick-actions.stop': 'Stop Server',
+                'dashboard.recent-activity.title': 'Recent Activity',
+                'dashboard.recent-activity.empty': 'No recent activity',
                 
                 // Server Control
                 'server.control.title': 'Server Control',
@@ -266,33 +304,21 @@ class I18n {
 
     // Create language toggle button
     createLanguageToggle() {
-        const nav = document.querySelector('nav .container .flex');
-        if (nav) {
-            const rightSection = nav.querySelector('.flex.items-center.space-x-4');
-            if (rightSection) {
-                // Remove existing language toggle if present
-                const existingToggle = rightSection.querySelector('.language-toggle');
-                if (existingToggle) {
-                    existingToggle.remove();
-                }
-
-                const languageToggle = document.createElement('div');
-                languageToggle.className = 'language-toggle flex items-center space-x-2';
-                languageToggle.innerHTML = `
-                    <button id="language-btn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded text-sm">
-                        ${this.currentLanguage === 'zh' ? 'EN' : '中'}
-                    </button>
-                `;
-
-                rightSection.insertBefore(languageToggle, rightSection.firstChild);
-
-                // Add click event
-                document.getElementById('language-btn').addEventListener('click', () => {
-                    const newLanguage = this.currentLanguage === 'zh' ? 'en' : 'zh';
-                    this.setLanguage(newLanguage);
-                    document.getElementById('language-btn').textContent = newLanguage === 'zh' ? 'EN' : '中';
-                });
-            }
+        const languageBtn = document.getElementById('language-btn');
+        if (languageBtn) {
+            // Remove any existing event listeners
+            const newBtn = languageBtn.cloneNode(true);
+            languageBtn.parentNode.replaceChild(newBtn, languageBtn);
+            
+            // Set initial button text
+            newBtn.textContent = this.currentLanguage === 'zh' ? 'EN' : '中';
+            
+            // Add click event
+            newBtn.addEventListener('click', () => {
+                const newLanguage = this.currentLanguage === 'zh' ? 'en' : 'zh';
+                this.setLanguage(newLanguage);
+                newBtn.textContent = newLanguage === 'zh' ? 'EN' : '中';
+            });
         }
     }
 }
