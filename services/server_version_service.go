@@ -66,7 +66,7 @@ func (s *ServerVersionService) GetAvailableVersions() []models.ServerVersion {
 func (s *ServerVersionService) DownloadVersion(version string) error {
 	versions := s.GetAvailableVersions()
 	var targetVersion *models.ServerVersion
-	
+
 	for _, v := range versions {
 		if v.Version == version {
 			targetVersion = &v
@@ -110,6 +110,8 @@ func (s *ServerVersionService) ActivateVersion(version string) error {
 		return fmt.Errorf("version %s is not downloaded", version)
 	}
 
+	versionPath := fmt.Sprintf("./bedrock-server/bedrock-server-%s", version)
+
 	// Update config.yml
 	configPath := "./config.yml"
 	config, err := s.loadConfig(configPath)
@@ -118,13 +120,23 @@ func (s *ServerVersionService) ActivateVersion(version string) error {
 	}
 
 	// Update bedrock path
-	config["bedrock"].(map[interface{}]interface{})["path"] = fmt.Sprintf("./bedrock-server/bedrock-server-%s", version)
+	config["bedrock"].(map[interface{}]interface{})["path"] = versionPath
 
 	// Save config
 	err = s.saveConfig(configPath, config)
 	if err != nil {
 		return fmt.Errorf("failed to save config: %v", err)
 	}
+
+	// Update the runtime bedrock path for server service
+	// Convert relative path to absolute path
+	absPath, err := filepath.Abs(versionPath)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path: %v", err)
+	}
+	
+	// Update the server service bedrock path
+	SetBedrockPath(absPath)
 
 	return nil
 }
@@ -406,4 +418,68 @@ func (s *ServerVersionService) getFallbackVersions() []models.ServerVersion {
 	}
 
 	return versions
+}
+
+// UpdateVersionConfigFromGitHub downloads the latest server_versions.json from GitHub
+func (s *ServerVersionService) UpdateVersionConfigFromGitHub() error {
+	// GitHub raw URL for the server_versions.json file
+	// TODO: Replace with your actual GitHub repository URL
+	githubURL := "https://raw.githubusercontent.com/ckfanzhe/minecraft-easy-server/refs/heads/feature/multi-version/config/server_versions.json"
+
+	// Create HTTP client with timeout
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+		Transport: &http.Transport{
+			ForceAttemptHTTP2: false, // Force HTTP/1.1
+		},
+	}
+
+	// Create request
+	req, err := http.NewRequest("GET", githubURL, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+
+	// Set headers
+	req.Header.Set("User-Agent", "Bedrock-EasyServer/1.0")
+	req.Header.Set("Accept", "application/json")
+
+	// Make request
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to fetch from GitHub: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("GitHub returned status %d", resp.StatusCode)
+	}
+
+	// Read response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response: %v", err)
+	}
+
+	// Validate JSON format
+	var config models.ServerVersionConfig
+	err = json.Unmarshal(body, &config)
+	if err != nil {
+		return fmt.Errorf("invalid JSON format from GitHub: %v", err)
+	}
+
+	// Ensure config directory exists
+	configDir := "./config"
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return fmt.Errorf("failed to create config directory: %v", err)
+	}
+
+	// Write to local file
+	configPath := filepath.Join(configDir, "server_versions.json")
+	err = os.WriteFile(configPath, body, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write config file: %v", err)
+	}
+
+	return nil
 }

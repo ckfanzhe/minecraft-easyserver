@@ -26,6 +26,9 @@ class I18n {
                 // Server Versions
                 'server.versions.title': '服务器版本管理',
                 'server.versions.description': '管理Minecraft基岩版专用服务器版本，下载、激活不同版本的服务器。',
+                'server.versions.local': '本地版本配置',
+                'server.versions.update': '更新版本列表',
+                'server.versions.updating': '更新中...',
                 'server.versions.download': '下载',
                 'server.versions.activate': '激活',
                 'server.versions.downloading': '下载中...',
@@ -160,6 +163,9 @@ class I18n {
                 // Server Versions
                 'server.versions.title': 'Server Version Management',
                 'server.versions.description': 'Manage Minecraft Bedrock dedicated server versions, download and activate different server versions.',
+                'server.versions.local': 'Local Version Configuration',
+                'server.versions.update': 'Update Version List',
+                'server.versions.updating': 'Updating...',
                 'server.versions.download': 'Download',
                 'server.versions.activate': 'Activate',
                 'server.versions.downloading': 'Downloading...',

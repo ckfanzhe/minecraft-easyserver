@@ -94,4 +94,5 @@ func setupServerVersionRoutes(api *gin.RouterGroup, handler *handlers.ServerVers
 	api.POST("/server-versions/:version/download", handler.DownloadVersion)
 	api.GET("/server-versions/:version/progress", handler.GetDownloadProgress)
 	api.PUT("/server-versions/:version/activate", handler.ActivateVersion)
+	api.POST("/server-versions/update-config", handler.UpdateVersionConfig)
 }

@@ -33,14 +33,21 @@ func NewResourcePackService() *ResourcePackService {
 
 // GetResourcePacks gets resource pack list
 func (r *ResourcePackService) GetResourcePacks() ([]models.ResourcePackInfo, error) {
-	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
 	var packs []models.ResourcePackInfo
+	
+	// If no server version is active, return empty list
+	if bedrockPath == "" {
+		return packs, nil
+	}
+	
+	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
 
 	// Get currently active world
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	config, err := readServerProperties(configPath)
 	if err != nil {
-		return nil, err
+		// If server.properties doesn't exist, return empty list
+		return packs, nil
 	}
 
 	// Read active resource packs from world configuration
@@ -97,6 +104,11 @@ func (r *ResourcePackService) GetResourcePacks() ([]models.ResourcePackInfo, err
 
 // UploadResourcePack uploads and extracts resource pack
 func (r *ResourcePackService) UploadResourcePack(zipPath, fileName string) (*models.ResourcePackInfo, error) {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return nil, fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	// Create resource_packs directory if it doesn't exist
 	resourcePacksPath := filepath.Join(bedrockPath, "resource_packs")
 	if err := os.MkdirAll(resourcePacksPath, 0755); err != nil {
@@ -142,6 +154,11 @@ func (r *ResourcePackService) UploadResourcePack(zipPath, fileName string) (*mod
 
 // ActivateResourcePack activates resource pack
 func (r *ResourcePackService) ActivateResourcePack(packUUID string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	// Find resource pack by UUID
 	packs, err := r.GetResourcePacks()
 	if err != nil {
@@ -206,6 +223,11 @@ func (r *ResourcePackService) ActivateResourcePack(packUUID string) error {
 
 // DeactivateResourcePack deactivates resource pack
 func (r *ResourcePackService) DeactivateResourcePack(packUUID string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	// Find resource pack by UUID to check if it's a system pack
 	packs, err := r.GetResourcePacks()
 	if err != nil {
@@ -266,6 +288,11 @@ func (r *ResourcePackService) DeactivateResourcePack(packUUID string) error {
 
 // DeleteResourcePack deletes resource pack
 func (r *ResourcePackService) DeleteResourcePack(packUUID string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	// Find resource pack by UUID
 	packs, err := r.GetResourcePacks()
 	if err != nil {

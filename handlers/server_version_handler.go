@@ -105,3 +105,23 @@ func (h *ServerVersionHandler) ActivateVersion(c *gin.Context) {
 		"message": "Version activated successfully",
 	})
 }
+
+// UpdateVersionConfig updates the server version configuration from GitHub
+func (h *ServerVersionHandler) UpdateVersionConfig(c *gin.Context) {
+	err := h.service.UpdateVersionConfigFromGitHub()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// Return updated versions
+	versions := h.service.GetAvailableVersions()
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Version configuration updated successfully",
+		"data":    versions,
+	})
+}

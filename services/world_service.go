@@ -18,6 +18,11 @@ func NewWorldService() *WorldService {
 
 // GetWorlds gets world list
 func (w *WorldService) GetWorlds() ([]models.WorldInfo, error) {
+	// If no server version is active, return empty list
+	if bedrockPath == "" {
+		return []models.WorldInfo{}, nil
+	}
+	
 	worldsPath := filepath.Join(bedrockPath, "worlds")
 	return getWorldsList(worldsPath)
 }
@@ -26,6 +31,11 @@ func (w *WorldService) GetWorlds() ([]models.WorldInfo, error) {
 func (w *WorldService) DeleteWorld(worldName string) error {
 	if worldName == "" {
 		return fmt.Errorf("world name cannot be empty")
+	}
+	
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
 	}
 
 	// Check if world exists
@@ -61,6 +71,11 @@ func (w *WorldService) ActivateWorld(worldName string) error {
 	if worldName == "" {
 		return fmt.Errorf("world name cannot be empty")
 	}
+	
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
 
 	// Update level-name in server.properties
 	configPath := filepath.Join(bedrockPath, "server.properties")
@@ -78,11 +93,13 @@ func getWorldsList(worldsPath string) ([]models.WorldInfo, error) {
 	var worlds []models.WorldInfo
 
 	// Read currently active world
-	configPath := filepath.Join(bedrockPath, "server.properties")
-	config, err := readServerProperties(configPath)
 	activeWorld := ""
-	if err == nil {
-		activeWorld = config.LevelName
+	if bedrockPath != "" {
+		configPath := filepath.Join(bedrockPath, "server.properties")
+		config, err := readServerProperties(configPath)
+		if err == nil {
+			activeWorld = config.LevelName
+		}
 	}
 
 	// If worlds directory doesn't exist, return empty list

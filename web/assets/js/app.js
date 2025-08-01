@@ -113,6 +113,10 @@ function bindEvents() {
     // Resource pack upload
     if (elements.resourcepackUploadBtn) elements.resourcepackUploadBtn.addEventListener('click', () => elements.resourcepackUpload.click());
     if (elements.resourcepackUpload) elements.resourcepackUpload.addEventListener('change', uploadResourcePack);
+
+    // Server version update
+    const updateVersionsBtn = document.getElementById('update-versions-btn');
+    if (updateVersionsBtn) updateVersionsBtn.addEventListener('click', updateServerVersions);
 }
 
 // API request wrapper
@@ -900,5 +904,39 @@ async function deleteResourcePack(uuid) {
         await loadResourcePacks();
     } catch (error) {
         // Error already handled in apiRequest
+    }
+}
+
+// Update server versions from GitHub
+async function updateServerVersions() {
+    const updateBtn = document.getElementById('update-versions-btn');
+    const originalText = updateBtn.innerHTML;
+    
+    // Show loading state
+    updateBtn.disabled = true;
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + 
+        (window.i18n ? window.i18n.t('server.versions.updating') : 'Updating...');
+    
+    try {
+        const data = await apiRequest('/server-versions/update-config', {
+            method: 'POST'
+        });
+        
+        showToast(data.message);
+        
+        // Update the versions list with new data
+        if (data.data) {
+            renderServerVersions(data.data);
+        } else {
+            // Reload versions if no data returned
+            await loadServerVersions();
+        }
+        
+    } catch (error) {
+        // Error already handled in apiRequest
+    } finally {
+        // Restore button state
+        updateBtn.disabled = false;
+        updateBtn.innerHTML = originalText;
     }
 }

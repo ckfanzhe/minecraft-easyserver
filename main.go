@@ -22,9 +22,19 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// Initialize bedrock path
-	if err := services.InitBedrockPath(config.AppConfig.GetBedrockPath()); err != nil {
-		log.Fatal("Failed to initialize bedrock path:", err)
+	// Initialize bedrock path (don't fail if path doesn't exist yet)
+	// Users can now select and activate versions through the web interface
+	bedrockPath := config.AppConfig.GetBedrockPath()
+	if bedrockPath != "" {
+		// Try to initialize, but don't fail if it doesn't exist
+		if err := services.InitBedrockPath(bedrockPath); err != nil {
+			log.Printf("Warning: Bedrock path not found (%s). Users can download and activate versions through the web interface.", err)
+			// Set an empty path to indicate no version is currently active
+			services.SetBedrockPath("")
+		}
+	} else {
+		log.Printf("No bedrock path configured. Users can download and activate versions through the web interface.")
+		services.SetBedrockPath("")
 	}
 
 	// Create Gin engine
