@@ -21,6 +21,25 @@ class I18n {
                 'nav.menu.management.permission': '权限管理',
                 'nav.menu.management.world': '世界管理',
                 'nav.menu.management.resourcepack': '资源包管理',
+                'nav.menu.server.versions': '版本管理',
+                
+                // Server Versions
+                'server.versions.title': '服务器版本管理',
+                'server.versions.description': '管理Minecraft基岩版专用服务器版本，下载、激活不同版本的服务器。',
+                'server.versions.local': '本地版本配置',
+                'server.versions.update': '更新版本列表',
+                'server.versions.updating': '更新中...',
+                'server.versions.download': '下载',
+                'server.versions.activate': '激活',
+                'server.versions.downloading': '下载中...',
+                'server.versions.extracting': '解压中...',
+                'server.versions.downloaded': '已下载',
+                'server.versions.active': '当前激活',
+                'server.versions.download-failed': '下载失败',
+                'server.versions.activate-confirm': '确定要激活版本 {version} 吗？这将重启服务器。',
+                'server.versions.activated': '版本已激活',
+                'server.versions.activate-failed': '激活失败',
+                'server.versions.empty': '暂无服务器版本',
                 
                 // Dashboard
                 'dashboard.title': '仪表板',
@@ -95,6 +114,7 @@ class I18n {
                 
                 // Resource Pack Management
                 'resourcepack.title': '资源包管理',
+                'world.empty': '暂无世界文件',
                 'resourcepack.upload': '上传资源包',
                 'resourcepack.upload.desc': '支持 .zip 和 .mcpack 格式，自动解压并读取配置',
                 'resourcepack.upload.note': '上传后将自动解压到资源包目录，原压缩文件会被删除',
@@ -139,6 +159,25 @@ class I18n {
                 'nav.menu.management.permission': 'Permission Management',
                 'nav.menu.management.world': 'World Management',
                 'nav.menu.management.resourcepack': 'Resource Pack Management',
+                'nav.menu.server.versions': 'Version Management',
+                
+                // Server Versions
+                'server.versions.title': 'Server Version Management',
+                'server.versions.description': 'Manage Minecraft Bedrock dedicated server versions, download and activate different server versions.',
+                'server.versions.local': 'Local Version Configuration',
+                'server.versions.update': 'Update Version List',
+                'server.versions.updating': 'Updating...',
+                'server.versions.download': 'Download',
+                'server.versions.activate': 'Activate',
+                'server.versions.downloading': 'Downloading...',
+                'server.versions.extracting': 'Extracting...',
+                'server.versions.downloaded': 'Downloaded',
+                'server.versions.active': 'Currently Active',
+                'server.versions.download-failed': 'Download failed',
+                'server.versions.activate-confirm': 'Are you sure you want to activate version {version}? This will restart the server.',
+                'server.versions.activated': 'Version activated',
+                'server.versions.activate-failed': 'Activation failed',
+                'server.versions.empty': 'No server versions available',
                 
                 // Dashboard
                 'dashboard.title': 'Dashboard',
@@ -201,6 +240,7 @@ class I18n {
                 
                 // World Management
                 'world.title': 'World Management',
+                'world.empty': 'No world files',
                 'world.upload': 'Upload World File',
                 'world.upload.desc': 'Supports .zip and .mcworld formats, auto-extract and delete archive',
                 'world.upload.note': 'Files will be auto-extracted to worlds directory, original archive will be deleted',

@@ -21,6 +21,7 @@ const elements = {
     resourcepackUploadBtn: document.getElementById('resourcepack-upload-btn'),
     resourcepackUpload: document.getElementById('resourcepack-upload'),
     resourcepacksContainer: document.getElementById('resourcepacks-container'),
+    serverVersionsContainer: document.getElementById('server-versions-container'),
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toast-message'),
     permissionModal: document.getElementById('permission-modal'),
@@ -48,6 +49,7 @@ async function initializeApp() {
     await loadPermissions();
     await loadWorlds();
     await loadResourcePacks();
+    await loadServerVersions();
 }
 
 // Bind event listeners
@@ -111,6 +113,10 @@ function bindEvents() {
     // Resource pack upload
     if (elements.resourcepackUploadBtn) elements.resourcepackUploadBtn.addEventListener('click', () => elements.resourcepackUpload.click());
     if (elements.resourcepackUpload) elements.resourcepackUpload.addEventListener('change', uploadResourcePack);
+
+    // Server version update
+    const updateVersionsBtn = document.getElementById('update-versions-btn');
+    if (updateVersionsBtn) updateVersionsBtn.addEventListener('click', updateServerVersions);
 }
 
 // API request wrapper
@@ -584,6 +590,8 @@ window.activateWorld = activateWorld;
 window.activateResourcePack = activateResourcePack;
 window.deactivateResourcePack = deactivateResourcePack;
 window.deleteResourcePack = deleteResourcePack;
+window.downloadServerVersion = downloadServerVersion;
+window.activateServerVersion = activateServerVersion;
 
 // Resource pack management functions
 
@@ -695,6 +703,176 @@ async function activateResourcePack(uuid) {
     }
 }
 
+// Server version management functions
+
+// Load server versions list
+async function loadServerVersions() {
+    try {
+        const data = await apiRequest('/server-versions');
+        renderServerVersions(data.data || []);
+    } catch (error) {
+        renderServerVersions([]);
+    }
+}
+
+// Render server versions list
+function renderServerVersions(versions) {
+    elements.serverVersionsContainer.innerHTML = '';
+    
+    if (versions.length === 0) {
+        const emptyMessage = window.i18n ? 
+            window.i18n.t('server.versions.empty') : 
+            'No server versions available';
+        elements.serverVersionsContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${emptyMessage}</p>`;
+        return;
+    }
+    
+    versions.forEach(version => {
+        const versionElement = createServerVersionElement(version);
+        elements.serverVersionsContainer.appendChild(versionElement);
+    });
+}
+
+// Create server version element
+function createServerVersionElement(version) {
+    const div = document.createElement('div');
+    div.className = 'border rounded-lg p-4 bg-gray-50';
+    
+    const downloadedText = window.i18n ? window.i18n.t('server.versions.downloaded') : 'Downloaded';
+    const activeText = window.i18n ? window.i18n.t('server.versions.active') : 'Active';
+    const downloadText = window.i18n ? window.i18n.t('server.versions.download') : 'Download';
+    const activateText = window.i18n ? window.i18n.t('server.versions.activate') : 'Activate';
+    const downloadingText = window.i18n ? window.i18n.t('server.versions.downloading') : 'Downloading...';
+    
+    let statusBadge = '';
+    if (version.active) {
+        statusBadge = `<span class="px-2 py-1 text-xs rounded bg-green-200 text-green-800">${activeText}</span>`;
+    } else if (version.downloaded) {
+        statusBadge = `<span class="px-2 py-1 text-xs rounded bg-blue-200 text-blue-800">${downloadedText}</span>`;
+    }
+    
+    let actionButton = '';
+    if (!version.downloaded) {
+        actionButton = `
+            <button onclick="downloadServerVersion('${version.version}')" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition duration-200">
+                <i class="fas fa-download mr-2"></i>${downloadText}
+            </button>
+        `;
+    } else if (!version.active) {
+        actionButton = `
+            <button onclick="activateServerVersion('${version.version}')" 
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-200">
+                <i class="fas fa-play mr-2"></i>${activateText}
+            </button>
+        `;
+    }
+    
+    div.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold">Bedrock Server ${version.version}</h3>
+                <p class="text-sm text-gray-600 mt-1">Minecraft Bedrock Dedicated Server</p>
+                <div class="mt-2">
+                    ${statusBadge}
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div id="progress-${version.version}" class="hidden">
+                    <div class="w-48 bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-1">${downloadingText}</p>
+                </div>
+                ${actionButton}
+            </div>
+        </div>
+    `;
+    
+    return div;
+}
+
+// Download server version
+async function downloadServerVersion(version) {
+    try {
+        const data = await apiRequest(`/server-versions/${version}/download`, {
+            method: 'POST'
+        });
+        showToast(data.message);
+        
+        // Show progress bar
+        const progressContainer = document.getElementById(`progress-${version}`);
+        if (progressContainer) {
+            progressContainer.classList.remove('hidden');
+        }
+        
+        // Start polling for progress
+        pollDownloadProgress(version);
+        
+    } catch (error) {
+        // Error already handled in apiRequest
+    }
+}
+
+// Poll download progress
+async function pollDownloadProgress(version) {
+    try {
+        const data = await apiRequest(`/server-versions/${version}/progress`);
+        const progress = data.data;
+        
+        // Update progress bar
+        const progressContainer = document.getElementById(`progress-${version}`);
+        if (progressContainer) {
+            const progressBar = progressContainer.querySelector('.bg-blue-600');
+            if (progressBar) {
+                progressBar.style.width = `${progress.progress}%`;
+            }
+            
+            const progressText = progressContainer.querySelector('.text-xs');
+            if (progressText) {
+                progressText.textContent = progress.message;
+            }
+        }
+        
+        // Continue polling if still downloading
+        if (progress.status === 'downloading' || progress.status === 'extracting') {
+            setTimeout(() => pollDownloadProgress(version), 1000);
+        } else {
+            // Download completed or failed, refresh the list
+            setTimeout(() => {
+                loadServerVersions();
+            }, 1000);
+        }
+        
+    } catch (error) {
+        // Progress not found, download might be completed
+        setTimeout(() => {
+            loadServerVersions();
+        }, 1000);
+    }
+}
+
+// Activate server version
+async function activateServerVersion(version) {
+    const confirmMessage = window.i18n ? 
+        window.i18n.t('server.versions.activate-confirm', { version }) : 
+        `Are you sure you want to activate server version ${version}? This will change the active server configuration.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        const data = await apiRequest(`/server-versions/${version}/activate`, {
+            method: 'PUT'
+        });
+        showToast(data.message);
+        await loadServerVersions();
+    } catch (error) {
+        // Error already handled in apiRequest
+    }
+}
+
 // Deactivate resource pack
 async function deactivateResourcePack(uuid) {
     try {
@@ -727,4 +905,47 @@ async function deleteResourcePack(uuid) {
     } catch (error) {
         // Error already handled in apiRequest
     }
+}
+
+// Update server versions from GitHub
+async function updateServerVersions() {
+    const updateBtn = document.getElementById('update-versions-btn');
+    const originalText = updateBtn.innerHTML;
+    
+    // Show loading state
+    updateBtn.disabled = true;
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + 
+        (window.i18n ? window.i18n.t('server.versions.updating') : 'Updating...');
+    
+    try {
+        const data = await apiRequest('/server-versions/update-config', {
+            method: 'POST'
+        });
+        
+        showToast(data.message);
+        
+        // Update the versions list with new data
+        if (data.data) {
+            renderServerVersions(data.data);
+        } else {
+            // Reload versions if no data returned
+            await loadServerVersions();
+        }
+        
+    } catch (error) {
+        // Error already handled in apiRequest
+    } finally {
+        // Restore button state
+        updateBtn.disabled = false;
+        updateBtn.innerHTML = originalText;
+    }
+}
+
+// Quick action functions for dashboard buttons
+async function startServer() {
+    await controlServer('start');
+}
+
+async function stopServer() {
+    await controlServer('stop');
 }

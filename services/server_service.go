@@ -108,9 +108,14 @@ func (s *ServerService) Start() error {
 		return fmt.Errorf("server is already running")
 	}
 
+	// Check if bedrock path is configured
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+
 	exePath := filepath.Join(bedrockPath, "bedrock_server.exe")
 	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("bedrock_server.exe file not found")
+		return fmt.Errorf("bedrock_server.exe file not found in %s. Please ensure the server version is properly downloaded", bedrockPath)
 	}
 
 	serverProcess = exec.Command(exePath)
@@ -156,10 +161,15 @@ func (s *ServerService) Restart() error {
 	// Wait one second
 	time.Sleep(time.Second)
 
+	// Check if bedrock path is configured
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+
 	// Restart
 	exePath := filepath.Join(bedrockPath, "bedrock_server.exe")
 	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("bedrock_server.exe file not found")
+		return fmt.Errorf("bedrock_server.exe file not found in %s. Please ensure the server version is properly downloaded", bedrockPath)
 	}
 
 	serverProcess = exec.Command(exePath)

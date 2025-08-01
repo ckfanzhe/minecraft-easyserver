@@ -21,12 +21,44 @@ func NewConfigService() *ConfigService {
 
 // GetConfig gets server configuration
 func (c *ConfigService) GetConfig() (models.ServerConfig, error) {
+	// If no server version is active, return default configuration
+	if bedrockPath == "" {
+		return getDefaultServerConfig(), nil
+	}
+	
 	configPath := filepath.Join(bedrockPath, "server.properties")
+	
+	// If server.properties doesn't exist, return default configuration
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		return getDefaultServerConfig(), nil
+	}
+	
 	return readServerProperties(configPath)
+}
+
+// getDefaultServerConfig returns default server configuration
+func getDefaultServerConfig() models.ServerConfig {
+	return models.ServerConfig{
+		ServerName:               "Bedrock Server",
+		Gamemode:                 "survival",
+		Difficulty:               "easy",
+		MaxPlayers:               10,
+		ServerPort:               19132,
+		AllowCheats:              false,
+		AllowList:                false,
+		OnlineMode:               true,
+		LevelName:                "Bedrock level",
+		DefaultPlayerPermission:  "member",
+	}
 }
 
 // UpdateConfig updates server configuration
 func (c *ConfigService) UpdateConfig(config models.ServerConfig) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	configPath := filepath.Join(bedrockPath, "server.properties")
 	return writeServerProperties(configPath, config)
 }

@@ -7,13 +7,16 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 **Currently Supported Platforms:**
 - ✅ Windows
 - Linux
-- macOS
 
 **Currently Supported Servers:**
 - ✅ Minecraft Bedrock Server
 - Minecraft Java Server
 
 ## 🚀 Features
+
+### 🌍 Minecraft Server Download
+- **Server Download** Support for downloading specific server versions directly from the management page
+- **Server Version Switching** Support for one-click server version switching
 
 ### 🎮 Server Control
 - **One-click Start/Stop/Restart** Minecraft Bedrock server
@@ -53,7 +56,8 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Resource Deletion** Safe deletion of unwanted resource packs
 
 ## 👀 Management Panel Preview
-![Management Panel Preview](docs/resources/screenshot-en.png)
+![Management Panel Preview](docs/resources/screenshot-en-home.png)
+![Server Download Panel Preview](docs/resources/screenshot-en-download.png)
 
 ## 📋 System Requirements
 
@@ -62,11 +66,7 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Go Language**: 1.21 or higher
 - **Memory**: At least 2GB RAM
 - **Storage**: At least 10GB available space
-- **Network**: Open ports 8080 (management panel) and 19132 (Minecraft server)
-
-### Minecraft Bedrock Server
-- Downloaded and extracted Minecraft Bedrock Dedicated Server
-- Server files should be placed in `./bedrock-server/bedrock-server-1.21.95.1/` directory
+- **Network**: Open ports 8081 (management panel) and 19132 (Minecraft server)
 
 ## 🛠️ Installation Guide
 
@@ -79,11 +79,6 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
    ```powershell
    go version
    ```
-
-#### Download Minecraft Bedrock Server
-1. Visit [Minecraft Official Website](https://www.minecraft.net/en-us/download/server/bedrock)
-2. Download Bedrock Dedicated Server
-3. Extract to the `bedrock-server` folder in the project directory
 
 ### 2. Project Deployment
 
@@ -110,40 +105,6 @@ go build -o bedrock-easyserver.exe
 go run main.go
 ```
 
-### 3. Directory Structure Confirmation
-
-Ensure your project directory structure is as follows:
-```
-bedrock-easyserver/
-├── main.go                    # Main program file
-├── go.mod                     # Go module file
-├── go.sum                     # Go dependency verification file
-├── config.yml                 # Application configuration file
-├── README.md                  # Project documentation (English)
-├── README_CN.md               # Project documentation (Chinese)
-├── .gitignore                 # Git ignore file configuration
-├── config/                    # Configuration module
-│   └── config.go             # Configuration processing logic
-├── handlers/                  # HTTP handlers
-│   ├── handlers.go           # API route handling
-│   └── handlers_test.go      # Handler unit tests
-├── models/                    # Data models
-│   └── models.go             # Data structure definitions
-├── services/                  # Business logic services
-│   ├── services.go           # Core business logic
-│   └── services_test.go      # Service layer unit tests
-├── web/                       # Frontend files
-│   ├── index.html            # Main page
-│   └── app.js                # JavaScript logic
-└── bedrock-server/           # Bedrock server directory
-    └── bedrock-server-1.21.95.1/
-        ├── bedrock_server.exe
-        ├── server.properties
-        ├── allowlist.json
-        ├── permissions.json
-        └── worlds/
-```
-
 ## 🚀 Usage Guide
 
 ### Start Management Panel
@@ -158,26 +119,38 @@ bedrock-easyserver/
    ```
 
 2. **Access Management Interface**:
-   - Open browser and visit: `http://localhost:8080`
+   - Open browser and visit: `http://localhost:8081`
    - The management panel will load automatically
 
-### Firewall Configuration
+## 🔥 Firewall Configuration
+
+### Windows Firewall
+```powershell
+# Allow management panel port (8081)
+netsh advfirewall firewall add rule name="Minecraft Management Panel" dir=in action=allow protocol=TCP localport=8081
+
+# Allow Minecraft server port (19132)
+netsh advfirewall firewall add rule name="Minecraft Bedrock Server" dir=in action=allow protocol=UDP localport=19132
+```
+
 Ensure the following ports are open in the firewall:
-- **8080**: Management panel access port
+- **8081**: Management panel access port
 - **19132**: Minecraft Bedrock server default port
 - **19133**: Minecraft Bedrock server IPv6 port
 
 ## 📝 Additional Information
 
 ### TODO Planned Features
-- 🔄 Support for one-click mcpackage mod import
+- ✅ Support for one-click mcpackage mod import
 - 🔄 Linux operating system support
 - 🔄 Real-time Bedrock server log viewing
 - 🔄 Direct command execution to Bedrock server through web interface
 - 🔄 Player online status monitoring
 - 🔄 Server performance monitoring
 - 🔄 Automatic world backup functionality
-- 🔄 Multi-language interface support
+- ✅ Multi-language interface support
+- 🔄 Java Server Support - Support for Minecraft Java Edition servers
+- 🔄 Docker Support - Containerized deployment support
 
 ## 🤝 Contributing
 

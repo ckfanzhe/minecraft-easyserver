@@ -76,7 +76,7 @@ func createDefaultConfig(configPath string) error {
 	defaultConfig.Server.Port = 8080
 	defaultConfig.Server.Debug = false
 
-	defaultConfig.Bedrock.Path = "./bedrock-server/bedrock-server-1.21.95.1"
+	defaultConfig.Bedrock.Path = ""
 	defaultConfig.Bedrock.Executable = "bedrock_server.exe"
 
 	defaultConfig.Web.StaticDir = "./web"
@@ -107,9 +107,10 @@ func validateConfig(config *Config) error {
 		return fmt.Errorf("invalid server port: %d", config.Server.Port)
 	}
 
-	if config.Bedrock.Path == "" {
-		return fmt.Errorf("Bedrock path cannot be empty")
-	}
+	// Bedrock path can be empty - users can select versions through the web interface
+	// if config.Bedrock.Path == "" {
+	//     return fmt.Errorf("Bedrock path cannot be empty")
+	// }
 
 	if config.Bedrock.Executable == "" {
 		return fmt.Errorf("Bedrock executable name cannot be empty")

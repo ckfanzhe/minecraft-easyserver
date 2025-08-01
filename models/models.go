@@ -87,3 +87,37 @@ type WorldResourcePack struct {
 	PackID  string `json:"pack_id"`
 	Version [3]int `json:"version"`
 }
+
+// ServerVersion server version information
+type ServerVersion struct {
+	Version     string `json:"version"`
+	DownloadURL string `json:"download_url"`
+	Active      bool   `json:"active"`
+	Downloaded  bool   `json:"downloaded"`
+	Path        string `json:"path"`
+	ReleaseDate string `json:"release_date,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// ServerVersionConfig configuration structure for server versions
+type ServerVersionConfig struct {
+	Versions []ServerVersionInfo `json:"versions"`
+}
+
+// ServerVersionInfo version information from config file
+type ServerVersionInfo struct {
+	Version     string `json:"version"`
+	DownloadURL string `json:"download_url"`
+	ReleaseDate string `json:"release_date"`
+	Description string `json:"description"`
+}
+
+// DownloadProgress download progress information
+type DownloadProgress struct {
+	Version     string  `json:"version"`
+	Progress    float64 `json:"progress"`
+	Status      string  `json:"status"`
+	Message     string  `json:"message"`
+	TotalBytes  int64   `json:"total_bytes"`
+	DownloadedBytes int64 `json:"downloaded_bytes"`
+}

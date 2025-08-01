@@ -17,12 +17,22 @@ func NewPermissionService() *PermissionService {
 
 // GetPermissions gets permissions
 func (p *PermissionService) GetPermissions() ([]map[string]interface{}, error) {
+	// If no server version is active, return empty list
+	if bedrockPath == "" {
+		return []map[string]interface{}{}, nil
+	}
+	
 	permissionsPath := filepath.Join(bedrockPath, "permissions.json")
 	return readPermissions(permissionsPath)
 }
 
 // UpdatePermission updates permission
 func (p *PermissionService) UpdatePermission(name, level string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	permissionsPath := filepath.Join(bedrockPath, "permissions.json")
 	permissions, err := readPermissions(permissionsPath)
 	if err != nil {
@@ -66,6 +76,11 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 
 // RemovePermission removes permission
 func (p *PermissionService) RemovePermission(name string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	permissionsPath := filepath.Join(bedrockPath, "permissions.json")
 	permissions, err := readPermissions(permissionsPath)
 	if err != nil {

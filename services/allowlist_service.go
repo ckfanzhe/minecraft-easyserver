@@ -19,6 +19,11 @@ func NewAllowlistService() *AllowlistService {
 
 // GetAllowlist gets allowlist
 func (a *AllowlistService) GetAllowlist() ([]string, error) {
+	// If no server version is active, return empty list
+	if bedrockPath == "" {
+		return []string{}, nil
+	}
+	
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
 	allowlist, err := readAllowlist(allowlistPath)
 	if err != nil {
@@ -35,6 +40,11 @@ func (a *AllowlistService) GetAllowlist() ([]string, error) {
 
 // AddToAllowlist adds to allowlist
 func (a *AllowlistService) AddToAllowlist(name string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
 	allowlist, err := readAllowlist(allowlistPath)
 	if err != nil {
@@ -60,6 +70,11 @@ func (a *AllowlistService) AddToAllowlist(name string) error {
 
 // RemoveFromAllowlist removes from allowlist
 func (a *AllowlistService) RemoveFromAllowlist(name string) error {
+	// If no server version is active, return error
+	if bedrockPath == "" {
+		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
+	}
+	
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
 	allowlist, err := readAllowlist(allowlistPath)
 	if err != nil {
