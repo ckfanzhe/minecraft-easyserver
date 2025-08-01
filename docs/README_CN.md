@@ -54,8 +54,8 @@
 - **资源删除** 安全删除不需要的资源包
 
 ## 👀 管理端预览
-![管理主页预览](docs/resources/screenshot-en-home.png)
-![服务器下载面板预览](docs/resources/screenshot-en-download.png)
+![管理主页预览](resources/screenshot-en-home.png)
+![服务器下载面板预览](resources/screenshot-en-download.png)
 
 ## 📋 系统要求
 
