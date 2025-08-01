@@ -477,14 +477,17 @@ function createPermissionElement(permission) {
         'operator': 'text-red-600'
     };
     
+    // Use permission.permission instead of permission.level
+    const permissionLevel = permission.permission || 'visitor';
+    
     // Escape special characters in permission name
     const escapedName = permission.name.replace(/'/g, "\\'").replace(/"/g, '\\"');
     
     div.innerHTML = `
         <div>
             <span class="font-medium">${permission.name}</span>
-            <span class="ml-2 px-2 py-1 text-xs rounded ${levelColor[permission.level]} bg-gray-200">
-                ${levelText[permission.level]}
+            <span class="ml-2 px-2 py-1 text-xs rounded ${levelColor[permissionLevel]} bg-gray-200">
+                ${levelText[permissionLevel] || permissionLevel}
             </span>
         </div>
         <button onclick="removePermission('${escapedName}')" 
