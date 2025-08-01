@@ -1,6 +1,6 @@
 bedrock:
-  executable: bedrock_server.exe
-  path: ""
+  executable: bedrock_server
+  path: ./bedrock-server/bedrock-server-1.21.95.1
 logging:
   file_output: false
   file_path: ./logs/server.log

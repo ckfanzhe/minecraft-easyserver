@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"gopkg.in/yaml.v3"
 )
@@ -77,7 +78,12 @@ func createDefaultConfig(configPath string) error {
 	defaultConfig.Server.Debug = false
 
 	defaultConfig.Bedrock.Path = ""
-	defaultConfig.Bedrock.Executable = "bedrock_server.exe"
+	// Set executable name based on operating system
+	if runtime.GOOS == "windows" {
+		defaultConfig.Bedrock.Executable = "bedrock_server.exe"
+	} else {
+		defaultConfig.Bedrock.Executable = "bedrock_server"
+	}
 
 	defaultConfig.Web.StaticDir = "./web"
 	defaultConfig.Web.WebfontsDir = "./web/webfonts"
