@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"bedrock-easyserver/config"
-	"bedrock-easyserver/handlers"
-	"bedrock-easyserver/services"
+	"minecraft-easyserver/config"
+	"minecraft-easyserver/handlers"
+	"minecraft-easyserver/services"
 
 	"github.com/gin-gonic/gin"
 )

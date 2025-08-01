@@ -1,4 +1,4 @@
-module bedrock-easyserver
+module minecraft-easyserver
 
 go 1.21
 

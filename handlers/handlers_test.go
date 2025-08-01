@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bedrock-easyserver/models"
-	"bedrock-easyserver/services"
+	"minecraft-easyserver/models"
+	"minecraft-easyserver/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

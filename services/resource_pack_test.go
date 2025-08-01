@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bedrock-easyserver/models"
+	"minecraft-easyserver/models"
 )
 
 func TestResourcePackService(t *testing.T) {
