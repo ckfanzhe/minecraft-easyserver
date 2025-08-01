@@ -424,7 +424,7 @@ func (s *ServerVersionService) getFallbackVersions() []models.ServerVersion {
 func (s *ServerVersionService) UpdateVersionConfigFromGitHub() error {
 	// GitHub raw URL for the server_versions.json file
 	// TODO: Replace with your actual GitHub repository URL
-	githubURL := "https://raw.githubusercontent.com/ckfanzhe/minecraft-easy-server/refs/heads/feature/multi-version/config/server_versions.json"
+	githubURL := "https://github.com/ckfanzhe/minecraft-easy-server/raw/refs/heads/main/config/server_versions.json"
 
 	// Create HTTP client with timeout
 	client := &http.Client{
