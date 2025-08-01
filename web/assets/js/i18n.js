@@ -114,6 +114,7 @@ class I18n {
                 
                 // Resource Pack Management
                 'resourcepack.title': '资源包管理',
+                'world.empty': '暂无世界文件',
                 'resourcepack.upload': '上传资源包',
                 'resourcepack.upload.desc': '支持 .zip 和 .mcpack 格式，自动解压并读取配置',
                 'resourcepack.upload.note': '上传后将自动解压到资源包目录，原压缩文件会被删除',
@@ -239,6 +240,7 @@ class I18n {
                 
                 // World Management
                 'world.title': 'World Management',
+                'world.empty': 'No world files',
                 'world.upload': 'Upload World File',
                 'world.upload.desc': 'Supports .zip and .mcworld formats, auto-extract and delete archive',
                 'world.upload.note': 'Files will be auto-extracted to worlds directory, original archive will be deleted',

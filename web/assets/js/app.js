@@ -940,3 +940,12 @@ async function updateServerVersions() {
         updateBtn.innerHTML = originalText;
     }
 }
+
+// Quick action functions for dashboard buttons
+async function startServer() {
+    await controlServer('start');
+}
+
+async function stopServer() {
+    await controlServer('stop');
+}
