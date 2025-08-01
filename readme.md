@@ -60,76 +60,58 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 
 ### Server Environment
 - **Operating System**: Windows 10+ or Ubuntu 18.04+ (Linux)
-- **Go Language**: 1.21 or higher
 - **Memory**: At least 2GB RAM
 - **Storage**: At least 10GB available space
 - **Network**: Open ports 8081 (management panel) and 19132 (Minecraft server)
 
 ## 🛠️ Installation Guide
 
-### 1. Environment Setup
+### Quick Start (Recommended)
 
-#### Install Go Language
+1. **Download Pre-built Release**:
+   - Download the appropriate version for your operating system from the [Releases](https://github.com/ckfanzhe/bedrock-easy-server/releases) page
+   - `minecraft-server-manager-windows.exe` for Windows
+   - `minecraft-server-manager-linux` for Linux
 
-**For Windows:**
-1. Visit [Go Official Website](https://golang.org/dl/) to download Windows version
-2. Run the installer and follow the prompts to complete installation
-3. Verify installation:
-   ```powershell
-   go version
-   ```
-
-**For Ubuntu/Linux:**
-1. Update package list:
+2. **Run the Application**:
    ```bash
-   sudo apt update
+   # For Linux
+   chmod +x minecraft-server-manager-linux
+   ./minecraft-server-manager-linux
+   
+   # For Windows
+   minecraft-server-manager-windows.exe
    ```
-2. Install Go:
+
+### Build from Source (For Developers)
+
+1. **Prerequisites**: Go 1.21 or higher
+2. **Clone Repository**:
    ```bash
-   sudo apt install golang-go
+   git clone https://github.com/ckfanzhe/bedrock-easy-server.git
+   cd minecraft-easy-server
    ```
-   Or download from [Go Official Website](https://golang.org/dl/) for the latest version
-3. Verify installation:
+3. **Build All Platforms**:
    ```bash
-   go version
+   chmod +x build.sh
+   ./build.sh
    ```
-
-### 2. Project Deployment
-
-#### Clone or Download Project
-```powershell
-# If using Git
-git clone https://github.com/ckfanzhe/bedrock-easy-server.git
-cd bedrock-easyserver
-
-# Or download and extract project files directly
-```
-
-#### Install Dependencies
-```powershell
-go mod tidy
-```
-
-#### Build Project
-```powershell
-# Build executable file
-go build -o bedrock-easyserver.exe
-
-# Or run directly
-go run main.go
-```
+4. **Or Build Single Platform**:
+   ```bash
+   go build -o minecraft-server-manager
+   ```
 
 ## 🚀 Usage Guide
 
 ### Start Management Panel
 
-1. **Command Line Startup**:
-   ```powershell
-   # Method 1: Run source code directly
-   go run main.go
+1. **Run the Application**:
+   ```bash
+   # For Linux
+   ./minecraft-server-manager-linux
    
-   # Method 2: Run compiled program
-   ./bedrock-easyserver.exe
+   # For Windows
+   minecraft-server-manager-windows.exe
    ```
 
 2. **Access Management Interface**:

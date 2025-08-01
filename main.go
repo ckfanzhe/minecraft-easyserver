@@ -1,8 +1,11 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"log"
+	"net/http"
 
 	"minecraft-easyserver/config"
 	"minecraft-easyserver/routes"
@@ -10,6 +13,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+//go:embed web/*
+var webFS embed.FS
 
 func main() {
 	// Load configuration file
@@ -40,13 +46,36 @@ func main() {
 	// Create Gin engine
 	r := gin.Default()
 
-	// Static file service
-	r.Static("/assets", config.AppConfig.Web.StaticDir)
-	r.LoadHTMLFiles(config.AppConfig.Web.TemplateFile)
+	// Setup embedded static files
+	webSubFS, err := fs.Sub(webFS, "web")
+	if err != nil {
+		log.Fatal("Failed to create web sub filesystem:", err)
+	}
 
-	// Home page
+	// Static file service using embedded files
+	// Create a sub filesystem for assets
+	assetsFS, err := fs.Sub(webSubFS, "assets")
+	if err != nil {
+		log.Fatal("Failed to create assets sub filesystem:", err)
+	}
+	r.StaticFS("/assets", http.FS(assetsFS))
+
+	// Load HTML template from embedded files
+	tmpl, err := webSubFS.Open("index.html")
+	if err != nil {
+		log.Fatal("Failed to open index.html:", err)
+	}
+	tmpl.Close()
+
+	// Home page - serve embedded index.html
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(200, "index.html", nil)
+		indexFile, err := webSubFS.Open("index.html")
+		if err != nil {
+			c.String(500, "Failed to load index.html")
+			return
+		}
+		defer indexFile.Close()
+		c.DataFromReader(200, -1, "text/html; charset=utf-8", indexFile, nil)
 	})
 
 	// Handle vite dev server client requests to avoid 404 errors
