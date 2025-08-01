@@ -19,9 +19,9 @@ bedrock:
 # Web界面配置
 web:
   # 静态文件目录
-  static_dir: "./web/static"
+  static_dir: "./web/assets"
   # 字体文件目录
-  webfonts_dir: "./web/webfonts"
+  webfonts_dir: "./web/assets/fonts"
   # HTML模板文件
   template_file: "./web/index.html"
 
