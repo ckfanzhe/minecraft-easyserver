@@ -2,10 +2,6 @@
 
 **轻量级** 的 Minecraft 服务器 Web 管理面板，提供现代化的用户界面和完整的服务器管理功能
 
-**目前支持的平台：**
-- ✅Windows
-- Linux
-
 **目前支持的服务器：**
 - ✅Minecraft Bedrock 服务器
 - Minecraft Java 服务器

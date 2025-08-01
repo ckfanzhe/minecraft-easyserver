@@ -4,9 +4,6 @@
 
 A **lightweight** Minecraft server web management panel with modern UI and comprehensive server management features.
 
-**Currently Supported Platforms:**
-- ✅ Windows
-- Linux
 
 **Currently Supported Servers:**
 - ✅ Minecraft Bedrock Server
