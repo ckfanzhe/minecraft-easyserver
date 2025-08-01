@@ -59,22 +59,39 @@
 
 ## 📋 系统要求
 
-### 服务器环境 Windows
-- **操作系统**: Windows 10 或更高版本
+### 服务器环境
+- **操作系统**: Windows 10+ 或 Ubuntu 18.04+ (Linux)
 - **Go 语言**: 1.21 或更高版本
 - **内存**: 至少 2GB RAM
 - **存储**: 至少 10GB 可用空间
-- **网络**: 开放端口 8080（管理面板）和 19132（Minecraft 服务器）
+- **网络**: 开放端口 8081（管理面板）和 19132（Minecraft 服务器）
 
 ## 🛠️ 安装指南
 
 ### 1. 环境准备
 
 #### 安装 Go 语言
+
+**Windows 系统：**
 1. 访问 [Go 官网](https://golang.org/dl/) 下载 Windows 版本
 2. 运行安装程序并按照提示完成安装
 3. 验证安装：
    ```powershell
+   go version
+   ```
+
+**Ubuntu/Linux 系统：**
+1. 更新软件包列表：
+   ```bash
+   sudo apt update
+   ```
+2. 安装 Go：
+   ```bash
+   sudo apt install golang-go
+   ```
+   或从 [Go 官网](https://golang.org/dl/) 下载最新版本
+3. 验证安装：
+   ```bash
    go version
    ```
 
@@ -130,7 +147,7 @@ go run main.go
 
 ### TODO计划功能
 - ✅ 支持一键导入mcpackage模组
-- 🔄 支持Linux操作系统
+- ✅ 支持Linux操作系统
 - 🔄 bedrock服务器日志实时查看
 - 🔄 直接通过页面执行命令到Bedrock服务器
 - 🔄 玩家在线状态监控

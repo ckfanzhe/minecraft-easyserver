@@ -106,10 +106,12 @@ type ServerVersionConfig struct {
 
 // ServerVersionInfo version information from config file
 type ServerVersionInfo struct {
-	Version     string `json:"version"`
-	DownloadURL string `json:"download_url"`
-	ReleaseDate string `json:"release_date"`
-	Description string `json:"description"`
+	Version            string `json:"version"`
+	DownloadURL        string `json:"download_url,omitempty"`        // For backward compatibility
+	DownloadURLWindows string `json:"download_url_windows,omitempty"` // Windows download URL
+	DownloadURLLinux   string `json:"download_url_linux,omitempty"`   // Linux download URL
+	ReleaseDate        string `json:"release_date"`
+	Description        string `json:"description"`
 }
 
 // DownloadProgress download progress information

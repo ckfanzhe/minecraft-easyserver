@@ -61,8 +61,8 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 
 ## 📋 System Requirements
 
-### Server Environment (Windows)
-- **Operating System**: Windows 10 or higher
+### Server Environment
+- **Operating System**: Windows 10+ or Ubuntu 18.04+ (Linux)
 - **Go Language**: 1.21 or higher
 - **Memory**: At least 2GB RAM
 - **Storage**: At least 10GB available space
@@ -73,10 +73,27 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 ### 1. Environment Setup
 
 #### Install Go Language
+
+**For Windows:**
 1. Visit [Go Official Website](https://golang.org/dl/) to download Windows version
 2. Run the installer and follow the prompts to complete installation
 3. Verify installation:
    ```powershell
+   go version
+   ```
+
+**For Ubuntu/Linux:**
+1. Update package list:
+   ```bash
+   sudo apt update
+   ```
+2. Install Go:
+   ```bash
+   sudo apt install golang-go
+   ```
+   Or download from [Go Official Website](https://golang.org/dl/) for the latest version
+3. Verify installation:
+   ```bash
    go version
    ```
 
@@ -142,7 +159,7 @@ Ensure the following ports are open in the firewall:
 
 ### TODO Planned Features
 - ✅ Support for one-click mcpackage mod import
-- 🔄 Linux operating system support
+- ✅ Linux operating system support
 - 🔄 Real-time Bedrock server log viewing
 - 🔄 Direct command execution to Bedrock server through web interface
 - 🔄 Player online status monitoring

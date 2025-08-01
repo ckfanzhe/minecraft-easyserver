@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sync"
 	"time"
 
@@ -113,9 +114,17 @@ func (s *ServerService) Start() error {
 		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
 	}
 
-	exePath := filepath.Join(bedrockPath, "bedrock_server.exe")
+	// Get executable name based on operating system
+	var executableName string
+	if runtime.GOOS == "windows" {
+		executableName = "bedrock_server.exe"
+	} else {
+		executableName = "bedrock_server"
+	}
+	
+	exePath := filepath.Join(bedrockPath, executableName)
 	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("bedrock_server.exe file not found in %s. Please ensure the server version is properly downloaded", bedrockPath)
+		return fmt.Errorf("%s file not found in %s. Please ensure the server version is properly downloaded", executableName, bedrockPath)
 	}
 
 	serverProcess = exec.Command(exePath)
@@ -167,9 +176,17 @@ func (s *ServerService) Restart() error {
 	}
 
 	// Restart
-	exePath := filepath.Join(bedrockPath, "bedrock_server.exe")
+	// Get executable name based on operating system
+	var executableName string
+	if runtime.GOOS == "windows" {
+		executableName = "bedrock_server.exe"
+	} else {
+		executableName = "bedrock_server"
+	}
+	
+	exePath := filepath.Join(bedrockPath, executableName)
 	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("bedrock_server.exe file not found in %s. Please ensure the server version is properly downloaded", bedrockPath)
+		return fmt.Errorf("%s file not found in %s. Please ensure the server version is properly downloaded", executableName, bedrockPath)
 	}
 
 	serverProcess = exec.Command(exePath)

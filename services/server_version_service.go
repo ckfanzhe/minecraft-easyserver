@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -41,9 +42,25 @@ func (s *ServerVersionService) GetAvailableVersions() []models.ServerVersion {
 
 	var versions []models.ServerVersion
 	for _, versionInfo := range versionConfig.Versions {
+		// Select download URL based on operating system
+		var downloadURL string
+		if runtime.GOOS == "windows" {
+			if versionInfo.DownloadURLWindows != "" {
+				downloadURL = versionInfo.DownloadURLWindows
+			} else {
+				downloadURL = versionInfo.DownloadURL // fallback for backward compatibility
+			}
+		} else {
+			if versionInfo.DownloadURLLinux != "" {
+				downloadURL = versionInfo.DownloadURLLinux
+			} else {
+				downloadURL = versionInfo.DownloadURL // fallback for backward compatibility
+			}
+		}
+		
 		version := models.ServerVersion{
 			Version:     versionInfo.Version,
-			DownloadURL: versionInfo.DownloadURL,
+			DownloadURL: downloadURL,
 			Active:      false,
 			Downloaded:  false,
 			Path:        fmt.Sprintf("./bedrock-server/bedrock-server-%s", versionInfo.Version),
@@ -166,6 +183,17 @@ func (s *ServerVersionService) downloadAndExtract(version *models.ServerVersion)
 		return
 	}
 
+	// Set executable permissions for Linux
+	if runtime.GOOS != "windows" {
+		executablePath := filepath.Join(version.Path, "bedrock_server")
+		if _, err := os.Stat(executablePath); err == nil {
+			if err := os.Chmod(executablePath, 0755); err != nil {
+				s.updateProgress(version.Version, 0, "error", fmt.Sprintf("Failed to set executable permissions: %v", err), 0, 0)
+				return
+			}
+		}
+	}
+
 	// Clean up zip file
 	os.Remove(zipPath)
 
@@ -280,7 +308,16 @@ func (s *ServerVersionService) extractZip(src, dest string) error {
 // isVersionDownloaded checks if a version is downloaded
 func (s *ServerVersionService) isVersionDownloaded(version string) bool {
 	path := fmt.Sprintf("./bedrock-server/bedrock-server-%s", version)
-	executablePath := filepath.Join(path, "bedrock_server.exe")
+	
+	// Get executable name based on operating system
+	var executableName string
+	if runtime.GOOS == "windows" {
+		executableName = "bedrock_server.exe"
+	} else {
+		executableName = "bedrock_server"
+	}
+	
+	executablePath := filepath.Join(path, executableName)
 	_, err := os.Stat(executablePath)
 	return err == nil
 }
@@ -390,10 +427,20 @@ func (s *ServerVersionService) loadVersionConfig(configPath string) (*models.Ser
 
 // getFallbackVersions returns hardcoded versions as fallback
 func (s *ServerVersionService) getFallbackVersions() []models.ServerVersion {
+	// Select download URL based on operating system
+	var downloadURL1, downloadURL2 string
+	if runtime.GOOS == "windows" {
+		downloadURL1 = "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.1.zip"
+		downloadURL2 = "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip"
+	} else {
+		downloadURL1 = "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.94.1.zip"
+		downloadURL2 = "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.95.1.zip"
+	}
+	
 	versions := []models.ServerVersion{
 		{
 			Version:     "1.21.94.1",
-			DownloadURL: "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.1.zip",
+			DownloadURL: downloadURL1,
 			Active:      false,
 			Downloaded:  false,
 			Path:        "./bedrock-server/bedrock-server-1.21.94.1",
@@ -402,7 +449,7 @@ func (s *ServerVersionService) getFallbackVersions() []models.ServerVersion {
 		},
 		{
 			Version:     "1.21.95.1",
-			DownloadURL: "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip",
+			DownloadURL: downloadURL2,
 			Active:      false,
 			Downloaded:  false,
 			Path:        "./bedrock-server/bedrock-server-1.21.95.1",

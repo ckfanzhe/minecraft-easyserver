@@ -2,25 +2,29 @@
   "versions": [
     {
       "version": "1.21.95.1",
-      "download_url": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip",
+      "download_url_windows": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip",
+      "download_url_linux": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.95.1.zip",
       "release_date": "2025-07-14",
       "description": "Latest stable release - hotfix with bug fixes and performance improvements"
     },
     {
       "version": "1.21.94.2",
-      "download_url": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.2.zip",
+      "download_url_windows": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.2.zip",
+      "download_url_linux": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.94.2.zip",
       "release_date": "None",
       "description": "None"
     },
     {
       "version": "1.21.94.1",
-      "download_url": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.1.zip",
+      "download_url_windows": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.94.1.zip",
+      "download_url_linux": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.94.1.zip",
       "release_date": "None",
       "description": "None"
     },
     {
       "version": "1.21.84.1",
-      "download_url": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.84.1.zip",
+      "download_url_windows": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.84.1.zip",
+      "download_url_linux": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.84.1.zip",
       "release_date": "None",
       "description": "None"
     }
