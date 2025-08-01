@@ -70,19 +70,19 @@ func LoadConfig(configPath string) error {
 // createDefaultConfig creates default configuration file
 func createDefaultConfig(configPath string) error {
 	defaultConfig := &Config{}
-	
+
 	// Set default values
 	defaultConfig.Server.Host = "localhost"
 	defaultConfig.Server.Port = 8080
 	defaultConfig.Server.Debug = false
-	
+
 	defaultConfig.Bedrock.Path = "./bedrock-server/bedrock-server-1.21.95.1"
 	defaultConfig.Bedrock.Executable = "bedrock_server.exe"
-	
+
 	defaultConfig.Web.StaticDir = "./web"
 	defaultConfig.Web.WebfontsDir = "./web/webfonts"
 	defaultConfig.Web.TemplateFile = "./web/index.html"
-	
+
 	defaultConfig.Logging.Level = "info"
 	defaultConfig.Logging.FileOutput = false
 	defaultConfig.Logging.FilePath = "./logs/server.log"

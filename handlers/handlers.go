@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"bedrock-easyserver/models"
-	"bedrock-easyserver/services"
+	"minecraft-easyserver/models"
+	"minecraft-easyserver/services"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -460,7 +461,7 @@ func (h *ResourcePackHandler) UploadResourcePack(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message":      "Resource pack uploaded successfully",
+		"message":       "Resource pack uploaded successfully",
 		"resource_pack": packInfo,
 	})
 }

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bedrock-easyserver/models"
+	"minecraft-easyserver/models"
 )
 
 func TestConfigService(t *testing.T) {

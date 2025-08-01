@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"bedrock-easyserver/config"
-	"bedrock-easyserver/handlers"
-	"bedrock-easyserver/services"
+	"minecraft-easyserver/config"
+	"minecraft-easyserver/handlers"
+	"minecraft-easyserver/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,8 +31,7 @@ func main() {
 	r := gin.Default()
 
 	// Static file service
-	r.Static("/static", config.AppConfig.Web.StaticDir)
-	r.Static("/webfonts", config.AppConfig.Web.WebfontsDir)
+	r.Static("/assets", config.AppConfig.Web.StaticDir)
 	r.LoadHTMLFiles(config.AppConfig.Web.TemplateFile)
 
 	// Home page

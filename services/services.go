@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"bedrock-easyserver/models"
+	"minecraft-easyserver/models"
 )
 
 var (
@@ -28,7 +28,7 @@ func InitBedrockPath(path string) error {
 	if path == "" {
 		return fmt.Errorf("bedrock path cannot be empty")
 	}
-	
+
 	// If it's a relative path, convert to absolute path
 	if !filepath.IsAbs(path) {
 		wd, err := os.Getwd()
@@ -37,12 +37,12 @@ func InitBedrockPath(path string) error {
 		}
 		path = filepath.Join(wd, path)
 	}
-	
+
 	// Check if path exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return fmt.Errorf("bedrock path does not exist: %s", path)
 	}
-	
+
 	bedrockPath = path
 	return nil
 }

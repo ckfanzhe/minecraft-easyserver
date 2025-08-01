@@ -3,254 +3,476 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="title">Minecraft EasyServer</title>
-    <link href="/static/tailwind.min.css" rel="stylesheet">
-    <link href="/static/all.min.css" rel="stylesheet">
-    <script src="/static/i18n.js"></script>
+    <title data-i18n="nav.title">Minecraft 控制面板</title>
+    <link href="/assets/css/tailwind.min.css" rel="stylesheet">
+    <link href="/assets/css/all.min.css" rel="stylesheet">
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
         }
-        .card-hover {
-            transition: all 0.3s ease;
+        .sidebar-hidden {
+            transform: translateX(-100%);
         }
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .nav-item {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        .nav-item.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .nav-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .nav-submenu.open {
+            max-height: 300px;
+        }
+        .mobile-menu-overlay {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-menu-overlay.active {
+                display: block;
+            }
         }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <!-- 导航栏 -->
-    <nav class="gradient-bg text-white shadow-lg">
+    <!-- Top Navigation Bar -->
+    <nav class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-cube text-2xl"></i>
-                    <h1 class="text-xl font-bold" data-i18n="nav.title">Minecraft EasyServer</h1>
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <button id="sidebar-toggle" class="md:hidden p-2 hover:bg-blue-700 rounded">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="text-xl font-bold" data-i18n="nav.title">Minecraft 控制面板</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span id="server-status" class="px-3 py-1 rounded-full text-sm bg-red-500" data-i18n="nav.status.offline">离线</span>
-                    <button id="refresh-btn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm" data-i18n="nav.status">状态:</span>
+                        <span id="server-status" class="px-2 py-1 rounded text-xs font-medium bg-gray-500" data-i18n="nav.status.unknown">未知</span>
+                    </div>
+                    <div class="language-toggle">
+                        <button id="language-btn" class="p-2 hover:bg-blue-700 rounded text-sm font-medium transition duration-200">
+                            中
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-8">
-        <!-- 服务器控制面板 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8 card-hover">
-            <h2 class="text-2xl font-bold mb-4 flex items-center">
-                <i class="fas fa-server mr-3 text-blue-500"></i>
-                <span data-i18n="server.control.title">服务器控制</span>
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                    <i class="fas fa-play mr-2"></i><span data-i18n="server.control.start">启动服务器</span>
-                </button>
-                <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                    <i class="fas fa-stop mr-2"></i><span data-i18n="server.control.stop">停止服务器</span>
-                </button>
-                <button id="restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                    <i class="fas fa-redo mr-2"></i><span data-i18n="server.control.restart">重启服务器</span>
-                </button>
-            </div>
-        </div>
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar bg-white shadow-lg w-64 min-h-screen fixed md:relative z-20">
+            <div class="p-4">
+                <nav class="space-y-2">
+                    <!-- Dashboard -->
+                    <div class="nav-item p-3 rounded cursor-pointer active" data-section="dashboard">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-tachometer-alt w-5"></i>
+                            <span data-i18n="nav.menu.dashboard">仪表板</span>
+                        </div>
+                    </div>
 
-        <!-- 主要功能区域 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- 服务器配置 -->
-            <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-cog mr-3 text-purple-500"></i>
-                    <span data-i18n="config.title">服务器配置</span>
-                </h3>
-                <form id="config-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.server-name">服务器名称</label>
-                        <input type="text" id="server-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Dedicated Server">
+                    <!-- Server Menu -->
+                    <div class="nav-group">
+                        <div class="nav-item p-3 rounded cursor-pointer" data-toggle="server-menu">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-server w-5"></i>
+                                    <span data-i18n="nav.menu.server">服务器</span>
+                                </div>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                        </div>
+                        <div id="server-menu" class="nav-submenu ml-8 space-y-1">
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="server-control">
+                                <span data-i18n="nav.menu.server.control">服务器控制</span>
+                            </div>
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="server-config">
+                                <span data-i18n="nav.menu.server.config">服务器配置</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.gamemode">游戏模式</label>
-                        <select id="gamemode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="survival" data-i18n="config.gamemode.survival">生存模式</option>
-                            <option value="creative" data-i18n="config.gamemode.creative">创造模式</option>
-                            <option value="adventure" data-i18n="config.gamemode.adventure">冒险模式</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.difficulty">难度</label>
-                        <select id="difficulty" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="peaceful" data-i18n="config.difficulty.peaceful">和平</option>
-                            <option value="easy" data-i18n="config.difficulty.easy">简单</option>
-                            <option value="normal" data-i18n="config.difficulty.normal">普通</option>
-                            <option value="hard" data-i18n="config.difficulty.hard">困难</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.max-players">最大玩家数</label>
-                        <input type="number" id="max-players" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" max="100" value="10">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.server-port">服务器端口</label>
-                        <input type="number" id="server-port" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" max="65535" value="19132">
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="allow-cheats" class="mr-2">
-                        <label for="allow-cheats" class="text-sm font-medium text-gray-700" data-i18n="config.allow-cheats">允许作弊</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="allow-list" class="mr-2">
-                        <label for="allow-list" class="text-sm font-medium text-gray-700" data-i18n="config.allow-list">启用白名单</label>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300">
-                        <i class="fas fa-save mr-2"></i><span data-i18n="config.save">保存配置</span>
-                    </button>
-                </form>
-            </div>
 
-            <!-- 白名单管理 -->
-            <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-users mr-3 text-green-500"></i>
-                    <span data-i18n="allowlist.title">白名单管理</span>
-                </h3>
-                <div class="mb-4">
-                    <div class="flex space-x-2">
-                        <input type="text" id="new-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="allowlist.placeholder" placeholder="输入玩家名称">
-                        <button id="add-player-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
-                            <i class="fas fa-plus"></i>
-                        </button>
+                    <!-- Management Menu -->
+                    <div class="nav-group">
+                        <div class="nav-item p-3 rounded cursor-pointer" data-toggle="management-menu">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-cogs w-5"></i>
+                                    <span data-i18n="nav.menu.management">管理</span>
+                                </div>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                        </div>
+                        <div id="management-menu" class="nav-submenu ml-8 space-y-1">
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="allowlist">
+                                <span data-i18n="nav.menu.management.allowlist">白名单管理</span>
+                            </div>
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="permission">
+                                <span data-i18n="nav.menu.management.permission">权限管理</span>
+                            </div>
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="world">
+                                <span data-i18n="nav.menu.management.world">世界管理</span>
+                            </div>
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="resourcepack">
+                                <span data-i18n="nav.menu.management.resourcepack">资源包管理</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div id="allowlist-container" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- 白名单项目将在这里动态添加 -->
-                </div>
+                </nav>
             </div>
+        </aside>
 
-            <!-- 权限管理 -->
-            <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-shield-alt mr-3 text-orange-500"></i>
-                    <span data-i18n="permission.title">权限管理</span>
-                </h3>
-                <div class="mb-4">
-                    <div class="flex gap-2">
-                        <input type="text" id="permission-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="permission.placeholder" placeholder="输入玩家名称">
-                        <button id="add-permission-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
-                            <i class="fas fa-plus mr-1"></i><span data-i18n="permission.add">添加权限</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="permissions-container" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- 权限项目将在这里动态添加 -->
-                </div>
-            </div>
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-overlay" class="mobile-menu-overlay fixed inset-0 bg-black bg-opacity-50 z-10"></div>
 
-            <!-- 世界管理 -->
-            <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-globe mr-3 text-indigo-500"></i>
-                    <span data-i18n="world.title">世界管理</span>
-                </h3>
-                <div class="mb-4">
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                        <input type="file" id="world-upload" accept=".zip,.mcworld" class="hidden">
-                        <button id="upload-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-300">
-                            <i class="fas fa-upload mr-2"></i><span data-i18n="world.upload">上传世界文件</span>
-                        </button>
-                        <p class="text-sm text-gray-500 mt-2" data-i18n="world.upload.desc">支持 .zip 和 .mcworld 格式，自动解压并删除压缩包</p>
-                        <p class="text-xs text-gray-400 mt-1" data-i18n="world.upload.note">上传后将自动解压到世界目录，原压缩文件会被删除</p>
-                    </div>
-                </div>
-                <div id="worlds-container" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- 世界项目将在这里动态添加 -->
-                </div>
-            </div>
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:ml-0">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="nav.menu.dashboard">仪表板</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Server Status Card -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                    <i class="fas fa-server text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">服务器状态</p>
+                                    <p id="dashboard-status" class="text-lg font-semibold text-gray-900">未知</p>
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- 资源包管理 -->
-            <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-cube mr-3 text-pink-500"></i>
-                    <span data-i18n="resourcepack.title">资源包管理</span>
-                </h3>
-                <div class="mb-4">
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                        <input type="file" id="resourcepack-upload" accept=".zip,.mcpack" class="hidden">
-                        <button id="resourcepack-upload-btn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md transition duration-300">
-                            <i class="fas fa-upload mr-2"></i><span data-i18n="resourcepack.upload">上传资源包</span>
-                        </button>
-                        <p class="text-sm text-gray-500 mt-2" data-i18n="resourcepack.upload.desc">支持 .zip 和 .mcpack 格式，自动解压并读取配置</p>
-                        <p class="text-xs text-gray-400 mt-1" data-i18n="resourcepack.upload.note">上传后将自动解压到资源包目录，原压缩文件会被删除</p>
+                        <!-- Quick Actions -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.quick-actions.title">快速操作</h3>
+                            <div class="space-y-2">
+                                <button class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm" onclick="startServer()">
+                                    <i class="fas fa-play mr-2"></i><span data-i18n="dashboard.quick-actions.start">启动服务器</span>
+                                </button>
+                                <button class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm" onclick="stopServer()">
+                                    <i class="fas fa-stop mr-2"></i><span data-i18n="dashboard.quick-actions.stop">停止服务器</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="bg-white rounded-lg shadow p-6 md:col-span-2">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.recent-activity.title">最近活动</h3>
+                            <div id="recent-activity" class="space-y-2 text-sm text-gray-600">
+                                <p data-i18n="dashboard.recent-activity.empty">暂无活动记录</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="resourcepacks-container" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- 资源包项目将在这里动态添加 -->
+            </section>
+
+            <!-- Server Control Section -->
+            <section id="server-control" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="server.control.title">服务器控制</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300">
+                                <i class="fas fa-play mr-2"></i><span data-i18n="server.control.start">启动服务器</span>
+                            </button>
+                            <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
+                                <i class="fas fa-stop mr-2"></i><span data-i18n="server.control.stop">停止服务器</span>
+                            </button>
+                            <button id="restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg transition duration-300">
+                                <i class="fas fa-redo mr-2"></i><span data-i18n="server.control.restart">重启服务器</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            <!-- Server Config Section -->
+            <section id="server-config" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="config.title">服务器配置</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+
+                        <form id="config-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.server-name">服务器名称</label>
+                                <input type="text" id="server-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Dedicated Server">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.gamemode">游戏模式</label>
+                                <select id="gamemode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="survival" data-i18n="config.gamemode.survival">生存模式</option>
+                                    <option value="creative" data-i18n="config.gamemode.creative">创造模式</option>
+                                    <option value="adventure" data-i18n="config.gamemode.adventure">冒险模式</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.difficulty">难度</label>
+                                <select id="difficulty" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="peaceful" data-i18n="config.difficulty.peaceful">和平</option>
+                                    <option value="easy" data-i18n="config.difficulty.easy">简单</option>
+                                    <option value="normal" data-i18n="config.difficulty.normal">普通</option>
+                                    <option value="hard" data-i18n="config.difficulty.hard">困难</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.max-players">最大玩家数</label>
+                                <input type="number" id="max-players" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" max="100" value="10">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="config.server-port">服务器端口</label>
+                                <input type="number" id="server-port" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" max="65535" value="19132">
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="allow-cheats" class="mr-2">
+                                <label for="allow-cheats" class="text-sm font-medium text-gray-700" data-i18n="config.allow-cheats">允许作弊</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="allow-list" class="mr-2">
+                                <label for="allow-list" class="text-sm font-medium text-gray-700" data-i18n="config.allow-list">启用白名单</label>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300">
+                                <i class="fas fa-save mr-2"></i><span data-i18n="config.save">保存配置</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Allowlist Section -->
+            <section id="allowlist" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="allowlist.title">白名单管理</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+
+
+                        <div class="mb-4">
+                            <div class="flex space-x-2">
+                                <input type="text" id="new-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="allowlist.placeholder" placeholder="输入玩家名称">
+                                <button id="add-player-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="allowlist-container" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- 白名单项目将在这里动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Permission Section -->
+            <section id="permission" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="permission.title">权限管理</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+
+
+                        <div class="mb-4">
+                            <div class="flex gap-2">
+                                <input type="text" id="permission-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="permission.placeholder" placeholder="输入玩家名称">
+                                <button id="add-permission-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
+                                    <i class="fas fa-plus mr-1"></i><span data-i18n="permission.add">添加权限</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="permissions-container" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- 权限项目将在这里动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- World Section -->
+            <section id="world" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="world.title">世界管理</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+
+
+                        <div class="mb-4">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                <input type="file" id="world-upload" accept=".zip,.mcworld" class="hidden">
+                                <button id="upload-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-300">
+                                    <i class="fas fa-upload mr-2"></i><span data-i18n="world.upload">上传世界文件</span>
+                                </button>
+                                <p class="text-sm text-gray-500 mt-2" data-i18n="world.upload.desc">支持 .zip 和 .mcworld 格式，自动解压并删除压缩包</p>
+                                <p class="text-xs text-gray-400 mt-1" data-i18n="world.upload.note">上传后将自动解压到世界目录，原压缩文件会被删除</p>
+                            </div>
+                        </div>
+                        <div id="worlds-container" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- 世界项目将在这里动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resource Pack Section -->
+            <section id="resourcepack" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="resourcepack.title">资源包管理</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+
+
+                        <div class="mb-4">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                <input type="file" id="resourcepack-upload" accept=".zip,.mcpack" class="hidden">
+                                <button id="resourcepack-upload-btn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md transition duration-300">
+                                    <i class="fas fa-upload mr-2"></i><span data-i18n="resourcepack.upload">上传资源包</span>
+                                </button>
+                                <p class="text-sm text-gray-500 mt-2" data-i18n="resourcepack.upload.desc">支持 .zip 和 .mcpack 格式，自动解压并读取配置</p>
+                                <p class="text-xs text-gray-400 mt-1" data-i18n="resourcepack.upload.note">上传后将自动解压到资源包目录，原压缩文件会被删除</p>
+                            </div>
+                        </div>
+                        <div id="resourcepacks-container" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- 资源包项目将在这里动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- 消息提示 -->
-    <div id="toast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300">
+    <!-- Toast Notifications -->
+    <div id="toast" class="fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-x-full z-50">
         <span id="toast-message"></span>
     </div>
 
-    <!-- 权限选择弹窗 -->
-    <div id="permission-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg p-6 w-96 max-w-90vw">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold" data-i18n="permission.modal.title">选择权限级别</h3>
-                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mb-4">
-                <p class="text-sm text-gray-600 mb-3">
-                    <span data-i18n="permission.modal.description">为玩家</span> 
-                    <span id="modal-player-name" class="font-medium"></span> 
-                    <span data-i18n="permission.modal.description2">选择权限级别：</span>
-                </p>
-                <div class="space-y-3">
-                    <button class="permission-option w-full text-left p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200" data-level="visitor">
-                        <div class="flex items-center">
-                            <i class="fas fa-eye text-gray-500 mr-3"></i>
-                            <div>
-                                <div class="font-medium" data-i18n="permission.level.visitor">访客</div>
-                                <div class="text-sm text-gray-500" data-i18n="permission.level.visitor.desc">只能查看，无法修改</div>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="permission-option w-full text-left p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200" data-level="member">
-                        <div class="flex items-center">
-                            <i class="fas fa-user text-blue-500 mr-3"></i>
-                            <div>
-                                <div class="font-medium" data-i18n="permission.level.member">成员</div>
-                                <div class="text-sm text-gray-500" data-i18n="permission.level.member.desc">可以进行基本操作</div>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="permission-option w-full text-left p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200" data-level="operator">
-                        <div class="flex items-center">
-                            <i class="fas fa-crown text-red-500 mr-3"></i>
-                            <div>
-                                <div class="font-medium" data-i18n="permission.level.operator">管理员</div>
-                                <div class="text-sm text-gray-500" data-i18n="permission.level.operator.desc">拥有完全管理权限</div>
-                            </div>
-                        </div>
-                    </button>
+    <!-- Message Notifications -->
+    <div id="message-container" class="fixed top-20 right-4 z-50 space-y-2">
+        <!-- Messages will be dynamically added here -->
+    </div>
+
+    <!-- Permission Selection Modal -->
+    <div id="permission-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold mb-4" data-i18n="permission.modal.title">选择权限级别</h3>
+            <p class="text-gray-600 mb-4">
+                <span data-i18n="permission.modal.description">为玩家</span>
+                <span id="modal-player-name" class="font-semibold"></span>
+                <span data-i18n="permission.modal.description2">选择权限级别：</span>
+            </p>
+            <div class="space-y-3">
+                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-level="visitor">
+                    <div class="font-semibold" data-i18n="permission.level.visitor">访客</div>
+                    <div class="text-sm text-gray-600" data-i18n="permission.level.visitor.desc">只能查看，无法修改</div>
+                </div>
+                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-level="member">
+                    <div class="font-semibold" data-i18n="permission.level.member">成员</div>
+                    <div class="text-sm text-gray-600" data-i18n="permission.level.member.desc">可以进行基本操作</div>
+                </div>
+                <div class="permission-option border rounded-lg p-3 cursor-pointer hover:bg-blue-50" data-level="operator">
+                    <div class="font-semibold" data-i18n="permission.level.operator">管理员</div>
+                    <div class="text-sm text-gray-600" data-i18n="permission.level.operator.desc">拥有完全管理权限</div>
                 </div>
             </div>
-            <div class="flex justify-end gap-2">
-                <button id="cancel-modal-btn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200" data-i18n="permission.modal.cancel">
-                    取消
-                </button>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button id="cancel-modal-btn" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded" data-i18n="permission.modal.cancel">取消</button>
+                <button id="close-modal-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" disabled>确认</button>
             </div>
         </div>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script src="/assets/js/i18n.js"></script>
+    <script src="/assets/js/app.js"></script>
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle for mobile
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('sidebar-hidden');
+                mobileOverlay.classList.toggle('active');
+            });
+
+            mobileOverlay.addEventListener('click', function() {
+                sidebar.classList.add('sidebar-hidden');
+                mobileOverlay.classList.remove('active');
+            });
+
+            // Navigation menu functionality
+            const navItems = document.querySelectorAll('[data-section]');
+            const contentSections = document.querySelectorAll('.content-section');
+            const submenuToggles = document.querySelectorAll('[data-toggle]');
+
+            // Handle section navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    
+                    // Remove active class from all nav items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Hide all content sections
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Show target section
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+
+                    // Close mobile menu
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('sidebar-hidden');
+                        mobileOverlay.classList.remove('active');
+                    }
+                });
+            });
+
+            // Handle submenu toggles
+            submenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const menuId = this.getAttribute('data-toggle');
+                    const submenu = document.getElementById(menuId);
+                    const chevron = this.querySelector('.fas.fa-chevron-down');
+                    
+                    if (submenu) {
+                        submenu.classList.toggle('open');
+                        chevron.style.transform = submenu.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                    }
+                });
+            });
+
+            // Update dashboard status
+            function updateDashboardStatus() {
+                const serverStatus = document.getElementById('server-status');
+                const dashboardStatus = document.getElementById('dashboard-status');
+                
+                if (serverStatus && dashboardStatus) {
+                    dashboardStatus.textContent = serverStatus.textContent;
+                }
+            }
+
+            // Call update function initially and set interval
+            updateDashboardStatus();
+            setInterval(updateDashboardStatus, 1000);
+        });
+    </script>
 </body>
 </html>
