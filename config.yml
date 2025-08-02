@@ -8,7 +8,7 @@ logging:
 server:
   debug: false
   host: localhost
-  port: 8081
+  port: 8080
 web:
   static_dir: ./web/assets
   template_file: ./web/index.html

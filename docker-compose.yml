@@ -1,0 +1,29 @@
+services:
+  minecraft-easyserver:
+    build: .
+    container_name: minecraft-easyserver
+    ports:
+      - "8080:8080"     # Web management panel
+      - "19132:19132/udp" # Minecraft Bedrock server
+      - "19133:19133/udp" # Minecraft Bedrock server IPv6
+    volumes:
+      - ./data:/data/bedrock-server  # Persistent data storage
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - minecraft-network
+
+networks:
+  minecraft-network:
+    driver: bridge
+
+volumes:
+  minecraft-data:
+    driver: local

@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Build artifacts
+minecraft-server-manager*
+build.sh
+
+# Development files
+.vscode/
+.idea/
+*.log
+
+# Test files
+*_test.go
+
+# Bedrock server files (will be downloaded at runtime)
+bedrock-server/
+!bedrock-server/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
