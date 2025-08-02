@@ -83,32 +83,48 @@
 
 ### Docker 部署
 
-1. **使用 Docker Compose（推荐）**：
+1. **直接使用 Docker（推荐）**：
    ```bash
-   # 克隆仓库
-   git clone https://github.com/ckfanzhe/bedrock-easy-server.git
-   cd minecraft-easy-server
-   
    # 创建数据目录用于持久化存储
    mkdir -p data
    
-   # 使用 Docker Compose 启动
-   docker-compose up -d
-   ```
-
-2. **直接使用 Docker**：
-   ```bash
-   # 构建镜像
-   docker build -t minecraft-easyserver .
-   
-   # 运行容器
+   # 使用已发布的镜像运行容器
    docker run -d \
      --name minecraft-easyserver \
      -p 8080:8080 \
      -p 19132:19132/udp \
      -p 19133:19133/udp \
      -v ./data:/data/bedrock-server \
-     minecraft-easyserver
+     ifanzhe/minecraft-easyserver:latest
+   ```
+
+2. **使用 Docker Compose**：
+   ```bash
+   # 创建 docker-compose.yml 文件
+   cat > docker-compose.yml << EOF
+   version: '3.8'
+   services:
+     minecraft-server-manager:
+       image: ifanzhe/minecraft-easyserver:latest
+       container_name: minecraft-easyserver
+       ports:
+         - "8080:8080"
+         - "19132:19132/udp"
+         - "19133:19133/udp"
+       volumes:
+         - ./data:/data/bedrock-server
+       environment:
+         - TZ=Asia/Shanghai
+       restart: unless-stopped
+       healthcheck:
+         test: ["CMD", "curl", "-f", "http://localhost:8080"]
+         interval: 30s
+         timeout: 10s
+         retries: 3
+   EOF
+   
+   # 使用 Docker Compose 启动
+   docker-compose up -d
    ```
 
 3. **访问应用程序**：
@@ -142,7 +158,7 @@
    # Linux 系统
    ./minecraft-server-manager-linux
    
-   # Windows 系统
+   # Windows 系统双击运行
    minecraft-server-manager-windows.exe
    ```
 

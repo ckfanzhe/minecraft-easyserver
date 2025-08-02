@@ -85,32 +85,48 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 
 ### Docker Deployment
 
-1. **Using Docker Compose (Recommended)**:
+1. **Using Docker directly (Recommended)**:
    ```bash
-   # Clone the repository
-   git clone https://github.com/ckfanzhe/bedrock-easy-server.git
-   cd minecraft-easy-server
-   
    # Create data directory for persistent storage
    mkdir -p data
    
-   # Start with Docker Compose
-   docker-compose up -d
-   ```
-
-2. **Using Docker directly**:
-   ```bash
-   # Build the image
-   docker build -t minecraft-easyserver .
-   
-   # Run the container
+   # Run the container using the published image
    docker run -d \
      --name minecraft-easyserver \
      -p 8080:8080 \
      -p 19132:19132/udp \
      -p 19133:19133/udp \
      -v ./data:/data/bedrock-server \
-     minecraft-easyserver
+     ifanzhe/minecraft-easyserver:latest
+   ```
+
+2. **Using Docker Compose**:
+   ```bash
+   # Create docker-compose.yml file
+   cat > docker-compose.yml << EOF
+   version: '3.8'
+   services:
+     minecraft-server-manager:
+       image: ifanzhe/minecraft-easyserver:latest
+       container_name: minecraft-easyserver
+       ports:
+         - "8080:8080"
+         - "19132:19132/udp"
+         - "19133:19133/udp"
+       volumes:
+         - ./data:/data/bedrock-server
+       environment:
+         - TZ=Asia/Shanghai
+       restart: unless-stopped
+       healthcheck:
+         test: ["CMD", "curl", "-f", "http://localhost:8080"]
+         interval: 30s
+         timeout: 10s
+         retries: 3
+   EOF
+   
+   # Start with Docker Compose
+   docker-compose up -d
    ```
 
 3. **Access the application**:
@@ -144,7 +160,7 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
    # For Linux
    ./minecraft-server-manager-linux
    
-   # For Windows
+   # For Windows double-click to run
    minecraft-server-manager-windows.exe
    ```
 
