@@ -59,7 +59,7 @@
 - **操作系统**: Windows 10+ 或 Ubuntu 18.04+ (Linux)
 - **内存**: 至少 2GB RAM
 - **存储**: 至少 10GB 可用空间
-- **网络**: 开放端口 8081（管理面板）和 19132（Minecraft 服务器）
+- **网络**: 开放端口 8080（管理面板）和 19132（Minecraft 服务器）
 
 ## 🛠️ 安装指南
 
@@ -73,13 +73,47 @@
 
 2. **运行应用程序**：
    ```bash
-   # Linux 系统
+   # Linux/macOS 系统
    chmod +x minecraft-server-manager-linux
    ./minecraft-server-manager-linux
    
    # Windows 系统
    minecraft-server-manager-windows.exe
    ```
+
+### Docker 部署
+
+1. **使用 Docker Compose（推荐）**：
+   ```bash
+   # 克隆仓库
+   git clone https://github.com/ckfanzhe/bedrock-easy-server.git
+   cd minecraft-easy-server
+   
+   # 创建数据目录用于持久化存储
+   mkdir -p data
+   
+   # 使用 Docker Compose 启动
+   docker-compose up -d
+   ```
+
+2. **直接使用 Docker**：
+   ```bash
+   # 构建镜像
+   docker build -t minecraft-easyserver .
+   
+   # 运行容器
+   docker run -d \
+     --name minecraft-easyserver \
+     -p 8080:8080 \
+     -p 19132:19132/udp \
+     -p 19133:19133/udp \
+     -v ./data:/data/bedrock-server \
+     minecraft-easyserver
+   ```
+
+3. **访问应用程序**：
+   - 打开浏览器访问：`http://localhost:8080`
+   - 服务器数据将持久化保存在 `./data` 目录中
 
 ### 从源码构建（开发者）
 
@@ -113,12 +147,12 @@
    ```
 
 2. **访问管理界面**：
-   - 打开浏览器访问：`http://localhost:8081`
+   - 打开浏览器访问：`http://localhost:8080`
    - 管理面板将自动加载
 
 ### 防火墙配置
 确保以下端口在防火墙中开放：
-- **8081**: 管理面板访问端口
+- **8080**: 管理面板访问端口
 - **19132**: Minecraft Bedrock 服务器默认端口
 - **19133**: Minecraft Bedrock 服务器 IPv6 端口
 
@@ -134,7 +168,7 @@
 - 🔄 世界自动备份功能
 - ✅ 多语言界面支持
 - 🔄 Java服务器支持 - 支持Minecraft Java Edition服务器
-- 🔄 Docker支持 - 容器化部署支持
+- ✅ Docker支持 - 容器化部署支持
 
 ## 🤝 贡献指南
 

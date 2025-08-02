@@ -62,7 +62,7 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Operating System**: Windows 10+ or Ubuntu 18.04+ (Linux)
 - **Memory**: At least 2GB RAM
 - **Storage**: At least 10GB available space
-- **Network**: Open ports 8081 (management panel) and 19132 (Minecraft server)
+- **Network**: Open ports 8080 (management panel) and 19132 (Minecraft server)
 
 ## 🛠️ Installation Guide
 
@@ -82,6 +82,40 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
    # For Windows
    minecraft-server-manager-windows.exe
    ```
+
+### Docker Deployment
+
+1. **Using Docker Compose (Recommended)**:
+   ```bash
+   # Clone the repository
+   git clone https://github.com/ckfanzhe/bedrock-easy-server.git
+   cd minecraft-easy-server
+   
+   # Create data directory for persistent storage
+   mkdir -p data
+   
+   # Start with Docker Compose
+   docker-compose up -d
+   ```
+
+2. **Using Docker directly**:
+   ```bash
+   # Build the image
+   docker build -t minecraft-easyserver .
+   
+   # Run the container
+   docker run -d \
+     --name minecraft-easyserver \
+     -p 8080:8080 \
+     -p 19132:19132/udp \
+     -p 19133:19133/udp \
+     -v ./data:/data/bedrock-server \
+     minecraft-easyserver
+   ```
+
+3. **Access the application**:
+   - Open browser and visit: `http://localhost:8080`
+   - Server data will be persisted in the `./data` directory
 
 ### Build from Source (For Developers)
 
@@ -115,22 +149,22 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
    ```
 
 2. **Access Management Interface**:
-   - Open browser and visit: `http://localhost:8081`
+   - Open browser and visit: `http://localhost:8080`
    - The management panel will load automatically
 
 ## 🔥 Firewall Configuration
 
 ### Windows Firewall
 ```powershell
-# Allow management panel port (8081)
-netsh advfirewall firewall add rule name="Minecraft Management Panel" dir=in action=allow protocol=TCP localport=8081
+# Allow management panel port (8080)
+netsh advfirewall firewall add rule name="Minecraft Management Panel" dir=in action=allow protocol=TCP localport=8080
 
 # Allow Minecraft server port (19132)
 netsh advfirewall firewall add rule name="Minecraft Bedrock Server" dir=in action=allow protocol=UDP localport=19132
 ```
 
 Ensure the following ports are open in the firewall:
-- **8081**: Management panel access port
+- **8080**: Management panel access port
 - **19132**: Minecraft Bedrock server default port
 - **19133**: Minecraft Bedrock server IPv6 port
 
@@ -146,7 +180,7 @@ Ensure the following ports are open in the firewall:
 - 🔄 Automatic world backup functionality
 - ✅ Multi-language interface support
 - 🔄 Java Server Support - Support for Minecraft Java Edition servers
-- 🔄 Docker Support - Containerized deployment support
+- ✅ Docker Support - Containerized deployment support
 
 ## 🤝 Contributing
 
