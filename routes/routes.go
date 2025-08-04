@@ -16,6 +16,9 @@ func SetupRoutes(r *gin.Engine) {
 	worldHandler := handlers.NewWorldHandler()
 	resourcePackHandler := handlers.NewResourcePackHandler()
 	serverVersionHandler := handlers.NewServerVersionHandler()
+	logHandler := handlers.NewLogHandler()
+	interactionHandler := handlers.NewInteractionHandler()
+	commandHandler := handlers.NewCommandHandler()
 
 	// API routes
 	api := r.Group("/api")
@@ -40,6 +43,15 @@ func SetupRoutes(r *gin.Engine) {
 		
 		// Server version routes
 		setupServerVersionRoutes(api, serverVersionHandler)
+		
+		// Log routes
+		setupLogRoutes(api, logHandler)
+		
+		// Interaction routes
+		setupInteractionRoutes(api, interactionHandler)
+		
+		// Command routes
+		setupCommandRoutes(api, commandHandler)
 	}
 }
 
@@ -95,4 +107,28 @@ func setupServerVersionRoutes(api *gin.RouterGroup, handler *handlers.ServerVers
 	api.GET("/server-versions/:version/progress", handler.GetDownloadProgress)
 	api.PUT("/server-versions/:version/activate", handler.ActivateVersion)
 	api.POST("/server-versions/update-config", handler.UpdateVersionConfig)
+}
+
+// setupLogRoutes sets up log routes
+func setupLogRoutes(api *gin.RouterGroup, handler *handlers.LogHandler) {
+	api.GET("/logs", handler.GetLogs)
+	api.DELETE("/logs", handler.ClearLogs)
+	api.GET("/logs/ws", handler.HandleWebSocket)
+}
+
+// setupInteractionRoutes sets up interaction routes
+func setupInteractionRoutes(api *gin.RouterGroup, handler *handlers.InteractionHandler) {
+	api.GET("/interaction/status", handler.GetStatus)
+	api.POST("/interaction/command", handler.SendCommand)
+	api.GET("/interaction/history", handler.GetCommandHistory)
+	api.DELETE("/interaction/history", handler.ClearHistory)
+}
+
+// setupCommandRoutes sets up command routes
+func setupCommandRoutes(api *gin.RouterGroup, handler *handlers.CommandHandler) {
+	api.GET("/commands", handler.GetQuickCommands)
+	api.GET("/commands/categories", handler.GetCategories)
+	api.POST("/commands/:id/execute", handler.ExecuteQuickCommand)
+	api.POST("/commands", handler.AddQuickCommand)
+	api.DELETE("/commands/:id", handler.RemoveQuickCommand)
 }

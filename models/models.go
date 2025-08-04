@@ -123,3 +123,33 @@ type DownloadProgress struct {
 	TotalBytes  int64   `json:"total_bytes"`
 	DownloadedBytes int64 `json:"downloaded_bytes"`
 }
+
+// ServerLogEntry server log entry
+type ServerLogEntry struct {
+	Timestamp string `json:"timestamp"`
+	Level     string `json:"level"`
+	Message   string `json:"message"`
+}
+
+// ServerCommand server command structure
+type ServerCommand struct {
+	Command   string `json:"command"`
+	Timestamp string `json:"timestamp"`
+}
+
+// ServerCommandResponse server command response
+type ServerCommandResponse struct {
+	Command   string `json:"command"`
+	Response  string `json:"response"`
+	Timestamp string `json:"timestamp"`
+	Success   bool   `json:"success"`
+}
+
+// QuickCommand quick command structure
+type QuickCommand struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Command     string `json:"command"`
+	Category    string `json:"category"`
+}
