@@ -43,10 +43,6 @@ class I18n {
                 
                 // Dashboard
                 'dashboard.title': '仪表板',
-                'dashboard.status.title': '服务器状态',
-                'dashboard.quick-actions.title': '快速操作',
-                'dashboard.quick-actions.start': '启动服务器',
-                'dashboard.quick-actions.stop': '停止服务器',
                 'dashboard.recent-activity.title': '最近活动',
                 'dashboard.recent-activity.empty': '暂无活动记录',
                 
@@ -181,10 +177,6 @@ class I18n {
                 
                 // Dashboard
                 'dashboard.title': 'Dashboard',
-                'dashboard.status.title': 'Server Status',
-                'dashboard.quick-actions.title': 'Quick Actions',
-                'dashboard.quick-actions.start': 'Start Server',
-                'dashboard.quick-actions.stop': 'Stop Server',
                 'dashboard.recent-activity.title': 'Recent Activity',
                 'dashboard.recent-activity.empty': 'No recent activity',
                 
