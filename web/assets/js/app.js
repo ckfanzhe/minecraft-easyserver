@@ -7,6 +7,9 @@ const elements = {
     startBtn: document.getElementById('start-btn'),
     stopBtn: document.getElementById('stop-btn'),
     restartBtn: document.getElementById('restart-btn'),
+    navStartBtn: document.getElementById('nav-start-btn'),
+    navStopBtn: document.getElementById('nav-stop-btn'),
+    navRestartBtn: document.getElementById('nav-restart-btn'),
     refreshBtn: document.getElementById('refresh-btn'),
     configForm: document.getElementById('config-form'),
     newPlayerInput: document.getElementById('new-player'),
@@ -58,6 +61,11 @@ function bindEvents() {
     if (elements.startBtn) elements.startBtn.addEventListener('click', () => controlServer('start'));
     if (elements.stopBtn) elements.stopBtn.addEventListener('click', () => controlServer('stop'));
     if (elements.restartBtn) elements.restartBtn.addEventListener('click', () => controlServer('restart'));
+    
+    // Navigation server control buttons
+    if (elements.navStartBtn) elements.navStartBtn.addEventListener('click', () => controlServer('start'));
+    if (elements.navStopBtn) elements.navStopBtn.addEventListener('click', () => controlServer('stop'));
+    if (elements.navRestartBtn) elements.navRestartBtn.addEventListener('click', () => controlServer('restart'));
     if (elements.refreshBtn) elements.refreshBtn.addEventListener('click', initializeApp);
 
     // Configuration form
@@ -283,7 +291,7 @@ async function addToAllowlist() {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('allowlist.error.empty-name') : 
-            'Please enter player name';
+            'Please enter player xuid';
         showToast(errorMessage, 'error');
         return;
     }
@@ -349,7 +357,7 @@ function showPermissionModal() {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('permission.error.empty-name') : 
-            'Please enter player name';
+            'Please enter player xuid';
         showToast(errorMessage, 'error');
         return;
     }
@@ -370,7 +378,7 @@ async function setPlayerPermission(level) {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('permission.error.empty-name') : 
-            'Please enter player name';
+            'Please enter player xuid';
         showToast(errorMessage, 'error');
         return;
     }
@@ -452,7 +460,7 @@ function createPlayerElement(playerName, type) {
     const div = document.createElement('div');
     div.className = 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded';
     
-    // Escape special characters in player name
+    // Escape special characters in player xuid
     const escapedName = playerName.replace(/'/g, "\\'").replace(/"/g, '\\"');
     
     div.innerHTML = `

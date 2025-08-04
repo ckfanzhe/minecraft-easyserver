@@ -43,10 +43,6 @@ class I18n {
                 
                 // Dashboard
                 'dashboard.title': '仪表板',
-                'dashboard.status.title': '服务器状态',
-                'dashboard.quick-actions.title': '快速操作',
-                'dashboard.quick-actions.start': '启动服务器',
-                'dashboard.quick-actions.stop': '停止服务器',
                 'dashboard.recent-activity.title': '最近活动',
                 'dashboard.recent-activity.empty': '暂无活动记录',
                 
@@ -76,18 +72,18 @@ class I18n {
                 
                 // Allowlist Management
                 'allowlist.title': '白名单管理',
-                'allowlist.placeholder': '输入玩家名称',
+                'allowlist.placeholder': '输入玩家xuid',
                 'allowlist.add': '添加',
                 'allowlist.remove': '移除',
                 'allowlist.empty': '暂无白名单用户',
-                'allowlist.error.empty-name': '请输入玩家名称',
+                'allowlist.error.empty-name': '请输入玩家xuid',
                 
                 // Permission Management
                 'permission.title': '权限管理',
-                'permission.placeholder': '输入玩家名称',
+                'permission.placeholder': '输入玩家xuid',
                 'permission.add': '添加权限',
                 'permission.empty': '暂无权限设置',
-                'permission.error.empty-name': '请输入玩家名称',
+                'permission.error.empty-name': '请输入玩家xuid',
                 'permission.modal.title': '选择权限级别',
                 'permission.modal.description': '为玩家',
                 'permission.modal.description2': '选择权限级别：',
@@ -181,10 +177,6 @@ class I18n {
                 
                 // Dashboard
                 'dashboard.title': 'Dashboard',
-                'dashboard.status.title': 'Server Status',
-                'dashboard.quick-actions.title': 'Quick Actions',
-                'dashboard.quick-actions.start': 'Start Server',
-                'dashboard.quick-actions.stop': 'Stop Server',
                 'dashboard.recent-activity.title': 'Recent Activity',
                 'dashboard.recent-activity.empty': 'No recent activity',
                 
@@ -214,18 +206,18 @@ class I18n {
                 
                 // Allowlist Management
                 'allowlist.title': 'Allowlist Management',
-                'allowlist.placeholder': 'Enter player name',
+                'allowlist.placeholder': 'Enter player xuid',
                 'allowlist.add': 'Add',
                 'allowlist.remove': 'Remove',
                 'allowlist.empty': 'No allowlist users',
-                'allowlist.error.empty-name': 'Please enter player name',
+                'allowlist.error.empty-name': 'Please enter player xuid',
                 
                 // Permission Management
                 'permission.title': 'Permission Management',
-                'permission.placeholder': 'Enter player name',
+                'permission.placeholder': 'Enter player xuid',
                 'permission.add': 'Add Permission',
                 'permission.empty': 'No permission settings',
-                'permission.error.empty-name': 'Please enter player name',
+                'permission.error.empty-name': 'Please enter player xuid',
                 'permission.modal.title': 'Select Permission Level',
                 'permission.modal.description': 'For player',
                 'permission.modal.description2': 'select permission level:',

@@ -53,8 +53,8 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Resource Deletion** Safe deletion of unwanted resource packs
 
 ## 👀 Management Panel Preview
-![Management Panel Preview](docs/resources/screenshot-en-home.png)
-![Server Download Panel Preview](docs/resources/screenshot-en-download.png)
+![Management Panel Preview](docs/resources/screenshot-en-manage.png)
+![Server Download Panel Preview](docs/resources/screenshot-en-version.png)
 
 ## 📋 System Requirements
 

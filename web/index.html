@@ -64,6 +64,18 @@
                     <div class="flex items-center space-x-2">
                         <span id="server-status" class="px-2 py-1 rounded text-xs font-medium bg-gray-500" data-i18n="nav.status.unknown">未知</span>
                     </div>
+                    <!-- Server Control Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <button id="nav-start-btn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="启动服务器">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="nav-stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="停止服务器">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <button id="nav-restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="重启服务器">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
                     <div class="language-toggle">
                         <button id="language-btn" class="p-2 hover:bg-blue-700 rounded text-sm font-medium transition duration-200">
                             中
@@ -99,9 +111,6 @@
                             </div>
                         </div>
                         <div id="server-menu" class="nav-submenu ml-8 space-y-1">
-                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="server-control">
-                                <span data-i18n="nav.menu.server.control">服务器控制</span>
-                            </div>
                             <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="server-config">
                                 <span data-i18n="nav.menu.server.config">服务器配置</span>
                             </div>
@@ -150,35 +159,9 @@
             <section id="dashboard" class="content-section active">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="nav.menu.dashboard">仪表板</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Server Status Card -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                                    <i class="fas fa-server text-xl"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">服务器状态</p>
-                                    <p id="dashboard-status" class="text-lg font-semibold text-gray-900">未知</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quick Actions -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.quick-actions.title">快速操作</h3>
-                            <div class="space-y-2">
-                                <button class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm" onclick="startServer()">
-                                    <i class="fas fa-play mr-2"></i><span data-i18n="dashboard.quick-actions.start">启动服务器</span>
-                                </button>
-                                <button class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm" onclick="stopServer()">
-                                    <i class="fas fa-stop mr-2"></i><span data-i18n="dashboard.quick-actions.stop">停止服务器</span>
-                                </button>
-                            </div>
-                        </div>
-
+                    <div class="grid grid-cols-1 gap-6">
                         <!-- Recent Activity -->
-                        <div class="bg-white rounded-lg shadow p-6 md:col-span-2">
+                        <div class="bg-white rounded-lg shadow p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.recent-activity.title">最近活动</h3>
                             <div id="recent-activity" class="space-y-2 text-sm text-gray-600">
                                 <p data-i18n="dashboard.recent-activity.empty">暂无活动记录</p>
@@ -188,25 +171,7 @@
                 </div>
             </section>
 
-            <!-- Server Control Section -->
-            <section id="server-control" class="content-section">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="server.control.title">服务器控制</h2>
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                                <i class="fas fa-play mr-2"></i><span data-i18n="server.control.start">启动服务器</span>
-                            </button>
-                            <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                                <i class="fas fa-stop mr-2"></i><span data-i18n="server.control.stop">停止服务器</span>
-                            </button>
-                            <button id="restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                                <i class="fas fa-redo mr-2"></i><span data-i18n="server.control.restart">重启服务器</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+
 
             <!-- Server Config Section -->
             <section id="server-config" class="content-section">
@@ -269,7 +234,7 @@
 
                         <div class="mb-4">
                             <div class="flex space-x-2">
-                                <input type="text" id="new-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="allowlist.placeholder" placeholder="输入玩家名称">
+                                <input type="text" id="new-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="allowlist.placeholder" placeholder="输入玩家xuid">
                                 <button id="add-player-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
                                     <i class="fas fa-plus"></i>
                                 </button>
@@ -291,7 +256,7 @@
 
                         <div class="mb-4">
                             <div class="flex gap-2">
-                                <input type="text" id="permission-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="permission.placeholder" placeholder="输入玩家名称">
+                                <input type="text" id="permission-player" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-i18n-placeholder="permission.placeholder" placeholder="输入玩家xuid">
                                 <button id="add-permission-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300">
                                     <i class="fas fa-plus mr-1"></i><span data-i18n="permission.add">添加权限</span>
                                 </button>
@@ -488,19 +453,7 @@
                 });
             });
 
-            // Update dashboard status
-            function updateDashboardStatus() {
-                const serverStatus = document.getElementById('server-status');
-                const dashboardStatus = document.getElementById('dashboard-status');
-                
-                if (serverStatus && dashboardStatus) {
-                    dashboardStatus.textContent = serverStatus.textContent;
-                }
-            }
 
-            // Call update function initially and set interval
-            updateDashboardStatus();
-            setInterval(updateDashboardStatus, 1000);
         });
     </script>
 </body>
