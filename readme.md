@@ -52,9 +52,21 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Resource Activation** One-click activation of different resource packs
 - **Resource Deletion** Safe deletion of unwanted resource packs
 
+### 📋 Server Logs
+- **Real-time Log Viewing** Monitor Minecraft server logs in real-time through the web interface
+- **Auto-scroll** Option to automatically scroll to the latest log entries
+
+### 💻 Command Execution
+- **Direct Command Input** Execute Minecraft server commands directly from the web interface
+- **Command History** View and reuse previously executed commands
+- **Quick Commands** Access frequently used commands through categorized quick access buttons
+
 ## 👀 Management Panel Preview
 ![Management Panel Preview](docs/resources/screenshot-en-manage.png)
 ![Server Download Panel Preview](docs/resources/screenshot-en-version.png)
+![Log Interface Preview](docs/resources/screenshot-en-log.png)
+![Command Execution Interface Preview](docs/resources/screenshot-en-cmd.png)
+![Quick Commands Preview](docs/resources/screenshot-en-cmd-quick.png)
 
 ## 📋 System Requirements
 
@@ -189,8 +201,8 @@ Ensure the following ports are open in the firewall:
 ### TODO Planned Features
 - ✅ Support for one-click mcpackage mod import
 - ✅ Linux operating system support
-- 🔄 Real-time Bedrock server log viewing
-- 🔄 Direct command execution to Bedrock server through web interface
+- ✅ Real-time Bedrock server log viewing
+- ✅ Direct command execution to Bedrock server through web interface
 - 🔄 Player online status monitoring
 - 🔄 Server performance monitoring
 - 🔄 Automatic world backup functionality

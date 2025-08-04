@@ -49,9 +49,21 @@
 - **资源激活** 一键激活不同的资源包
 - **资源删除** 安全删除不需要的资源包
 
+### 📋 服务器日志
+- **实时日志查看** 通过Web界面实时监控Minecraft服务器日志
+- **自动滚动** 可选择自动滚动到最新的日志条目
+
+### 💻 命令执行
+- **直接命令输入** 通过Web界面直接执行Minecraft服务器命令
+- **命令历史** 查看和重用之前执行过的命令
+- **快捷命令** 通过分类的快速访问按钮使用常用命令
+
 ## 👀 管理端预览
 ![管理主页预览](resources/screenshot-zh-manage.png)
 ![服务器下载面板预览](resources/screenshot-zh-version.png)
+![日志界面预览](resources/screenshot-zh-log.png)
+![命令执行界面预览](resources/screenshot-zh-cmd.png)
+![快速命令预览](resources/screenshot-zh-cmd-quick.png)
 
 ## 📋 系统要求
 
@@ -177,8 +189,8 @@
 ### TODO计划功能
 - ✅ 支持一键导入mcpackage模组
 - ✅ 支持Linux操作系统
-- 🔄 bedrock服务器日志实时查看
-- 🔄 直接通过页面执行命令到Bedrock服务器
+- ✅ bedrock服务器日志实时查看
+- ✅ 直接通过页面执行命令到Bedrock服务器
 - 🔄 玩家在线状态监控
 - 🔄 服务器性能监控
 - 🔄 世界自动备份功能
