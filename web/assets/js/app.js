@@ -291,7 +291,7 @@ async function addToAllowlist() {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('allowlist.error.empty-name') : 
-            'Please enter player name';
+            'Please enter player xuid';
         showToast(errorMessage, 'error');
         return;
     }
@@ -357,7 +357,7 @@ function showPermissionModal() {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('permission.error.empty-name') : 
-            'Please enter player name';
+            'Please enter player xuid';
         showToast(errorMessage, 'error');
         return;
     }
@@ -378,7 +378,7 @@ async function setPlayerPermission(level) {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('permission.error.empty-name') : 
-            'Please enter player name';
+            'Please enter player xuid';
         showToast(errorMessage, 'error');
         return;
     }
@@ -460,7 +460,7 @@ function createPlayerElement(playerName, type) {
     const div = document.createElement('div');
     div.className = 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded';
     
-    // Escape special characters in player name
+    // Escape special characters in player xuid
     const escapedName = playerName.replace(/'/g, "\\'").replace(/"/g, '\\"');
     
     div.innerHTML = `
