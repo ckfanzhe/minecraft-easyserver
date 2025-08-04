@@ -352,9 +352,9 @@ function renderPermissions(permissions) {
 
 // Show permission selection modal
 function showPermissionModal() {
-    const playerName = elements.permissionPlayer.value.trim();
+    const playerXuid = elements.permissionPlayer.value.trim();
     
-    if (!playerName) {
+    if (!playerXuid) {
         const errorMessage = window.i18n ? 
             window.i18n.t('permission.error.empty-name') : 
             'Please enter player xuid';
@@ -362,7 +362,7 @@ function showPermissionModal() {
         return;
     }
     
-    elements.modalPlayerName.textContent = playerName;
+    elements.modalPlayerName.textContent = playerXuid;
     elements.permissionModal.classList.remove('hidden');
 }
 
@@ -373,9 +373,9 @@ function hidePermissionModal() {
 
 // Set player permission
 async function setPlayerPermission(level) {
-    const playerName = elements.permissionPlayer.value.trim();
+    const playerXuid = elements.permissionPlayer.value.trim();
     
-    if (!playerName) {
+    if (!playerXuid) {
         const errorMessage = window.i18n ? 
             window.i18n.t('permission.error.empty-name') : 
             'Please enter player xuid';
@@ -386,7 +386,7 @@ async function setPlayerPermission(level) {
     try {
         const data = await apiRequest('/permissions', {
             method: 'PUT',
-            body: JSON.stringify({ name: playerName, level })
+            body: JSON.stringify({ xuid: playerXuid, level })
         });
         showToast(data.message);
         elements.permissionPlayer.value = '';
@@ -494,17 +494,18 @@ function createPermissionElement(permission) {
     // Use permission.permission instead of permission.level
     const permissionLevel = permission.permission || 'visitor';
     
-    // Escape special characters in permission name
-    const escapedName = permission.name.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    // Escape special characters in permission xuid
+    const escapedXuid = (permission.xuid || permission.name || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const displayXuid = permission.xuid || permission.name || '';
     
     div.innerHTML = `
         <div>
-            <span class="font-medium">${permission.name}</span>
+            <span class="font-medium">${displayXuid}</span>
             <span class="ml-2 px-2 py-1 text-xs rounded ${levelColor[permissionLevel]} bg-gray-200">
                 ${levelText[permissionLevel] || permissionLevel}
             </span>
         </div>
-        <button onclick="removePermission('${escapedName}')" 
+        <button onclick="removePermission('${escapedXuid}')" 
                 class="text-red-500 hover:text-red-700 transition duration-200">
             <i class="fas fa-trash"></i>
         </button>
@@ -578,9 +579,9 @@ async function activateWorld(worldName) {
 }
 
 // Remove permission
-async function removePermission(playerName) {
+async function removePermission(playerXuid) {
     try {
-        const data = await apiRequest(`/permissions/${encodeURIComponent(playerName)}`, {
+        const data = await apiRequest(`/permissions/${encodeURIComponent(playerXuid)}`, {
             method: 'DELETE'
         });
         showToast(data.message);

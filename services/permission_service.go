@@ -27,7 +27,7 @@ func (p *PermissionService) GetPermissions() ([]map[string]interface{}, error) {
 }
 
 // UpdatePermission updates permission
-func (p *PermissionService) UpdatePermission(name, level string) error {
+func (p *PermissionService) UpdatePermission(xuid, level string) error {
 	// If no server version is active, return error
 	if bedrockPath == "" {
 		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
@@ -55,7 +55,7 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 	// Find and update existing permission
 	found := false
 	for i, permission := range permissions {
-		if permission["name"] == name {
+		if permission["xuid"] == xuid {
 			permissions[i]["permission"] = level
 			found = true
 			break
@@ -65,7 +65,7 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 	// If not found, add new permission
 	if !found {
 		newPermission := map[string]interface{}{
-			"name":       name,
+			"xuid":       xuid,
 			"permission": level,
 		}
 		permissions = append(permissions, newPermission)
@@ -75,7 +75,7 @@ func (p *PermissionService) UpdatePermission(name, level string) error {
 }
 
 // RemovePermission removes permission
-func (p *PermissionService) RemovePermission(name string) error {
+func (p *PermissionService) RemovePermission(xuid string) error {
 	// If no server version is active, return error
 	if bedrockPath == "" {
 		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
@@ -90,7 +90,7 @@ func (p *PermissionService) RemovePermission(name string) error {
 	// Find and remove permission
 	found := false
 	for i, permission := range permissions {
-		if permission["name"] == name {
+		if permission["xuid"] == xuid {
 			permissions = append(permissions[:i], permissions[i+1:]...)
 			found = true
 			break
@@ -98,7 +98,7 @@ func (p *PermissionService) RemovePermission(name string) error {
 	}
 
 	if !found {
-		return fmt.Errorf("permission not found for player: %s", name)
+		return fmt.Errorf("permission not found for player: %s", xuid)
 	}
 
 	return writePermissions(permissionsPath, permissions)

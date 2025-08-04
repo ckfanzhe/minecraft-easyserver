@@ -68,7 +68,7 @@ func setupAllowlistRoutes(api *gin.RouterGroup, handler *handlers.AllowlistHandl
 func setupPermissionRoutes(api *gin.RouterGroup, handler *handlers.PermissionHandler) {
 	api.GET("/permissions", handler.GetPermissions)
 	api.PUT("/permissions", handler.UpdatePermission)
-	api.DELETE("/permissions/:name", handler.RemovePermission)
+	api.DELETE("/permissions/:xuid", handler.RemovePermission)
 }
 
 // setupWorldRoutes sets up world routes
