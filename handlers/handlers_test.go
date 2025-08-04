@@ -254,7 +254,7 @@ func TestPermissionHandler(t *testing.T) {
 
 	t.Run("UpdatePermission", func(t *testing.T) {
 		requestBody := map[string]string{
-			"name":  "TestPlayer1",
+			"xuid":  "2535414938543844",
 			"level": "operator",
 		}
 
@@ -273,7 +273,7 @@ func TestPermissionHandler(t *testing.T) {
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "Permission set")
+		assert.Contains(t, response["message"], "Set")
 	})
 
 	t.Run("GetPermissions", func(t *testing.T) {
@@ -298,7 +298,7 @@ func TestPermissionHandler(t *testing.T) {
 
 	t.Run("UpdatePermission_InvalidLevel", func(t *testing.T) {
 		requestBody := map[string]string{
-			"name":  "TestPlayer1",
+			"xuid":  "2535414938543844",
 			"level": "invalid",
 		}
 
@@ -318,8 +318,8 @@ func TestPermissionHandler(t *testing.T) {
 	t.Run("RemovePermission", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("DELETE", "/api/permissions/TestPlayer1", nil)
-		c.Params = gin.Params{gin.Param{Key: "name", Value: "TestPlayer1"}}
+		c.Request = httptest.NewRequest("DELETE", "/api/permissions/2535414938543844", nil)
+		c.Params = gin.Params{gin.Param{Key: "xuid", Value: "2535414938543844"}}
 
 		handler.RemovePermission(c)
 

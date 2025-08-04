@@ -22,7 +22,7 @@ type AllowlistEntry struct {
 
 // PermissionEntry permission entry
 type PermissionEntry struct {
-	Name  string `json:"name"`
+	Xuid  string `json:"xuid"`
 	Level string `json:"level"`
 }
 
