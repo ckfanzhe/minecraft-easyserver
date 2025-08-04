@@ -7,6 +7,9 @@ const elements = {
     startBtn: document.getElementById('start-btn'),
     stopBtn: document.getElementById('stop-btn'),
     restartBtn: document.getElementById('restart-btn'),
+    navStartBtn: document.getElementById('nav-start-btn'),
+    navStopBtn: document.getElementById('nav-stop-btn'),
+    navRestartBtn: document.getElementById('nav-restart-btn'),
     refreshBtn: document.getElementById('refresh-btn'),
     configForm: document.getElementById('config-form'),
     newPlayerInput: document.getElementById('new-player'),
@@ -58,6 +61,11 @@ function bindEvents() {
     if (elements.startBtn) elements.startBtn.addEventListener('click', () => controlServer('start'));
     if (elements.stopBtn) elements.stopBtn.addEventListener('click', () => controlServer('stop'));
     if (elements.restartBtn) elements.restartBtn.addEventListener('click', () => controlServer('restart'));
+    
+    // Navigation server control buttons
+    if (elements.navStartBtn) elements.navStartBtn.addEventListener('click', () => controlServer('start'));
+    if (elements.navStopBtn) elements.navStopBtn.addEventListener('click', () => controlServer('stop'));
+    if (elements.navRestartBtn) elements.navRestartBtn.addEventListener('click', () => controlServer('restart'));
     if (elements.refreshBtn) elements.refreshBtn.addEventListener('click', initializeApp);
 
     // Configuration form

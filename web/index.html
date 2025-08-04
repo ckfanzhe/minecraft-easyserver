@@ -64,6 +64,18 @@
                     <div class="flex items-center space-x-2">
                         <span id="server-status" class="px-2 py-1 rounded text-xs font-medium bg-gray-500" data-i18n="nav.status.unknown">未知</span>
                     </div>
+                    <!-- Server Control Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <button id="nav-start-btn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="启动服务器">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="nav-stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="停止服务器">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <button id="nav-restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="重启服务器">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
                     <div class="language-toggle">
                         <button id="language-btn" class="p-2 hover:bg-blue-700 rounded text-sm font-medium transition duration-200">
                             中
@@ -99,9 +111,6 @@
                             </div>
                         </div>
                         <div id="server-menu" class="nav-submenu ml-8 space-y-1">
-                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="server-control">
-                                <span data-i18n="nav.menu.server.control">服务器控制</span>
-                            </div>
                             <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="server-config">
                                 <span data-i18n="nav.menu.server.config">服务器配置</span>
                             </div>
@@ -188,25 +197,7 @@
                 </div>
             </section>
 
-            <!-- Server Control Section -->
-            <section id="server-control" class="content-section">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="server.control.title">服务器控制</h2>
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                                <i class="fas fa-play mr-2"></i><span data-i18n="server.control.start">启动服务器</span>
-                            </button>
-                            <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                                <i class="fas fa-stop mr-2"></i><span data-i18n="server.control.stop">停止服务器</span>
-                            </button>
-                            <button id="restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg transition duration-300">
-                                <i class="fas fa-redo mr-2"></i><span data-i18n="server.control.restart">重启服务器</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+
 
             <!-- Server Config Section -->
             <section id="server-config" class="content-section">
