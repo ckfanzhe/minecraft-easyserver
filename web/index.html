@@ -167,7 +167,7 @@
                                     <i class="fas fa-server text-xl"></i>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">服务器状态</p>
+                                    <p class="text-sm font-medium text-gray-600" data-i18n="dashboard.status.title">服务器状态</p>
                                     <p id="dashboard-status" class="text-lg font-semibold text-gray-900">未知</p>
                                 </div>
                             </div>
@@ -481,11 +481,30 @@
 
             // Update dashboard status
             function updateDashboardStatus() {
-                const serverStatus = document.getElementById('server-status');
                 const dashboardStatus = document.getElementById('dashboard-status');
                 
-                if (serverStatus && dashboardStatus) {
-                    dashboardStatus.textContent = serverStatus.textContent;
+                if (dashboardStatus && window.loadServerStatus) {
+                    // Get current server status and update dashboard display
+                    fetch('/api/status')
+                        .then(response => response.json())
+                        .then(data => {
+                            let statusText;
+                            switch (data.status) {
+                                case 'running':
+                                    statusText = window.i18n ? window.i18n.t('nav.status.running') : '运行中';
+                                    break;
+                                case 'stopped':
+                                    statusText = window.i18n ? window.i18n.t('nav.status.stopped') : '已停止';
+                                    break;
+                                default:
+                                    statusText = window.i18n ? window.i18n.t('nav.status.unknown') : '未知';
+                            }
+                            dashboardStatus.textContent = statusText;
+                        })
+                        .catch(() => {
+                            const statusText = window.i18n ? window.i18n.t('nav.status.unknown') : '未知';
+                            dashboardStatus.textContent = statusText;
+                        });
                 }
             }
 
