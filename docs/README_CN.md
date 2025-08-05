@@ -59,10 +59,10 @@
 - **快捷命令** 通过分类的快速访问按钮使用常用命令
 
 ## 👀 管理端预览
+![主页预览](resources/screenshot-zh-status.png)
 ![管理主页预览](resources/screenshot-zh-manage.png)
 ![服务器下载面板预览](resources/screenshot-zh-version.png)
-![日志界面预览](resources/screenshot-zh-log.png)
-![命令执行界面预览](resources/screenshot-zh-cmd.png)
+![Cmd and Log 预览](resources/screenshot-zh-cmd-exec.png)
 ![快速命令预览](resources/screenshot-zh-cmd-quick.png)
 
 ## 📋 系统要求

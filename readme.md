@@ -61,10 +61,10 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Quick Commands** Access frequently used commands through categorized quick access buttons
 
 ## 👀 Management Panel Preview
+![Dashboard Preview](docs/resources/screenshot-en-status.png)
 ![Management Panel Preview](docs/resources/screenshot-en-manage.png)
 ![Server Download Panel Preview](docs/resources/screenshot-en-version.png)
-![Log Interface Preview](docs/resources/screenshot-en-log.png)
-![Command Execution Interface Preview](docs/resources/screenshot-en-cmd.png)
+![Cmd and Log Preview](docs/resources/screenshot-en-cmd-exec.png)
 ![Quick Commands Preview](docs/resources/screenshot-en-cmd-quick.png)
 
 ## 📋 System Requirements

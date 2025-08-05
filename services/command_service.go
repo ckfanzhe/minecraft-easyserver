@@ -173,7 +173,7 @@ func (cs *CommandService) ExecuteQuickCommand(id string) error {
 	}
 
 	// Get interaction service to send the command
-	interactionSvc := NewInteractionService()
+	interactionSvc := GetInteractionService()
 	if !interactionSvc.IsEnabled() {
 		return fmt.Errorf("server interaction is not supported on this platform")
 	}

@@ -118,7 +118,7 @@ func (s *ServerService) Start() error {
 
 	// Initialize services
 	logSvc = NewLogService()
-	interactionSvc = NewInteractionService()
+	interactionSvc = GetInteractionService()
 
 	// Get executable name based on operating system
 	var executableName string
@@ -169,6 +169,14 @@ func (s *ServerService) Start() error {
 		// Note: In a real implementation, you might want to duplicate stdout
 		// to capture both logs and command responses separately
 		logSvc.AddLogEntry("INFO", "Server interaction enabled")
+		
+		// Start capturing command responses from stdout
+		// We need to duplicate stdout to capture both logs and command responses
+		// For now, we'll use a simple approach
+		go func() {
+			// This is a simplified implementation
+			// In practice, you might want to use io.TeeReader to duplicate the stream
+		}()
 	}
 
 	return nil

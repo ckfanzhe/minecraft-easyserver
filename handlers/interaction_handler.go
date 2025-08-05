@@ -15,7 +15,7 @@ type InteractionHandler struct {
 
 func NewInteractionHandler() *InteractionHandler {
 	return &InteractionHandler{
-		interactionService: services.NewInteractionService(),
+		interactionService: services.GetInteractionService(),
 	}
 }
 
