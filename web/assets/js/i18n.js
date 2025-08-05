@@ -24,7 +24,7 @@ class I18n {
                 'nav.menu.server.versions': '版本管理',
                 'nav.menu.tools': '服务器工具',
                 'nav.menu.tools.logs': '服务器日志',
-                'nav.menu.tools.interaction': '命令交互',
+                'nav.menu.tools.interaction': '命令交互与日志',
                 'nav.menu.tools.commands': '快捷命令',
                 
                 // Navigation Buttons
@@ -146,7 +146,7 @@ class I18n {
                 'logs.cleared': '日志已清空',
                 
                 // Interaction
-                'interaction.title': '命令交互',
+                'interaction.title': '命令交互与日志',
                 'interaction.send-command': '发送命令',
                 'interaction.command': '命令',
                 'interaction.command.note': '注意：某些危险命令（如stop、restart）不允许通过网页执行',
@@ -215,7 +215,7 @@ class I18n {
                 'nav.menu.server.versions': 'Version Management',
                 'nav.menu.tools': 'Server Tools',
                 'nav.menu.tools.logs': 'Server Logs',
-                'nav.menu.tools.interaction': 'Command Interaction',
+                'nav.menu.tools.interaction': 'Command Interaction & Logs',
                 'nav.menu.tools.commands': 'Quick Commands',
                 
                 // Navigation Buttons
@@ -337,7 +337,7 @@ class I18n {
                 'logs.cleared': 'Logs cleared',
                 
                 // Interaction
-                'interaction.title': 'Command Interaction',
+                'interaction.title': 'Command Interaction & Logs',
                 'interaction.send-command': 'Send Command',
                 'interaction.command': 'Command',
                 'interaction.command.note': 'Note: Some dangerous commands (like stop, restart) are not allowed to be executed via web interface',

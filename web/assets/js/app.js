@@ -1246,7 +1246,7 @@ function renderCommandHistory(history) {
         return;
     }
     
-    history.slice(-10).forEach(entry => {
+    history.slice(-10).reverse().forEach(entry => {
         const historyElement = createCommandHistoryElement(entry);
         elements.commandHistory.appendChild(historyElement);
     });
@@ -1255,7 +1255,7 @@ function renderCommandHistory(history) {
 // Create command history element
 function createCommandHistoryElement(entry) {
     const div = document.createElement('div');
-    div.className = 'bg-gray-50 p-2 rounded text-sm';
+    div.className = 'bg-gray-50 p-2 rounded text-sm cursor-pointer hover:bg-gray-100 transition-colors duration-200';
     
     const timestamp = new Date(entry.timestamp).toLocaleTimeString();
     
@@ -1268,6 +1268,16 @@ function createCommandHistoryElement(entry) {
             <div class="text-xs text-gray-400 ml-2">${timestamp}</div>
         </div>
     `;
+    
+    // Add click event to fill command input
+    div.addEventListener('click', function() {
+        if (elements.commandInput) {
+            elements.commandInput.value = entry.command;
+            elements.commandInput.focus();
+            // Trigger input event to enable send button
+            elements.commandInput.dispatchEvent(new Event('input'));
+        }
+    });
     
     return div;
 }

@@ -17,26 +17,34 @@ import (
 //go:embed web/*
 var webFS embed.FS
 
-func main() {
+func main() {	
 	// Load configuration file
 	if err := config.LoadConfig("config.yml"); err != nil {
-		log.Fatal("Failed to load configuration file:", err)
+		log.Fatalf("Failed to load configuration file 'config.yml': %v\nPlease ensure the config.yml file exists and is properly formatted.", err)
 	}
+	log.Printf("Configuration loaded successfully. Server will run on port %d, debug mode: %v", 
+		config.AppConfig.Server.Port, config.AppConfig.Server.Debug)
 
 	// Set Gin mode based on configuration
 	if !config.AppConfig.Server.Debug {
+		log.Println("Setting Gin to release mode")
 		gin.SetMode(gin.ReleaseMode)
+	} else {
+		log.Println("Running in debug mode")
 	}
 
 	// Initialize bedrock path (don't fail if path doesn't exist yet)
 	// Users can now select and activate versions through the web interface
 	bedrockPath := config.AppConfig.GetBedrockPath()
 	if bedrockPath != "" {
+		log.Printf("Configured bedrock path: %s", bedrockPath)
 		// Try to initialize, but don't fail if it doesn't exist
 		if err := services.InitBedrockPath(bedrockPath); err != nil {
-			log.Printf("Warning: Bedrock path not found (%s). Users can download and activate versions through the web interface.", err)
+			log.Printf("Warning: Bedrock path initialization failed (%s). Users can download and activate versions through the web interface. Error: %v", bedrockPath, err)
 			// Set an empty path to indicate no version is currently active
 			services.SetBedrockPath("")
+		} else {
+			log.Printf("Bedrock path initialized successfully: %s", bedrockPath)
 		}
 	} else {
 		log.Printf("No bedrock path configured. Users can download and activate versions through the web interface.")
@@ -49,21 +57,21 @@ func main() {
 	// Setup embedded static files
 	webSubFS, err := fs.Sub(webFS, "web")
 	if err != nil {
-		log.Fatal("Failed to create web sub filesystem:", err)
+		log.Fatalf("Failed to create web sub filesystem: %v\nThis indicates an issue with embedded files compilation.", err)
 	}
 
 	// Static file service using embedded files
 	// Create a sub filesystem for assets
 	assetsFS, err := fs.Sub(webSubFS, "assets")
 	if err != nil {
-		log.Fatal("Failed to create assets sub filesystem:", err)
+		log.Fatalf("Failed to create assets sub filesystem: %v\nThis indicates missing assets directory in embedded files.", err)
 	}
 	r.StaticFS("/assets", http.FS(assetsFS))
 
 	// Load HTML template from embedded files
 	tmpl, err := webSubFS.Open("index.html")
 	if err != nil {
-		log.Fatal("Failed to open index.html:", err)
+		log.Fatalf("Failed to open index.html: %v\nThis indicates missing index.html in embedded files.", err)
 	}
 	tmpl.Close()
 
@@ -71,6 +79,7 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		indexFile, err := webSubFS.Open("index.html")
 		if err != nil {
+			log.Printf("Error serving index.html: %v", err)
 			c.String(500, "Failed to load index.html")
 			return
 		}
@@ -88,6 +97,12 @@ func main() {
 
 	// Start server
 	serverAddr := config.AppConfig.GetServerAddress()
-	log.Printf("Server started at http://%s", serverAddr)
-	r.Run(":" + fmt.Sprintf("%d", config.AppConfig.Server.Port))
+	log.Printf("Starting HTTP server on %s...", serverAddr)
+	log.Printf("Server will be accessible at http://%s", serverAddr)
+	
+	port := fmt.Sprintf(":%d", config.AppConfig.Server.Port)
+	
+	if err := r.Run(port); err != nil {
+		log.Fatalf("Failed to start server on port %s: %v\nPossible causes:\n- Port %d is already in use\n- Insufficient permissions\n- Invalid port number", port, err, config.AppConfig.Server.Port)
+	}
 }
