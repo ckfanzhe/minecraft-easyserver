@@ -16,6 +16,7 @@ func SetupRoutes(r *gin.Engine) {
 	worldHandler := handlers.NewWorldHandler()
 	resourcePackHandler := handlers.NewResourcePackHandler()
 	serverVersionHandler := handlers.NewServerVersionHandler()
+	performanceMonitoringHandler := handlers.NewPerformaceMonitoringHandler()
 
 	// API routes
 	api := r.Group("/api")
@@ -40,6 +41,9 @@ func SetupRoutes(r *gin.Engine) {
 		
 		// Server version routes
 		setupServerVersionRoutes(api, serverVersionHandler)
+
+		// Performace monitoring routes
+		setupPerformanceMonitoringRoutes(api, performanceMonitoringHandler)
 	}
 }
 
@@ -95,4 +99,9 @@ func setupServerVersionRoutes(api *gin.RouterGroup, handler *handlers.ServerVers
 	api.GET("/server-versions/:version/progress", handler.GetDownloadProgress)
 	api.PUT("/server-versions/:version/activate", handler.ActivateVersion)
 	api.POST("/server-versions/update-config", handler.UpdateVersionConfig)
+}
+
+// setupPerformanceMonitoringRoutes sets up performace moniroeing routes
+func setupPerformanceMonitoringRoutes(api *gin.RouterGroup, handler *handlers.PerformaceMonitoringHandler) {
+	api.GET("/monitor/base", handler.GetPerformaceMonitoring)
 }
