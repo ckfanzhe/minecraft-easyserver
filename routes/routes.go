@@ -19,6 +19,7 @@ func SetupRoutes(r *gin.Engine) {
 	logHandler := handlers.NewLogHandler()
 	interactionHandler := handlers.NewInteractionHandler()
 	commandHandler := handlers.NewCommandHandler()
+	performanceMonitoringHandler := handlers.NewPerformaceMonitoringHandler()
 
 	// API routes
 	api := r.Group("/api")
@@ -52,6 +53,9 @@ func SetupRoutes(r *gin.Engine) {
 		
 		// Command routes
 		setupCommandRoutes(api, commandHandler)
+
+		// Performace monitoring routes
+		setupPerformanceMonitoringRoutes(api, performanceMonitoringHandler)
 	}
 }
 
@@ -131,4 +135,9 @@ func setupCommandRoutes(api *gin.RouterGroup, handler *handlers.CommandHandler) 
 	api.POST("/commands/:id/execute", handler.ExecuteQuickCommand)
 	api.POST("/commands", handler.AddQuickCommand)
 	api.DELETE("/commands/:id", handler.RemoveQuickCommand)
+}
+
+// setupPerformanceMonitoringRoutes sets up performace moniroeing routes
+func setupPerformanceMonitoringRoutes(api *gin.RouterGroup, handler *handlers.PerformaceMonitoringHandler) {
+	api.GET("/monitor/base", handler.GetPerformaceMonitoring)
 }
