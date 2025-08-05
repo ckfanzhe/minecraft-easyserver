@@ -54,6 +54,14 @@ class I18n {
                 'dashboard.title': '仪表板',
                 'dashboard.recent-activity.title': '最近活动',
                 'dashboard.recent-activity.empty': '暂无活动记录',
+                'dashboard.performance.title': '性能监控',
+                'dashboard.performance.system': '系统性能',
+                'dashboard.performance.bedrock': 'Bedrock进程',
+                'dashboard.performance.cpu': 'CPU使用率',
+                'dashboard.performance.memory': '内存使用率',
+                'dashboard.performance.memory-mb': '内存使用',
+                'dashboard.performance.bedrock-stopped': 'Bedrock服务器未运行',
+                'dashboard.performance.bedrock-running': 'PID: {pid}',
                 
                 // Server Control
                 'server.control.title': '服务器控制',
@@ -149,7 +157,6 @@ class I18n {
                 'interaction.title': '命令交互与日志',
                 'interaction.send-command': '发送命令',
                 'interaction.command': '命令',
-                'interaction.command.note': '注意：某些危险命令（如stop、restart）不允许通过网页执行',
                 'interaction.send': '发送',
                 'interaction.history': '命令历史',
                 'interaction.clear-history': '清空',
@@ -245,6 +252,14 @@ class I18n {
                 'dashboard.title': 'Dashboard',
                 'dashboard.recent-activity.title': 'Recent Activity',
                 'dashboard.recent-activity.empty': 'No recent activity',
+                'dashboard.performance.title': 'Performance Monitoring',
+                'dashboard.performance.system': 'System Performance',
+                'dashboard.performance.bedrock': 'Bedrock Process',
+                'dashboard.performance.cpu': 'CPU Usage',
+                'dashboard.performance.memory': 'Memory Usage',
+                'dashboard.performance.memory-mb': 'Memory Usage',
+                'dashboard.performance.bedrock-stopped': 'Bedrock server not running',
+                'dashboard.performance.bedrock-running': 'PID: {pid}',
                 
                 // Server Control
                 'server.control.title': 'Server Control',

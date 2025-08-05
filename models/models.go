@@ -153,3 +153,25 @@ type QuickCommand struct {
 	Command     string `json:"command"`
 	Category    string `json:"category"`
 }
+
+// SystemPerformance system performance monitoring data
+type SystemPerformance struct {
+	CPUUsage    float64 `json:"cpu_usage"`
+	MemoryUsage float64 `json:"memory_usage"`
+	Timestamp   string  `json:"timestamp"`
+}
+
+// ProcessPerformance process performance monitoring data
+type ProcessPerformance struct {
+	PID         int     `json:"pid"`
+	CPUUsage    float64 `json:"cpu_usage"`
+	MemoryUsage float64 `json:"memory_usage"`
+	MemoryMB    float64 `json:"memory_mb"`
+	Timestamp   string  `json:"timestamp"`
+}
+
+// PerformanceMonitoringData combined performance monitoring data
+type PerformanceMonitoringData struct {
+	System  SystemPerformance  `json:"system"`
+	Bedrock ProcessPerformance `json:"bedrock"`
+}

@@ -181,7 +181,42 @@
             <section id="dashboard" class="content-section active">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="nav.menu.dashboard">仪表板</h2>
-                    <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Performance Monitoring -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.performance.title">性能监控</h3>
+                            <div class="space-y-4">
+                                <!-- System Performance -->
+                                <div>
+                                    <h4 class="text-md font-medium text-gray-700 mb-2" data-i18n="dashboard.performance.system">系统性能</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.cpu">CPU使用率</div>
+                                            <div class="text-lg font-semibold text-blue-600" id="system-cpu">--</div>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.memory">内存使用率</div>
+                                            <div class="text-lg font-semibold text-green-600" id="system-memory">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Bedrock Process Performance -->
+                                <div>
+                                    <h4 class="text-md font-medium text-gray-700 mb-2" data-i18n="dashboard.performance.bedrock">Bedrock进程</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.cpu">CPU使用率</div>
+                                            <div class="text-lg font-semibold text-orange-600" id="bedrock-cpu">--</div>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.memory-mb">内存使用</div>
+                                            <div class="text-lg font-semibold text-purple-600" id="bedrock-memory">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-xs text-gray-500" id="bedrock-status" data-i18n="dashboard.performance.bedrock-stopped">Bedrock服务器未运行</div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Recent Activity -->
                         <div class="bg-white rounded-lg shadow p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.recent-activity.title">最近活动</h3>
@@ -418,7 +453,6 @@
                                         <i class="fas fa-paper-plane mr-1"></i><span data-i18n="interaction.send">发送</span>
                                     </button>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1" data-i18n="interaction.command.note">注意：某些危险命令（如stop、restart）不允许通过网页执行</p>
                             </div>
                         </div>
                     </div>
@@ -542,6 +576,11 @@
                     const targetSection = document.getElementById(sectionId);
                     if (targetSection) {
                         targetSection.classList.add('active');
+                    }
+                    
+                    // Call showSection function for additional functionality
+                    if (typeof window.showSection === 'function') {
+                        window.showSection(sectionId);
                     }
 
                     // Close mobile menu

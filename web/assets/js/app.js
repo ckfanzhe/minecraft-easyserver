@@ -1453,5 +1453,127 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ===== PERFORMANCE MONITORING FUNCTIONALITY =====
+
+// Performance monitoring variables
+let performanceMonitoringInterval = null;
+
+// Load performance monitoring data
+async function loadPerformanceMonitoring() {
+    try {
+        const data = await apiRequest('/monitor/performance');
+        updatePerformanceDisplay(data);
+    } catch (error) {
+        console.error('Failed to load performance monitoring data:', error);
+        // Reset display on error
+        updatePerformanceDisplay(null);
+    }
+}
+
+// Update performance display
+function updatePerformanceDisplay(data) {
+    const systemCpuElement = document.getElementById('system-cpu');
+    const systemMemoryElement = document.getElementById('system-memory');
+    const bedrockCpuElement = document.getElementById('bedrock-cpu');
+    const bedrockMemoryElement = document.getElementById('bedrock-memory');
+    const bedrockStatusElement = document.getElementById('bedrock-status');
+
+    if (!data) {
+        // Reset all displays
+        if (systemCpuElement) systemCpuElement.textContent = '--';
+        if (systemMemoryElement) systemMemoryElement.textContent = '--';
+        if (bedrockCpuElement) bedrockCpuElement.textContent = '--';
+        if (bedrockMemoryElement) bedrockMemoryElement.textContent = '--';
+        if (bedrockStatusElement) {
+            bedrockStatusElement.textContent = window.i18n ? window.i18n.t('dashboard.performance.bedrock-stopped') : 'Bedrock服务器未运行';
+        }
+        return;
+    }
+
+    // Update system performance
+    if (systemCpuElement) {
+        systemCpuElement.textContent = `${data.system.cpu_usage.toFixed(1)}%`;
+    }
+    if (systemMemoryElement) {
+        systemMemoryElement.textContent = `${data.system.memory_usage.toFixed(1)}%`;
+    }
+
+    // Update bedrock process performance
+    if (data.bedrock.pid > 0) {
+        if (bedrockCpuElement) {
+            bedrockCpuElement.textContent = `${data.bedrock.cpu_usage.toFixed(1)}%`;
+        }
+        if (bedrockMemoryElement) {
+            bedrockMemoryElement.textContent = `${data.bedrock.memory_mb.toFixed(1)}MB`;
+        }
+        if (bedrockStatusElement) {
+            const statusText = window.i18n ? 
+                window.i18n.t('dashboard.performance.bedrock-running', { pid: data.bedrock.pid }) : 
+                `PID: ${data.bedrock.pid}`;
+            bedrockStatusElement.textContent = statusText;
+        }
+    } else {
+        if (bedrockCpuElement) bedrockCpuElement.textContent = '--';
+        if (bedrockMemoryElement) bedrockMemoryElement.textContent = '--';
+        if (bedrockStatusElement) {
+            bedrockStatusElement.textContent = window.i18n ? 
+                window.i18n.t('dashboard.performance.bedrock-stopped') : 
+                'Bedrock服务器未运行';
+        }
+    }
+}
+
+// Start performance monitoring
+function startPerformanceMonitoring() {
+    // Load initial data
+    loadPerformanceMonitoring();
+    
+    // Set up interval for periodic updates (every 5 seconds)
+    if (performanceMonitoringInterval) {
+        clearInterval(performanceMonitoringInterval);
+    }
+    performanceMonitoringInterval = setInterval(loadPerformanceMonitoring, 5000);
+}
+
+// Stop performance monitoring
+function stopPerformanceMonitoring() {
+    if (performanceMonitoringInterval) {
+        clearInterval(performanceMonitoringInterval);
+        performanceMonitoringInterval = null;
+    }
+}
+
+// Initialize performance monitoring when dashboard is active
+function initializePerformanceMonitoring() {
+    const dashboardSection = document.getElementById('dashboard');
+    if (dashboardSection && dashboardSection.classList.contains('active')) {
+        startPerformanceMonitoring();
+    }
+}
+
+// Add performance monitoring to navigation handling
+const originalShowSection = window.showSection;
+window.showSection = function(sectionId) {
+    if (originalShowSection) {
+        originalShowSection(sectionId);
+    }
+    
+    // Start/stop performance monitoring based on active section
+    if (sectionId === 'dashboard') {
+        startPerformanceMonitoring();
+    } else {
+        stopPerformanceMonitoring();
+    }
+};
+
+// Initialize performance monitoring on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Delay initialization to ensure other components are ready
+    setTimeout(initializePerformanceMonitoring, 1000);
+});
+
 // Make functions globally available
 window.executeQuickCommand = executeQuickCommand;
+window.loadPerformanceMonitoring = loadPerformanceMonitoring;
+window.startPerformanceMonitoring = startPerformanceMonitoring;
+window.stopPerformanceMonitoring = stopPerformanceMonitoring;

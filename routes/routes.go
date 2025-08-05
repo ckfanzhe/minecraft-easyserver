@@ -137,7 +137,7 @@ func setupCommandRoutes(api *gin.RouterGroup, handler *handlers.CommandHandler) 
 	api.DELETE("/commands/:id", handler.RemoveQuickCommand)
 }
 
-// setupPerformanceMonitoringRoutes sets up performace moniroeing routes
+// setupPerformanceMonitoringRoutes sets up performance monitoring routes
 func setupPerformanceMonitoringRoutes(api *gin.RouterGroup, handler *handlers.PerformaceMonitoringHandler) {
-	api.GET("/monitor/base", handler.GetPerformaceMonitoring)
+	api.GET("/monitor/performance", handler.GetPerformanceMonitoringData)
 }
