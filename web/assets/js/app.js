@@ -1472,12 +1472,18 @@ function createQuickCommandElement(command) {
     const div = document.createElement('div');
     div.className = 'bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200';
     
+    // Get internationalized name and description
+    const nameKey = `commands.${command.id}.name`;
+    const descriptionKey = `commands.${command.id}.description`;
+    const displayName = window.i18n ? window.i18n.t(nameKey) : command.name;
+    const displayDescription = window.i18n ? window.i18n.t(descriptionKey) : command.description;
+    
     div.innerHTML = `
         <div class="flex justify-between items-start mb-2">
-            <h4 class="font-semibold text-gray-800">${escapeHtml(command.name)}</h4>
+            <h4 class="font-semibold text-gray-800">${escapeHtml(displayName)}</h4>
             <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${getCategoryDisplayName(command.category)}</span>
         </div>
-        <p class="text-sm text-gray-600 mb-3">${escapeHtml(command.description)}</p>
+        <p class="text-sm text-gray-600 mb-3">${escapeHtml(displayDescription)}</p>
         <div class="flex justify-between items-center">
             <code class="text-xs bg-gray-100 px-2 py-1 rounded font-mono">${escapeHtml(command.command)}</code>
             <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200" 

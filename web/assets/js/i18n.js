@@ -101,6 +101,9 @@ class I18n {
                 'permission.add': '添加权限',
                 'permission.empty': '暂无权限设置',
                 'permission.error.empty-name': '请输入玩家xuid',
+                
+                // Command Input
+                'command.input.placeholder': '输入服务器命令并按回车执行...',
                 'permission.modal.title': '选择权限级别',
                 'permission.modal.description': '为玩家',
                 'permission.modal.description2': '选择权限级别：',
@@ -182,6 +185,36 @@ class I18n {
                 'commands.filter-failed': '筛选命令失败',
                 'commands.executed': '命令已执行',
                 'commands.execute-failed': '执行命令失败',
+                
+                // Quick command names and descriptions
+                'commands.time_day.name': '设置为白天',
+                'commands.time_day.description': '将游戏时间设置为白天',
+                'commands.time_night.name': '设置为夜晚',
+                'commands.time_night.description': '将游戏时间设置为夜晚',
+                'commands.time_noon.name': '设置为正午',
+                'commands.time_noon.description': '将游戏时间设置为正午',
+                'commands.time_midnight.name': '设置为午夜',
+                'commands.time_midnight.description': '将游戏时间设置为午夜',
+                'commands.weather_clear.name': '晴天',
+                'commands.weather_clear.description': '设置天气为晴天',
+                'commands.weather_rain.name': '雨天',
+                'commands.weather_rain.description': '设置天气为雨天',
+                'commands.weather_thunder.name': '雷阵雨',
+                'commands.weather_thunder.description': '设置天气为雷阵雨',
+                'commands.gamemode_survival.name': '生存模式',
+                'commands.gamemode_survival.description': '将默认游戏模式设置为生存模式',
+                'commands.gamemode_creative.name': '创造模式',
+                'commands.gamemode_creative.description': '将默认游戏模式设置为创造模式',
+                'commands.gamemode_adventure.name': '冒险模式',
+                'commands.gamemode_adventure.description': '将默认游戏模式设置为冒险模式',
+                'commands.difficulty_peaceful.name': '和平难度',
+                'commands.difficulty_peaceful.description': '设置游戏难度为和平',
+                'commands.difficulty_easy.name': '简单难度',
+                'commands.difficulty_easy.description': '设置游戏难度为简单',
+                'commands.difficulty_normal.name': '普通难度',
+                'commands.difficulty_normal.description': '设置游戏难度为普通',
+                'commands.difficulty_hard.name': '困难难度',
+                'commands.difficulty_hard.description': '设置游戏难度为困难',
                 'logs.clear-success': '日志清空成功',
                 'logs.clear-failed': '日志清空失败',
                 'logs.load-failed': '日志加载失败',
@@ -299,6 +332,9 @@ class I18n {
                 'permission.add': 'Add Permission',
                 'permission.empty': 'No permission settings',
                 'permission.error.empty-name': 'Please enter player xuid',
+                
+                // Command Input
+                'command.input.placeholder': 'Enter server command and press Enter to execute...',
                 'permission.modal.title': 'Select Permission Level',
                 'permission.modal.description': 'For player',
                 'permission.modal.description2': 'select permission level:',
@@ -381,6 +417,36 @@ class I18n {
                 'commands.filter-failed': 'Failed to filter commands',
                 'commands.executed': 'Command executed',
                 'commands.execute-failed': 'Failed to execute command',
+                
+                // Quick command names and descriptions
+                'commands.time_day.name': 'Set to Day',
+                'commands.time_day.description': 'Set game time to day',
+                'commands.time_night.name': 'Set to Night',
+                'commands.time_night.description': 'Set game time to night',
+                'commands.time_noon.name': 'Set to Noon',
+                'commands.time_noon.description': 'Set game time to noon',
+                'commands.time_midnight.name': 'Set to Midnight',
+                'commands.time_midnight.description': 'Set game time to midnight',
+                'commands.weather_clear.name': 'Clear Weather',
+                'commands.weather_clear.description': 'Set weather to clear',
+                'commands.weather_rain.name': 'Rainy Weather',
+                'commands.weather_rain.description': 'Set weather to rain',
+                'commands.weather_thunder.name': 'Thunderstorm',
+                'commands.weather_thunder.description': 'Set weather to thunderstorm',
+                'commands.gamemode_survival.name': 'Survival Mode',
+                'commands.gamemode_survival.description': 'Set default game mode to survival',
+                'commands.gamemode_creative.name': 'Creative Mode',
+                'commands.gamemode_creative.description': 'Set default game mode to creative',
+                'commands.gamemode_adventure.name': 'Adventure Mode',
+                'commands.gamemode_adventure.description': 'Set default game mode to adventure',
+                'commands.difficulty_peaceful.name': 'Peaceful Difficulty',
+                'commands.difficulty_peaceful.description': 'Set game difficulty to peaceful',
+                'commands.difficulty_easy.name': 'Easy Difficulty',
+                'commands.difficulty_easy.description': 'Set game difficulty to easy',
+                'commands.difficulty_normal.name': 'Normal Difficulty',
+                'commands.difficulty_normal.description': 'Set game difficulty to normal',
+                'commands.difficulty_hard.name': 'Hard Difficulty',
+                'commands.difficulty_hard.description': 'Set game difficulty to hard',
                 'logs.clear-success': 'Logs cleared successfully',
                 'logs.clear-failed': 'Failed to clear logs',
                 'logs.load-failed': 'Failed to load logs',
@@ -471,6 +537,11 @@ class I18n {
         // Update server status if the function exists
         if (typeof updateServerStatus === 'function' && typeof currentServerStatus !== 'undefined') {
             updateServerStatus(currentServerStatus);
+        }
+        
+        // Update quick commands if the function exists
+        if (typeof loadQuickCommands === 'function') {
+            loadQuickCommands();
         }
     }
 
