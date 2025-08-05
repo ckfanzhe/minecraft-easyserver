@@ -3,8 +3,9 @@ shared-data/resource_packs/
 shared-data/worlds/
 bedrock-server-*
 mcpack_example
-bedrock-easyserver.exe
+bedrock-easyserver*
 *FEATURE.md
 minecraft-easyserver.exe
 REFACTORING.md
 minecraft-server-manager*
+minecraft-easyserver

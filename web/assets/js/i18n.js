@@ -22,6 +22,15 @@ class I18n {
                 'nav.menu.management.world': '世界管理',
                 'nav.menu.management.resourcepack': '资源包管理',
                 'nav.menu.server.versions': '版本管理',
+                'nav.menu.tools': '服务器工具',
+                'nav.menu.tools.logs': '服务器日志',
+                'nav.menu.tools.interaction': '命令交互与日志',
+                'nav.menu.tools.commands': '快捷命令',
+                
+                // Navigation Buttons
+                'nav.buttons.start': '启动服务器',
+                'nav.buttons.stop': '停止服务器',
+                'nav.buttons.restart': '重启服务器',
                 
                 // Server Versions
                 'server.versions.title': '服务器版本管理',
@@ -45,6 +54,14 @@ class I18n {
                 'dashboard.title': '仪表板',
                 'dashboard.recent-activity.title': '最近活动',
                 'dashboard.recent-activity.empty': '暂无活动记录',
+                'dashboard.performance.title': '性能监控',
+                'dashboard.performance.system': '系统性能',
+                'dashboard.performance.bedrock': 'Bedrock进程',
+                'dashboard.performance.cpu': 'CPU使用率',
+                'dashboard.performance.memory': '内存使用率',
+                'dashboard.performance.memory-mb': '内存使用',
+                'dashboard.performance.bedrock-stopped': 'Bedrock服务器未运行',
+                'dashboard.performance.bedrock-running': 'PID: {pid}',
                 
                 // Server Control
                 'server.control.title': '服务器控制',
@@ -122,6 +139,53 @@ class I18n {
                 'resourcepack.empty': '暂无资源包',
                 'resourcepack.deleteConfirm': '确定要删除此资源包吗？此操作不可撤销！',
                 
+                // Logs
+                'logs.title': '服务器日志',
+                'logs.refresh': '刷新',
+                'logs.clear': '清空',
+                'logs.auto-scroll': '自动滚动',
+                'logs.status': '状态',
+                'logs.connecting': '连接中...',
+                'logs.connected': '已连接',
+                'logs.disconnected': '已断开',
+                'logs.connection-error': '连接错误',
+                'logs.connection-failed': '连接失败',
+                'logs.no-logs': '暂无日志',
+                'logs.cleared': '日志已清空',
+                
+                // Interaction
+                'interaction.title': '命令交互与日志',
+                'interaction.send-command': '发送命令',
+                'interaction.command': '命令',
+                'interaction.send': '发送',
+                'interaction.history': '命令历史',
+                'interaction.clear-history': '清空',
+                'interaction.enabled': '命令交互已启用',
+                'interaction.disabled': '命令交互在当前平台不可用',
+                'interaction.command-sent': '命令发送成功',
+                'interaction.send-failed': '发送命令失败',
+                'interaction.no-history': '暂无命令历史',
+                'interaction.history-cleared': '命令历史已清空',
+                'interaction.clear-history-success': '命令历史清空成功',
+                'interaction.clear-history-failed': '清空命令历史失败',
+                
+                // Commands
+                'commands.title': '快捷命令',
+                'commands.all': '全部',
+                'commands.time': '时间',
+                'commands.weather': '天气',
+                'commands.gamemode': '游戏模式',
+                'commands.difficulty': '难度',
+                'commands.execute': '执行',
+                'commands.no-commands': '暂无可用命令',
+                'commands.load-failed': '加载快捷命令失败',
+                'commands.filter-failed': '筛选命令失败',
+                'commands.executed': '命令已执行',
+                'commands.execute-failed': '执行命令失败',
+                'logs.clear-success': '日志清空成功',
+                'logs.clear-failed': '日志清空失败',
+                'logs.load-failed': '日志加载失败',
+                
                 // Messages
                 'message.request-failed': '请求失败',
                 'message.config-saved': '配置已保存',
@@ -156,6 +220,15 @@ class I18n {
                 'nav.menu.management.world': 'World Management',
                 'nav.menu.management.resourcepack': 'Resource Pack Management',
                 'nav.menu.server.versions': 'Version Management',
+                'nav.menu.tools': 'Server Tools',
+                'nav.menu.tools.logs': 'Server Logs',
+                'nav.menu.tools.interaction': 'Command Interaction & Logs',
+                'nav.menu.tools.commands': 'Quick Commands',
+                
+                // Navigation Buttons
+                'nav.buttons.start': 'Start Server',
+                'nav.buttons.stop': 'Stop Server',
+                'nav.buttons.restart': 'Restart Server',
                 
                 // Server Versions
                 'server.versions.title': 'Server Version Management',
@@ -179,6 +252,14 @@ class I18n {
                 'dashboard.title': 'Dashboard',
                 'dashboard.recent-activity.title': 'Recent Activity',
                 'dashboard.recent-activity.empty': 'No recent activity',
+                'dashboard.performance.title': 'Performance Monitoring',
+                'dashboard.performance.system': 'System Performance',
+                'dashboard.performance.bedrock': 'Bedrock Process',
+                'dashboard.performance.cpu': 'CPU Usage',
+                'dashboard.performance.memory': 'Memory Usage',
+                'dashboard.performance.memory-mb': 'Memory Usage',
+                'dashboard.performance.bedrock-stopped': 'Bedrock server not running',
+                'dashboard.performance.bedrock-running': 'PID: {pid}',
                 
                 // Server Control
                 'server.control.title': 'Server Control',
@@ -256,6 +337,54 @@ class I18n {
                 'resourcepack.empty': 'No resource packs',
                 'resourcepack.deleteConfirm': 'Are you sure you want to delete this resource pack? This action cannot be undone!',
                 
+                // Logs
+                'logs.title': 'Server Logs',
+                'logs.refresh': 'Refresh',
+                'logs.clear': 'Clear',
+                'logs.auto-scroll': 'Auto Scroll',
+                'logs.status': 'Status',
+                'logs.connecting': 'Connecting...',
+                'logs.connected': 'Connected',
+                'logs.disconnected': 'Disconnected',
+                'logs.connection-error': 'Connection Error',
+                'logs.connection-failed': 'Connection Failed',
+                'logs.no-logs': 'No logs available',
+                'logs.cleared': 'Logs cleared',
+                
+                // Interaction
+                'interaction.title': 'Command Interaction & Logs',
+                'interaction.send-command': 'Send Command',
+                'interaction.command': 'Command',
+                'interaction.command.note': 'Note: Some dangerous commands (like stop, restart) are not allowed to be executed via web interface',
+                'interaction.send': 'Send',
+                'interaction.history': 'Command History',
+                'interaction.clear-history': 'Clear',
+                'interaction.enabled': 'Command interaction enabled',
+                'interaction.disabled': 'Command interaction not available on current platform',
+                'interaction.command-sent': 'Command sent successfully',
+                'interaction.send-failed': 'Failed to send command',
+                'interaction.no-history': 'No command history',
+                'interaction.history-cleared': 'Command history cleared',
+                'interaction.clear-history-success': 'Command history cleared successfully',
+                'interaction.clear-history-failed': 'Failed to clear command history',
+                
+                // Commands
+                'commands.title': 'Quick Commands',
+                'commands.all': 'All',
+                'commands.time': 'Time',
+                'commands.weather': 'Weather',
+                'commands.gamemode': 'Game Mode',
+                'commands.difficulty': 'Difficulty',
+                'commands.execute': 'Execute',
+                'commands.no-commands': 'No commands available',
+                'commands.load-failed': 'Failed to load quick commands',
+                'commands.filter-failed': 'Failed to filter commands',
+                'commands.executed': 'Command executed',
+                'commands.execute-failed': 'Failed to execute command',
+                'logs.clear-success': 'Logs cleared successfully',
+                'logs.clear-failed': 'Failed to clear logs',
+                'logs.load-failed': 'Failed to load logs',
+                
                 // Messages
                 'message.request-failed': 'Request failed',
                 'message.config-saved': 'Configuration saved',
@@ -314,6 +443,12 @@ class I18n {
         document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
             const key = element.getAttribute('data-i18n-placeholder');
             element.placeholder = this.t(key);
+        });
+
+        // Update elements with data-i18n-title attribute
+        document.querySelectorAll('[data-i18n-title]').forEach(element => {
+            const key = element.getAttribute('data-i18n-title');
+            element.title = this.t(key);
         });
 
         // Update page title

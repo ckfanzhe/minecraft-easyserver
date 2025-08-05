@@ -16,6 +16,8 @@ var (
 	serverProcess *exec.Cmd
 	serverMutex   sync.Mutex
 	bedrockPath   string
+	logSvc        *LogService
+	interactionSvc *InteractionService
 )
 
 // InitBedrockPath initializes bedrock path
@@ -114,6 +116,10 @@ func (s *ServerService) Start() error {
 		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
 	}
 
+	// Initialize services
+	logSvc = NewLogService()
+	interactionSvc = NewInteractionService()
+
 	// Get executable name based on operating system
 	var executableName string
 	if runtime.GOOS == "windows" {
@@ -130,8 +136,39 @@ func (s *ServerService) Start() error {
 	serverProcess = exec.Command(exePath)
 	serverProcess.Dir = bedrockPath
 
+	// Set up pipes for logging and interaction
+	stdout, err := serverProcess.StdoutPipe()
+	if err != nil {
+		return fmt.Errorf("failed to create stdout pipe: %v", err)
+	}
+
+	stderr, err := serverProcess.StderrPipe()
+	if err != nil {
+		return fmt.Errorf("failed to create stderr pipe: %v", err)
+	}
+
+	// Set up stdin for interaction (only on supported platforms)
+	if interactionSvc.IsEnabled() {
+		stdin, err := serverProcess.StdinPipe()
+		if err != nil {
+			return fmt.Errorf("failed to create stdin pipe: %v", err)
+		}
+		interactionSvc.SetStdin(stdin)
+	}
+
 	if err := serverProcess.Start(); err != nil {
 		return fmt.Errorf("failed to start server: %v", err)
+	}
+
+	// Start log capture
+	logSvc.StartLogCapture(stdout, stderr)
+	logSvc.AddLogEntry("INFO", "Server started successfully")
+
+	// Start command response capture (if interaction is enabled)
+	if interactionSvc.IsEnabled() {
+		// Note: In a real implementation, you might want to duplicate stdout
+		// to capture both logs and command responses separately
+		logSvc.AddLogEntry("INFO", "Server interaction enabled")
 	}
 
 	return nil
@@ -146,55 +183,51 @@ func (s *ServerService) Stop() error {
 		return fmt.Errorf("server not running")
 	}
 
+	// Log server stopping
+	if logSvc != nil {
+		logSvc.AddLogEntry("INFO", "Stopping server...")
+	}
+
+	// Stop log capture
+	if logSvc != nil {
+		logSvc.StopLogCapture()
+	}
+
+	// Close interaction service
+	if interactionSvc != nil {
+		interactionSvc.Close()
+	}
+
 	if err := serverProcess.Process.Kill(); err != nil {
 		return fmt.Errorf("failed to stop server: %v", err)
 	}
 
 	serverProcess.Wait()
 	serverProcess = nil
+
+	// Log server stopped
+	if logSvc != nil {
+		logSvc.AddLogEntry("INFO", "Server stopped")
+	}
+
 	return nil
 }
 
 // Restart restarts server
 func (s *ServerService) Restart() error {
-	serverMutex.Lock()
-	defer serverMutex.Unlock()
-
 	// Stop first
-	if serverProcess != nil && serverProcess.Process != nil {
-		serverProcess.Process.Kill()
-		serverProcess.Wait()
-		serverProcess = nil
+	err := s.Stop()
+	if err != nil {
+		// If stop fails, we still try to start
+		// Only log if logSvc is available
+		if logSvc != nil {
+			logSvc.AddLogEntry("WARN", fmt.Sprintf("Failed to stop server gracefully: %v", err))
+		}
 	}
 
 	// Wait one second
 	time.Sleep(time.Second)
 
-	// Check if bedrock path is configured
-	if bedrockPath == "" {
-		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
-	}
-
-	// Restart
-	// Get executable name based on operating system
-	var executableName string
-	if runtime.GOOS == "windows" {
-		executableName = "bedrock_server.exe"
-	} else {
-		executableName = "bedrock_server"
-	}
-	
-	exePath := filepath.Join(bedrockPath, executableName)
-	if _, err := os.Stat(exePath); os.IsNotExist(err) {
-		return fmt.Errorf("%s file not found in %s. Please ensure the server version is properly downloaded", executableName, bedrockPath)
-	}
-
-	serverProcess = exec.Command(exePath)
-	serverProcess.Dir = bedrockPath
-
-	if err := serverProcess.Start(); err != nil {
-		return fmt.Errorf("failed to restart server: %v", err)
-	}
-
-	return nil
+	// Start again (this will reinitialize all services)
+	return s.Start()
 }

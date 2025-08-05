@@ -17,21 +17,23 @@ func NewPerformaceMonitoringHandler() *PerformaceMonitoringHandler {
 		performanceMonitoringService: services.NewPerformanceMonitoringService(),
 	}
 }
-func (p *PerformaceMonitoringHandler) GetPerformaceMonitoring(c *gin.Context) {
-	cpu, err := p.performanceMonitoringService.GetCPUUsage()
+
+// GetPerformanceMonitoringData gets comprehensive performance monitoring data
+func (p *PerformaceMonitoringHandler) GetPerformanceMonitoringData(c *gin.Context) {
+	// Get server status to obtain bedrock PID
+	serverHandler := NewServerHandler()
+	serverStatus := serverHandler.serverService.GetStatus()
+	
+	bedrockPID := 0
+	if serverStatus.Status == "running" {
+		bedrockPID = serverStatus.PID
+	}
+
+	data, err := p.performanceMonitoringService.GetPerformanceMonitoringData(bedrockPID)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to read configuration: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to get performance monitoring data: " + err.Error()})
 		return
 	}
-	memory, err := p.performanceMonitoringService.GetMemoryUsage()
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to read configuration: " + err.Error()})
-		return
-	}
-	disk, err := p.performanceMonitoringService.GetDiskUsage()
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to read configuration: " + err.Error()})
-		return
-	}
-	c.JSON(200, gin.H{"cpu": cpu, "memory": memory, "disk": disk})
+
+	c.JSON(200, data)
 }

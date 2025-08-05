@@ -66,13 +66,13 @@
                     </div>
                     <!-- Server Control Buttons -->
                     <div class="flex items-center space-x-2">
-                        <button id="nav-start-btn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="启动服务器">
+                        <button id="nav-start-btn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200" data-i18n-title="nav.buttons.start" title="启动服务器">
                             <i class="fas fa-play"></i>
                         </button>
-                        <button id="nav-stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="停止服务器">
+                        <button id="nav-stop-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200" data-i18n-title="nav.buttons.stop" title="停止服务器">
                             <i class="fas fa-stop"></i>
                         </button>
-                        <button id="nav-restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition duration-200" title="重启服务器">
+                        <button id="nav-restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition duration-200" data-i18n-title="nav.buttons.restart" title="重启服务器">
                             <i class="fas fa-redo"></i>
                         </button>
                     </div>
@@ -146,6 +146,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Server Tools Menu -->
+                    <div class="nav-group">
+                        <div class="nav-item p-3 rounded cursor-pointer" data-toggle="tools-menu">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-tools w-5"></i>
+                                    <span data-i18n="nav.menu.tools">服务器工具</span>
+                                </div>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                        </div>
+                        <div id="tools-menu" class="nav-submenu ml-8 space-y-1">
+
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="interaction">
+                                <span data-i18n="nav.menu.tools.interaction">命令交互</span>
+                            </div>
+                            <div class="nav-item p-2 rounded cursor-pointer text-sm" data-section="commands">
+                                <span data-i18n="nav.menu.tools.commands">快捷命令</span>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
             </div>
         </aside>
@@ -159,7 +181,42 @@
             <section id="dashboard" class="content-section active">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="nav.menu.dashboard">仪表板</h2>
-                    <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Performance Monitoring -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.performance.title">性能监控</h3>
+                            <div class="space-y-4">
+                                <!-- System Performance -->
+                                <div>
+                                    <h4 class="text-md font-medium text-gray-700 mb-2" data-i18n="dashboard.performance.system">系统性能</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.cpu">CPU使用率</div>
+                                            <div class="text-lg font-semibold text-blue-600" id="system-cpu">--</div>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.memory">内存使用率</div>
+                                            <div class="text-lg font-semibold text-green-600" id="system-memory">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Bedrock Process Performance -->
+                                <div>
+                                    <h4 class="text-md font-medium text-gray-700 mb-2" data-i18n="dashboard.performance.bedrock">Bedrock进程</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.cpu">CPU使用率</div>
+                                            <div class="text-lg font-semibold text-orange-600" id="bedrock-cpu">--</div>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded">
+                                            <div class="text-sm text-gray-600" data-i18n="dashboard.performance.memory-mb">内存使用</div>
+                                            <div class="text-lg font-semibold text-purple-600" id="bedrock-memory">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-xs text-gray-500" id="bedrock-status" data-i18n="dashboard.performance.bedrock-stopped">Bedrock服务器未运行</div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Recent Activity -->
                         <div class="bg-white rounded-lg shadow p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="dashboard.recent-activity.title">最近活动</h3>
@@ -343,6 +400,96 @@
                     </div>
                 </div>
             </section>
+
+
+
+            <!-- Server Interaction & Logs Section -->
+            <section id="interaction" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="interaction.title">命令交互与日志</h2>
+                    
+                    <!-- Server Logs Area -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800" data-i18n="logs.title">服务器日志</h3>
+                            <div class="flex items-center space-x-2">
+                                <button id="logs-refresh-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition duration-200">
+                                    <i class="fas fa-sync-alt mr-1"></i><span data-i18n="logs.refresh">刷新</span>
+                                </button>
+                                <button id="logs-clear-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm transition duration-200">
+                                    <i class="fas fa-trash mr-1"></i><span data-i18n="logs.clear">清空</span>
+                                </button>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" id="logs-auto-scroll" checked class="rounded">
+                                    <span class="text-sm" data-i18n="logs.auto-scroll">自动滚动</span>
+                                </label>
+                                <div class="text-sm text-gray-500">
+                                    <span data-i18n="logs.status">状态:</span>
+                                    <span id="logs-connection-status" class="font-medium" data-i18n="logs.connecting">连接中...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="logs-container" class="bg-gray-900 text-green-400 p-4 rounded-lg h-96 overflow-y-auto font-mono text-sm">
+                            <div id="logs-content">
+                                <!-- 日志内容将在这里显示 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Command Input Area -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800" data-i18n="interaction.send-command">发送命令</h3>
+                            <div id="interaction-status" class="px-3 py-1 rounded-full text-sm">
+                                <!-- 交互状态将在这里显示 -->
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="interaction.command">命令</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="command-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="输入服务器命令...">
+                                    <button id="send-command-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition duration-200" disabled>
+                                        <i class="fas fa-paper-plane mr-1"></i><span data-i18n="interaction.send">发送</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Command History Area -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800" data-i18n="interaction.history">命令历史</h3>
+                            <button id="clear-history-btn" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition duration-200">
+                                <i class="fas fa-trash mr-1"></i><span data-i18n="interaction.clear-history">清空</span>
+                            </button>
+                        </div>
+                        <div id="command-history" class="space-y-1 h-48 overflow-y-auto bg-gray-50 p-3 rounded-lg">
+                            <!-- 命令历史将在这里显示 -->
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <!-- Quick Commands Section -->
+            <section id="commands" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="commands.title">快捷命令</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2" id="command-categories">
+                                <!-- 命令分类标签将在这里显示 -->
+                            </div>
+                        </div>
+                        <div id="quick-commands-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- 快捷命令将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -429,6 +576,11 @@
                     const targetSection = document.getElementById(sectionId);
                     if (targetSection) {
                         targetSection.classList.add('active');
+                    }
+                    
+                    // Call showSection function for additional functionality
+                    if (typeof window.showSection === 'function') {
+                        window.showSection(sectionId);
                     }
 
                     // Close mobile menu

@@ -30,8 +30,27 @@ const elements = {
     permissionModal: document.getElementById('permission-modal'),
     modalPlayerName: document.getElementById('modal-player-name'),
     closeModalBtn: document.getElementById('close-modal-btn'),
-    cancelModalBtn: document.getElementById('cancel-modal-btn')
+    cancelModalBtn: document.getElementById('cancel-modal-btn'),
+    // Logs elements
+    logsContainer: document.getElementById('logs-container'),
+    logsContent: document.getElementById('logs-content'),
+    logsRefreshBtn: document.getElementById('logs-refresh-btn'),
+    logsClearBtn: document.getElementById('logs-clear-btn'),
+    logsAutoScroll: document.getElementById('logs-auto-scroll'),
+    logsConnectionStatus: document.getElementById('logs-connection-status'),
+    // Interaction elements
+    interactionStatus: document.getElementById('interaction-status'),
+    commandInput: document.getElementById('command-input'),
+    sendCommandBtn: document.getElementById('send-command-btn'),
+    commandHistory: document.getElementById('command-history'),
+    clearHistoryBtn: document.getElementById('clear-history-btn'),
+    // Commands elements
+    commandCategories: document.getElementById('command-categories'),
+    quickCommandsContainer: document.getElementById('quick-commands-container')
 };
+
+// WebSocket connection for logs
+let logsWebSocket = null;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
@@ -53,6 +72,10 @@ async function initializeApp() {
     await loadWorlds();
     await loadResourcePacks();
     await loadServerVersions();
+    await loadLogs();
+    await loadInteractionStatus();
+    await loadQuickCommands();
+    initializeLogsWebSocket();
 }
 
 // Bind event listeners
@@ -98,6 +121,27 @@ function bindEvents() {
     if (elements.cancelModalBtn) {
         elements.cancelModalBtn.addEventListener('click', hidePermissionModal);
     }
+
+    // Logs events
+    if (elements.logsRefreshBtn) elements.logsRefreshBtn.addEventListener('click', loadLogs);
+    if (elements.logsClearBtn) elements.logsClearBtn.addEventListener('click', clearLogs);
+
+    // Interaction events
+    if (elements.sendCommandBtn) elements.sendCommandBtn.addEventListener('click', sendCommand);
+    if (elements.commandInput) {
+        elements.commandInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendCommand();
+            }
+        });
+        elements.commandInput.addEventListener('input', function() {
+            const hasValue = this.value.trim().length > 0;
+            if (elements.sendCommandBtn) {
+                elements.sendCommandBtn.disabled = !hasValue;
+            }
+        });
+    }
+    if (elements.clearHistoryBtn) elements.clearHistoryBtn.addEventListener('click', clearCommandHistory);
     if (elements.permissionModal) {
         elements.permissionModal.addEventListener('click', function(e) {
             if (e.target === elements.permissionModal) {
@@ -958,3 +1002,578 @@ async function startServer() {
 async function stopServer() {
     await controlServer('stop');
 }
+
+// ===== LOGS FUNCTIONALITY =====
+
+// Load logs from server
+async function loadLogs() {
+    try {
+        const response = await apiRequest('/logs');
+        if (response.logs) {
+            renderLogs(response.logs);
+        }
+    } catch (error) {
+        console.error('Failed to load logs:', error);
+        const errorMessage = window.i18n ? window.i18n.t('logs.load-failed') : 'Failed to load logs';
+        showToast(errorMessage, 'error');
+    }
+}
+
+// Render logs in the container
+function renderLogs(logs) {
+    if (!elements.logsContent) return;
+    
+    elements.logsContent.innerHTML = '';
+    
+    if (logs.length === 0) {
+        const noLogsText = window.i18n ? window.i18n.t('logs.no-logs') : 'No logs available';
+        elements.logsContent.innerHTML = `<div class="text-gray-500">${noLogsText}</div>`;
+        return;
+    }
+    
+    logs.forEach(log => {
+        const logElement = createLogElement(log);
+        elements.logsContent.appendChild(logElement);
+    });
+    
+    // Auto scroll to bottom if enabled
+    if (elements.logsAutoScroll && elements.logsAutoScroll.checked) {
+        elements.logsContainer.scrollTop = elements.logsContainer.scrollHeight;
+    }
+}
+
+// Create a log element
+function createLogElement(log) {
+    const div = document.createElement('div');
+    div.className = 'log-entry mb-1';
+    
+    const timestamp = new Date(log.timestamp).toLocaleTimeString();
+    const levelClass = getLevelClass(log.level);
+    
+    div.innerHTML = `
+        <span class="text-gray-400">[${timestamp}]</span>
+        <span class="${levelClass} font-semibold">[${log.level}]</span>
+        <span>${escapeHtml(log.message)}</span>
+    `;
+    
+    return div;
+}
+
+// Get CSS class for log level
+function getLevelClass(level) {
+    switch (level.toUpperCase()) {
+        case 'ERROR': return 'text-red-400';
+        case 'WARN': return 'text-yellow-400';
+        case 'INFO': return 'text-blue-400';
+        case 'DEBUG': return 'text-gray-400';
+        default: return 'text-green-400';
+    }
+}
+
+// Clear logs
+async function clearLogs() {
+    try {
+        await apiRequest('/logs', { method: 'DELETE' });
+        if (elements.logsContent) {
+            const logsClearedText = window.i18n ? window.i18n.t('logs.cleared') : 'Logs cleared';
+            elements.logsContent.innerHTML = `<div class="text-gray-500">${logsClearedText}</div>`;
+        }
+        const successMessage = window.i18n ? window.i18n.t('logs.clear-success') : 'Logs cleared successfully';
+        showToast(successMessage);
+    } catch (error) {
+        console.error('Failed to clear logs:', error);
+        const errorMessage = window.i18n ? window.i18n.t('logs.clear-failed') : 'Failed to clear logs';
+        showToast(errorMessage, 'error');
+    }
+}
+
+// Initialize WebSocket connection for real-time logs
+function initializeLogsWebSocket() {
+    if (!elements.logsConnectionStatus) return;
+    
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/api/logs/ws`;
+    
+    try {
+        logsWebSocket = new WebSocket(wsUrl);
+        
+        logsWebSocket.onopen = function() {
+            const connectedText = window.i18n ? window.i18n.t('logs.connected') : '已连接';
+            elements.logsConnectionStatus.textContent = connectedText;
+            elements.logsConnectionStatus.className = 'font-medium text-green-600';
+        };
+        
+        logsWebSocket.onmessage = function(event) {
+            try {
+                const log = JSON.parse(event.data);
+                appendLogEntry(log);
+            } catch (error) {
+                console.error('Failed to parse log message:', error);
+            }
+        };
+        
+        logsWebSocket.onclose = function() {
+            const disconnectedText = window.i18n ? window.i18n.t('logs.disconnected') : '已断开';
+            elements.logsConnectionStatus.textContent = disconnectedText;
+            elements.logsConnectionStatus.className = 'font-medium text-red-600';
+            
+            // Attempt to reconnect after 3 seconds
+            setTimeout(initializeLogsWebSocket, 3000);
+        };
+        
+        logsWebSocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+            const errorText = window.i18n ? window.i18n.t('logs.connection-error') : '连接错误';
+            elements.logsConnectionStatus.textContent = errorText;
+            elements.logsConnectionStatus.className = 'font-medium text-red-600';
+        };
+    } catch (error) {
+        console.error('Failed to create WebSocket:', error);
+        const failedText = window.i18n ? window.i18n.t('logs.connection-failed') : '连接失败';
+        elements.logsConnectionStatus.textContent = failedText;
+        elements.logsConnectionStatus.className = 'font-medium text-red-600';
+    }
+}
+
+// Append a single log entry to the container
+function appendLogEntry(log) {
+    if (!elements.logsContent) return;
+    
+    const logElement = createLogElement(log);
+    elements.logsContent.appendChild(logElement);
+    
+    // Auto scroll to bottom if enabled
+    if (elements.logsAutoScroll && elements.logsAutoScroll.checked) {
+        elements.logsContainer.scrollTop = elements.logsContainer.scrollHeight;
+    }
+    
+    // Remove old entries if too many (keep last 1000)
+    const entries = elements.logsContent.children;
+    if (entries.length > 1000) {
+        elements.logsContent.removeChild(entries[0]);
+    }
+}
+
+// ===== INTERACTION FUNCTIONALITY =====
+
+// Load interaction status
+async function loadInteractionStatus() {
+    try {
+        const response = await apiRequest('/interaction/status');
+        updateInteractionStatus(response.enabled);
+        if (response.enabled) {
+            await loadCommandHistory();
+        }
+    } catch (error) {
+        console.error('Failed to load interaction status:', error);
+        updateInteractionStatus(false);
+    }
+}
+
+// Update interaction status display
+function updateInteractionStatus(enabled) {
+    if (!elements.interactionStatus) return;
+    
+    if (enabled) {
+        const enabledText = window.i18n ? window.i18n.t('interaction.enabled') : '命令交互已启用';
+        elements.interactionStatus.innerHTML = `
+            <div class="bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded">
+                <i class="fas fa-check-circle mr-2"></i>
+                ${enabledText}
+            </div>
+        `;
+        if (elements.sendCommandBtn) elements.sendCommandBtn.disabled = false;
+        if (elements.commandInput) elements.commandInput.disabled = false;
+    } else {
+        const disabledText = window.i18n ? window.i18n.t('interaction.disabled') : '命令交互在当前平台不可用';
+        elements.interactionStatus.innerHTML = `
+            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                ${disabledText}
+            </div>
+        `;
+        if (elements.sendCommandBtn) elements.sendCommandBtn.disabled = true;
+        if (elements.commandInput) elements.commandInput.disabled = true;
+    }
+}
+
+// Send command to server
+async function sendCommand() {
+    const command = elements.commandInput?.value.trim();
+    if (!command) return;
+    
+    try {
+        const response = await apiRequest('/interaction/command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command })
+        });
+        
+        if (elements.commandInput) elements.commandInput.value = '';
+        if (elements.sendCommandBtn) elements.sendCommandBtn.disabled = true;
+        
+        const successText = window.i18n ? window.i18n.t('interaction.command-sent') : 'Command sent successfully';
+        showToast(successText);
+        await loadCommandHistory();
+    } catch (error) {
+        console.error('Failed to send command:', error);
+        const failedText = window.i18n ? window.i18n.t('interaction.send-failed') : 'Failed to send command';
+        showToast(error.message || failedText, 'error');
+    }
+}
+
+// Load command history
+async function loadCommandHistory() {
+    try {
+        const response = await apiRequest('/interaction/history');
+        if (response.history) {
+            renderCommandHistory(response.history);
+        }
+    } catch (error) {
+        console.error('Failed to load command history:', error);
+    }
+}
+
+// Render command history
+function renderCommandHistory(history) {
+    if (!elements.commandHistory) return;
+    
+    elements.commandHistory.innerHTML = '';
+    
+    if (history.length === 0) {
+        const noHistoryText = window.i18n ? window.i18n.t('interaction.no-history') : 'No command history';
+        elements.commandHistory.innerHTML = `<div class="text-gray-500 text-sm">${noHistoryText}</div>`;
+        return;
+    }
+    
+    history.slice(-10).reverse().forEach(entry => {
+        const historyElement = createCommandHistoryElement(entry);
+        elements.commandHistory.appendChild(historyElement);
+    });
+}
+
+// Create command history element
+function createCommandHistoryElement(entry) {
+    const div = document.createElement('div');
+    div.className = 'bg-gray-50 p-2 rounded text-sm cursor-pointer hover:bg-gray-100 transition-colors duration-200';
+    
+    const timestamp = new Date(entry.timestamp).toLocaleTimeString();
+    
+    div.innerHTML = `
+        <div class="flex justify-between items-start">
+            <div class="flex-1">
+                <div class="font-mono text-blue-600">${escapeHtml(entry.command)}</div>
+                <div class="text-gray-600 mt-1">${escapeHtml(entry.response)}</div>
+            </div>
+            <div class="text-xs text-gray-400 ml-2">${timestamp}</div>
+        </div>
+    `;
+    
+    // Add click event to fill command input
+    div.addEventListener('click', function() {
+        if (elements.commandInput) {
+            elements.commandInput.value = entry.command;
+            elements.commandInput.focus();
+            // Trigger input event to enable send button
+            elements.commandInput.dispatchEvent(new Event('input'));
+        }
+    });
+    
+    return div;
+}
+
+// Clear command history
+async function clearCommandHistory() {
+    try {
+        await apiRequest('/interaction/history', { method: 'DELETE' });
+        if (elements.commandHistory) {
+            const clearedText = window.i18n ? window.i18n.t('interaction.history-cleared') : 'Command history cleared';
+            elements.commandHistory.innerHTML = `<div class="text-gray-500 text-sm">${clearedText}</div>`;
+        }
+        const successText = window.i18n ? window.i18n.t('interaction.clear-history-success') : 'Command history cleared successfully';
+        showToast(successText);
+    } catch (error) {
+        console.error('Failed to clear command history:', error);
+        const failedText = window.i18n ? window.i18n.t('interaction.clear-history-failed') : 'Failed to clear command history';
+        showToast(failedText, 'error');
+    }
+}
+
+// ===== QUICK COMMANDS FUNCTIONALITY =====
+
+// Load quick commands
+async function loadQuickCommands() {
+    try {
+        const [commandsResponse, categoriesResponse] = await Promise.all([
+            apiRequest('/commands'),
+            apiRequest('/commands/categories')
+        ]);
+        
+        if (categoriesResponse.categories) {
+            renderCommandCategories(categoriesResponse.categories);
+        }
+        
+        if (commandsResponse.commands) {
+            renderQuickCommands(commandsResponse.commands);
+        }
+    } catch (error) {
+        console.error('Failed to load quick commands:', error);
+        const failedText = window.i18n ? window.i18n.t('commands.load-failed') : 'Failed to load quick commands';
+        showToast(failedText, 'error');
+    }
+}
+
+// Render command categories
+function renderCommandCategories(categories) {
+    if (!elements.commandCategories) return;
+    
+    elements.commandCategories.innerHTML = '';
+    
+    // Add "All" category
+    const allBtn = document.createElement('button');
+    allBtn.className = 'px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition duration-200';
+    const allText = window.i18n ? window.i18n.t('commands.all') : '全部';
+    allBtn.textContent = allText;
+    allBtn.addEventListener('click', () => filterCommandsByCategory(''));
+    elements.commandCategories.appendChild(allBtn);
+    
+    categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.className = 'px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition duration-200';
+        btn.textContent = getCategoryDisplayName(category);
+        btn.addEventListener('click', () => filterCommandsByCategory(category));
+        elements.commandCategories.appendChild(btn);
+    });
+}
+
+// Get display name for category
+function getCategoryDisplayName(category) {
+    if (!window.i18n) {
+        const categoryNames = {
+            'time': '时间',
+            'weather': '天气',
+            'gamemode': '游戏模式',
+            'difficulty': '难度'
+        };
+        return categoryNames[category] || category;
+    }
+    
+    const categoryKey = `commands.${category}`;
+    return window.i18n.t(categoryKey) || category;
+}
+
+// Filter commands by category
+async function filterCommandsByCategory(category) {
+    try {
+        const url = category ? `/commands?category=${encodeURIComponent(category)}` : '/commands';
+        const response = await apiRequest(url);
+        
+        if (response.commands) {
+            renderQuickCommands(response.commands);
+        }
+        
+        // Update active category button
+        const buttons = elements.commandCategories?.querySelectorAll('button');
+        buttons?.forEach((btn, index) => {
+            if ((index === 0 && !category) || (index > 0 && btn.textContent === getCategoryDisplayName(category))) {
+                btn.className = 'px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition duration-200';
+            } else {
+                btn.className = 'px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition duration-200';
+            }
+        });
+    } catch (error) {
+        console.error('Failed to filter commands:', error);
+        const failedText = window.i18n ? window.i18n.t('commands.filter-failed') : 'Failed to filter commands';
+        showToast(failedText, 'error');
+    }
+}
+
+// Render quick commands
+function renderQuickCommands(commands) {
+    if (!elements.quickCommandsContainer) return;
+    
+    elements.quickCommandsContainer.innerHTML = '';
+    
+    if (commands.length === 0) {
+        const noCommandsText = window.i18n ? window.i18n.t('commands.no-commands') : 'No commands available';
+        elements.quickCommandsContainer.innerHTML = `<div class="col-span-full text-gray-500 text-center py-8">${noCommandsText}</div>`;
+        return;
+    }
+    
+    commands.forEach(command => {
+        const commandElement = createQuickCommandElement(command);
+        elements.quickCommandsContainer.appendChild(commandElement);
+    });
+}
+
+// Create quick command element
+function createQuickCommandElement(command) {
+    const div = document.createElement('div');
+    div.className = 'bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200';
+    
+    div.innerHTML = `
+        <div class="flex justify-between items-start mb-2">
+            <h4 class="font-semibold text-gray-800">${escapeHtml(command.name)}</h4>
+            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${getCategoryDisplayName(command.category)}</span>
+        </div>
+        <p class="text-sm text-gray-600 mb-3">${escapeHtml(command.description)}</p>
+        <div class="flex justify-between items-center">
+            <code class="text-xs bg-gray-100 px-2 py-1 rounded font-mono">${escapeHtml(command.command)}</code>
+            <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200" 
+                    onclick="executeQuickCommand('${command.id}')">
+                <i class="fas fa-play mr-1"></i>${window.i18n ? window.i18n.t('commands.execute') : '执行'}
+            </button>
+        </div>
+    `;
+    
+    return div;
+}
+
+// Execute quick command
+async function executeQuickCommand(commandId) {
+    try {
+        const response = await apiRequest(`/commands/${commandId}/execute`, {
+            method: 'POST'
+        });
+        
+        const executedText = window.i18n ? window.i18n.t('commands.executed') : 'Command executed';
+        showToast(`${executedText}: ${response.command}`);
+        await loadCommandHistory();
+    } catch (error) {
+        console.error('Failed to execute command:', error);
+        const failedText = window.i18n ? window.i18n.t('commands.execute-failed') : 'Failed to execute command';
+        showToast(error.message || failedText, 'error');
+    }
+}
+
+// Utility function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ===== PERFORMANCE MONITORING FUNCTIONALITY =====
+
+// Performance monitoring variables
+let performanceMonitoringInterval = null;
+
+// Load performance monitoring data
+async function loadPerformanceMonitoring() {
+    try {
+        const data = await apiRequest('/monitor/performance');
+        updatePerformanceDisplay(data);
+    } catch (error) {
+        console.error('Failed to load performance monitoring data:', error);
+        // Reset display on error
+        updatePerformanceDisplay(null);
+    }
+}
+
+// Update performance display
+function updatePerformanceDisplay(data) {
+    const systemCpuElement = document.getElementById('system-cpu');
+    const systemMemoryElement = document.getElementById('system-memory');
+    const bedrockCpuElement = document.getElementById('bedrock-cpu');
+    const bedrockMemoryElement = document.getElementById('bedrock-memory');
+    const bedrockStatusElement = document.getElementById('bedrock-status');
+
+    if (!data) {
+        // Reset all displays
+        if (systemCpuElement) systemCpuElement.textContent = '--';
+        if (systemMemoryElement) systemMemoryElement.textContent = '--';
+        if (bedrockCpuElement) bedrockCpuElement.textContent = '--';
+        if (bedrockMemoryElement) bedrockMemoryElement.textContent = '--';
+        if (bedrockStatusElement) {
+            bedrockStatusElement.textContent = window.i18n ? window.i18n.t('dashboard.performance.bedrock-stopped') : 'Bedrock服务器未运行';
+        }
+        return;
+    }
+
+    // Update system performance
+    if (systemCpuElement) {
+        systemCpuElement.textContent = `${data.system.cpu_usage.toFixed(1)}%`;
+    }
+    if (systemMemoryElement) {
+        systemMemoryElement.textContent = `${data.system.memory_usage.toFixed(1)}%`;
+    }
+
+    // Update bedrock process performance
+    if (data.bedrock.pid > 0) {
+        if (bedrockCpuElement) {
+            bedrockCpuElement.textContent = `${data.bedrock.cpu_usage.toFixed(1)}%`;
+        }
+        if (bedrockMemoryElement) {
+            bedrockMemoryElement.textContent = `${data.bedrock.memory_mb.toFixed(1)}MB`;
+        }
+        if (bedrockStatusElement) {
+            const statusText = window.i18n ? 
+                window.i18n.t('dashboard.performance.bedrock-running', { pid: data.bedrock.pid }) : 
+                `PID: ${data.bedrock.pid}`;
+            bedrockStatusElement.textContent = statusText;
+        }
+    } else {
+        if (bedrockCpuElement) bedrockCpuElement.textContent = '--';
+        if (bedrockMemoryElement) bedrockMemoryElement.textContent = '--';
+        if (bedrockStatusElement) {
+            bedrockStatusElement.textContent = window.i18n ? 
+                window.i18n.t('dashboard.performance.bedrock-stopped') : 
+                'Bedrock服务器未运行';
+        }
+    }
+}
+
+// Start performance monitoring
+function startPerformanceMonitoring() {
+    // Load initial data
+    loadPerformanceMonitoring();
+    
+    // Set up interval for periodic updates (every 5 seconds)
+    if (performanceMonitoringInterval) {
+        clearInterval(performanceMonitoringInterval);
+    }
+    performanceMonitoringInterval = setInterval(loadPerformanceMonitoring, 5000);
+}
+
+// Stop performance monitoring
+function stopPerformanceMonitoring() {
+    if (performanceMonitoringInterval) {
+        clearInterval(performanceMonitoringInterval);
+        performanceMonitoringInterval = null;
+    }
+}
+
+// Initialize performance monitoring when dashboard is active
+function initializePerformanceMonitoring() {
+    const dashboardSection = document.getElementById('dashboard');
+    if (dashboardSection && dashboardSection.classList.contains('active')) {
+        startPerformanceMonitoring();
+    }
+}
+
+// Add performance monitoring to navigation handling
+const originalShowSection = window.showSection;
+window.showSection = function(sectionId) {
+    if (originalShowSection) {
+        originalShowSection(sectionId);
+    }
+    
+    // Start/stop performance monitoring based on active section
+    if (sectionId === 'dashboard') {
+        startPerformanceMonitoring();
+    } else {
+        stopPerformanceMonitoring();
+    }
+};
+
+// Initialize performance monitoring on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Delay initialization to ensure other components are ready
+    setTimeout(initializePerformanceMonitoring, 1000);
+});
+
+// Make functions globally available
+window.executeQuickCommand = executeQuickCommand;
+window.loadPerformanceMonitoring = loadPerformanceMonitoring;
+window.startPerformanceMonitoring = startPerformanceMonitoring;
+window.stopPerformanceMonitoring = stopPerformanceMonitoring;
