@@ -43,7 +43,9 @@ const elements = {
     commandInput: document.getElementById('command-input'),
     sendCommandBtn: document.getElementById('send-command-btn'),
     commandHistory: document.getElementById('command-history'),
+    commandHistoryContainer: document.getElementById('command-history-container'),
     clearHistoryBtn: document.getElementById('clear-history-btn'),
+    historyToggleBtn: document.getElementById('history-toggle'),
     // Commands elements
     commandCategories: document.getElementById('command-categories'),
     quickCommandsContainer: document.getElementById('quick-commands-container')
@@ -51,6 +53,8 @@ const elements = {
 
 // WebSocket connection for logs
 let logsWebSocket = null;
+let currentLogsConnectionStatus = 'connecting'; // Track current connection status
+let currentServerStatus = 'unknown'; // Track current server status
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
@@ -74,6 +78,7 @@ async function initializeApp() {
     await loadServerVersions();
     await loadLogs();
     await loadInteractionStatus();
+    await loadCommandHistory();
     await loadQuickCommands();
     initializeLogsWebSocket();
 }
@@ -142,6 +147,7 @@ function bindEvents() {
         });
     }
     if (elements.clearHistoryBtn) elements.clearHistoryBtn.addEventListener('click', clearCommandHistory);
+    if (elements.historyToggleBtn) elements.historyToggleBtn.addEventListener('click', toggleCommandHistory);
     if (elements.permissionModal) {
         elements.permissionModal.addEventListener('click', function(e) {
             if (e.target === elements.permissionModal) {
@@ -222,6 +228,9 @@ async function loadServerStatus() {
 
 // Update server status display
 function updateServerStatus(status) {
+    if (!elements.serverStatus) return;
+    
+    currentServerStatus = status;
     const statusElement = elements.serverStatus;
     statusElement.className = 'px-3 py-1 rounded-full text-sm';
     
@@ -1087,9 +1096,44 @@ async function clearLogs() {
     }
 }
 
+// Update logs connection status display
+function updateLogsConnectionStatus(status) {
+    if (!elements.logsConnectionStatus) return;
+    
+    currentLogsConnectionStatus = status;
+    let statusText, statusClass;
+    
+    switch (status) {
+        case 'connected':
+            statusText = window.i18n ? window.i18n.t('logs.connected') : '已连接';
+            statusClass = 'font-medium text-green-600';
+            break;
+        case 'disconnected':
+            statusText = window.i18n ? window.i18n.t('logs.disconnected') : '已断开';
+            statusClass = 'font-medium text-red-600';
+            break;
+        case 'error':
+            statusText = window.i18n ? window.i18n.t('logs.connection-error') : '连接错误';
+            statusClass = 'font-medium text-red-600';
+            break;
+        case 'failed':
+            statusText = window.i18n ? window.i18n.t('logs.connection-failed') : '连接失败';
+            statusClass = 'font-medium text-red-600';
+            break;
+        default: // connecting
+            statusText = window.i18n ? window.i18n.t('logs.connecting') : '连接中...';
+            statusClass = 'font-medium text-yellow-600';
+    }
+    
+    elements.logsConnectionStatus.textContent = statusText;
+    elements.logsConnectionStatus.className = statusClass;
+}
+
 // Initialize WebSocket connection for real-time logs
 function initializeLogsWebSocket() {
     if (!elements.logsConnectionStatus) return;
+    
+    updateLogsConnectionStatus('connecting');
     
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/logs/ws`;
@@ -1098,9 +1142,7 @@ function initializeLogsWebSocket() {
         logsWebSocket = new WebSocket(wsUrl);
         
         logsWebSocket.onopen = function() {
-            const connectedText = window.i18n ? window.i18n.t('logs.connected') : '已连接';
-            elements.logsConnectionStatus.textContent = connectedText;
-            elements.logsConnectionStatus.className = 'font-medium text-green-600';
+            updateLogsConnectionStatus('connected');
         };
         
         logsWebSocket.onmessage = function(event) {
@@ -1113,9 +1155,7 @@ function initializeLogsWebSocket() {
         };
         
         logsWebSocket.onclose = function() {
-            const disconnectedText = window.i18n ? window.i18n.t('logs.disconnected') : '已断开';
-            elements.logsConnectionStatus.textContent = disconnectedText;
-            elements.logsConnectionStatus.className = 'font-medium text-red-600';
+            updateLogsConnectionStatus('disconnected');
             
             // Attempt to reconnect after 3 seconds
             setTimeout(initializeLogsWebSocket, 3000);
@@ -1123,15 +1163,11 @@ function initializeLogsWebSocket() {
         
         logsWebSocket.onerror = function(error) {
             console.error('WebSocket error:', error);
-            const errorText = window.i18n ? window.i18n.t('logs.connection-error') : '连接错误';
-            elements.logsConnectionStatus.textContent = errorText;
-            elements.logsConnectionStatus.className = 'font-medium text-red-600';
+            updateLogsConnectionStatus('error');
         };
     } catch (error) {
         console.error('Failed to create WebSocket:', error);
-        const failedText = window.i18n ? window.i18n.t('logs.connection-failed') : '连接失败';
-        elements.logsConnectionStatus.textContent = failedText;
-        elements.logsConnectionStatus.className = 'font-medium text-red-600';
+        updateLogsConnectionStatus('failed');
     }
 }
 
@@ -1280,6 +1316,31 @@ function createCommandHistoryElement(entry) {
     });
     
     return div;
+}
+
+// Toggle command history visibility
+function toggleCommandHistory() {
+    if (!elements.commandHistoryContainer || !elements.historyToggleBtn) return;
+    
+    const isHidden = elements.commandHistoryContainer.classList.contains('hidden');
+    
+    if (isHidden) {
+        elements.commandHistoryContainer.classList.remove('hidden');
+    } else {
+        elements.commandHistoryContainer.classList.add('hidden');
+    }
+    
+    // Update chevron icon
+    const chevron = document.getElementById('history-chevron');
+    if (chevron) {
+        if (isHidden) {
+            chevron.classList.remove('fa-chevron-down');
+            chevron.classList.add('fa-chevron-up');
+        } else {
+            chevron.classList.remove('fa-chevron-up');
+            chevron.classList.add('fa-chevron-down');
+        }
+    }
 }
 
 // Clear command history

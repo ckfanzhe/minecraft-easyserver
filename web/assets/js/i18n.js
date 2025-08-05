@@ -456,6 +456,22 @@ class I18n {
         
         // Update HTML lang attribute
         document.documentElement.lang = this.currentLanguage === 'zh' ? 'zh-CN' : 'en';
+        
+        // Update dynamic status displays that shouldn't be overridden by i18n
+        this.updateDynamicStatuses();
+    }
+    
+    // Update dynamic status displays after language change
+    updateDynamicStatuses() {
+        // Update logs connection status if the function exists
+        if (typeof updateLogsConnectionStatus === 'function' && typeof currentLogsConnectionStatus !== 'undefined') {
+            updateLogsConnectionStatus(currentLogsConnectionStatus);
+        }
+        
+        // Update server status if the function exists
+        if (typeof updateServerStatus === 'function' && typeof currentServerStatus !== 'undefined') {
+            updateServerStatus(currentServerStatus);
+        }
     }
 
     // Update page language attribute

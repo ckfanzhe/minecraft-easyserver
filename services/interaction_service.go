@@ -32,6 +32,11 @@ func NewInteractionService() *InteractionService {
 	return interactionService
 }
 
+// GetInteractionService returns the global interaction service instance
+func GetInteractionService() *InteractionService {
+	return NewInteractionService()
+}
+
 // IsEnabled returns whether interaction is enabled on current platform
 func (is *InteractionService) IsEnabled() bool {
 	return is.enabled
