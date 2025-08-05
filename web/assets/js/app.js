@@ -335,7 +335,7 @@ async function addToAllowlist() {
     if (!playerName) {
         const errorMessage = window.i18n ? 
             window.i18n.t('allowlist.error.empty-name') : 
-            'Please enter player xuid';
+            'Please enter player name';
         showToast(errorMessage, 'error');
         return;
     }

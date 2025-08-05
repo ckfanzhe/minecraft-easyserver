@@ -89,11 +89,11 @@ class I18n {
                 
                 // Allowlist Management
                 'allowlist.title': '白名单管理',
-                'allowlist.placeholder': '输入玩家xuid',
+                'allowlist.placeholder': '输入玩家名称',
                 'allowlist.add': '添加',
                 'allowlist.remove': '移除',
                 'allowlist.empty': '暂无白名单用户',
-                'allowlist.error.empty-name': '请输入玩家xuid',
+                'allowlist.error.empty-name': '请输入玩家名称',
                 
                 // Permission Management
                 'permission.title': '权限管理',
@@ -287,11 +287,11 @@ class I18n {
                 
                 // Allowlist Management
                 'allowlist.title': 'Allowlist Management',
-                'allowlist.placeholder': 'Enter player xuid',
+                'allowlist.placeholder': 'Enter player name',
                 'allowlist.add': 'Add',
                 'allowlist.remove': 'Remove',
                 'allowlist.empty': 'No allowlist users',
-                'allowlist.error.empty-name': 'Please enter player xuid',
+                'allowlist.error.empty-name': 'Please enter player name',
                 
                 // Permission Management
                 'permission.title': 'Permission Management',
