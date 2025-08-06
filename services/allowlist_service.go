@@ -18,10 +18,10 @@ func NewAllowlistService() *AllowlistService {
 }
 
 // GetAllowlist gets allowlist
-func (a *AllowlistService) GetAllowlist() ([]string, error) {
+func (a *AllowlistService) GetAllowlist() ([]models.AllowlistEntry, error) {
 	// If no server version is active, return empty list
 	if bedrockPath == "" {
-		return []string{}, nil
+		return []models.AllowlistEntry{}, nil
 	}
 	
 	allowlistPath := filepath.Join(bedrockPath, "allowlist.json")
@@ -30,16 +30,11 @@ func (a *AllowlistService) GetAllowlist() ([]string, error) {
 		return nil, err
 	}
 
-	var names []string
-	for _, entry := range allowlist {
-		names = append(names, entry.Name)
-	}
-
-	return names, nil
+	return allowlist, nil
 }
 
 // AddToAllowlist adds to allowlist
-func (a *AllowlistService) AddToAllowlist(name string) error {
+func (a *AllowlistService) AddToAllowlist(entry models.AllowlistEntry) error {
 	// If no server version is active, return error
 	if bedrockPath == "" {
 		return fmt.Errorf("no server version is currently active. Please download and activate a server version first")
@@ -52,16 +47,16 @@ func (a *AllowlistService) AddToAllowlist(name string) error {
 	}
 
 	// Check if already exists
-	for _, entry := range allowlist {
-		if entry.Name == name {
-			return fmt.Errorf("player %s is already in allowlist", name)
+	for _, existingEntry := range allowlist {
+		if existingEntry.Name == entry.Name {
+			return fmt.Errorf("player %s is already in allowlist", entry.Name)
 		}
 	}
 
 	// Add new entry
 	newEntry := models.AllowlistEntry{
-		Name:               name,
-		IgnoresPlayerLimit: false,
+		Name:               entry.Name,
+		IgnoresPlayerLimit: entry.IgnoresPlayerLimit,
 	}
 	allowlist = append(allowlist, newEntry)
 
