@@ -11,6 +11,7 @@ import (
 	"minecraft-easyserver/routes"
 	"minecraft-easyserver/services"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -54,6 +55,15 @@ func main() {
 	// Create Gin engine
 	r := gin.Default()
 
+	// Setup CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3001", "http://127.0.0.1:3001"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	// Setup embedded static files
 	webSubFS, err := fs.Sub(webFS, "web")
 	if err != nil {
@@ -61,12 +71,26 @@ func main() {
 	}
 
 	// Static file service using embedded files
-	// Create a sub filesystem for assets
-	assetsFS, err := fs.Sub(webSubFS, "assets")
-	if err != nil {
-		log.Fatalf("Failed to create assets sub filesystem: %v\nThis indicates missing assets directory in embedded files.", err)
+	// Serve all static files (including bundle.js, images, etc.)
+	r.StaticFS("/static", http.FS(webSubFS))
+
+	// Serve bundle.js directly
+	r.GET("/bundle.js", func(c *gin.Context) {
+		bundleFile, err := webSubFS.Open("bundle.js")
+		if err != nil {
+			log.Printf("Error serving bundle.js: %v", err)
+			c.String(404, "bundle.js not found")
+			return
+		}
+		defer bundleFile.Close()
+		c.DataFromReader(200, -1, "application/javascript", bundleFile, nil)
+	})
+
+	// Serve images directory
+	imagesFS, err := fs.Sub(webSubFS, "images")
+	if err == nil {
+		r.StaticFS("/images", http.FS(imagesFS))
 	}
-	r.StaticFS("/assets", http.FS(assetsFS))
 
 	// Load HTML template from embedded files
 	tmpl, err := webSubFS.Open("index.html")

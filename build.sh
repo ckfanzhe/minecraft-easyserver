@@ -9,7 +9,19 @@ echo "🚀 Starting Minecraft Easy Server build..."
 
 # Clean old build files
 echo "🧹 Cleaning old build files..."
-rm -f minecraft-easyserver-*
+rm -f minecraft-easyserver-embedded minecraft-easyserver-windows.exe minecraft-easyserver-linux
+
+# Build frontend project
+echo "🎨 Building frontend project..."
+cd minecraft-easyserver-web
+npm install
+npm run build
+cd ..
+
+# Copy frontend build output to web directory
+echo "📁 Copying frontend build output..."
+rm -rf web/*
+cp -r minecraft-easyserver-web/dist/* web/
 
 # Build current platform version
 echo "📦 Building current platform version..."
