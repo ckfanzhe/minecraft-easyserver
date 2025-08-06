@@ -1,0 +1,3 @@
+[submodule "minecraft-easyserver-web"]
+	path = minecraft-easyserver-web
+	url = https://github.com/ckfanzhe/minecraft-easyserver-web
