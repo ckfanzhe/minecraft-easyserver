@@ -6,20 +6,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// PerformaceMonitoringHandle performance monitoring handler
-type PerformaceMonitoringHandler struct {
+// PerformanceMonitoringHandler performance monitoring handler
+type PerformanceMonitoringHandler struct {
 	performanceMonitoringService *services.PerformanceMonitoringService
 }
 
-// PerformaceMonitoringHandler creates a new performance monitoring  handler
-func NewPerformaceMonitoringHandler() *PerformaceMonitoringHandler {
-	return &PerformaceMonitoringHandler{
+// NewPerformanceMonitoringHandler creates a new performance monitoring handler
+func NewPerformanceMonitoringHandler() *PerformanceMonitoringHandler {
+	return &PerformanceMonitoringHandler{
 		performanceMonitoringService: services.NewPerformanceMonitoringService(),
 	}
 }
 
 // GetPerformanceMonitoringData gets comprehensive performance monitoring data
-func (p *PerformaceMonitoringHandler) GetPerformanceMonitoringData(c *gin.Context) {
+func (p *PerformanceMonitoringHandler) GetPerformanceMonitoringData(c *gin.Context) {
 	// Get server status to obtain bedrock PID
 	serverHandler := NewServerHandler()
 	serverStatus := serverHandler.serverService.GetStatus()

@@ -19,7 +19,7 @@ func SetupRoutes(r *gin.Engine) {
 	logHandler := handlers.NewLogHandler()
 	interactionHandler := handlers.NewInteractionHandler()
 	commandHandler := handlers.NewCommandHandler()
-	performanceMonitoringHandler := handlers.NewPerformaceMonitoringHandler()
+	performanceMonitoringHandler := handlers.NewPerformanceMonitoringHandler()
 
 	// API routes
 	api := r.Group("/api")
@@ -138,6 +138,6 @@ func setupCommandRoutes(api *gin.RouterGroup, handler *handlers.CommandHandler) 
 }
 
 // setupPerformanceMonitoringRoutes sets up performance monitoring routes
-func setupPerformanceMonitoringRoutes(api *gin.RouterGroup, handler *handlers.PerformaceMonitoringHandler) {
+func setupPerformanceMonitoringRoutes(api *gin.RouterGroup, handler *handlers.PerformanceMonitoringHandler) {
 	api.GET("/monitor/performance", handler.GetPerformanceMonitoringData)
 }
