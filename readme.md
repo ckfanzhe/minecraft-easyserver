@@ -4,7 +4,6 @@
 
 A **lightweight** Minecraft server web management panel with modern UI and comprehensive server management features.
 
-
 **Currently Supported Servers:**
 - ✅ Minecraft Bedrock Server
 - Minecraft Java Server
@@ -206,12 +205,10 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 ## 🔥 Firewall Configuration
 
 ### Windows Firewall
-```powershell
-# Allow management panel port (8080)
-netsh advfirewall firewall add rule name="Minecraft Management Panel" dir=in action=allow protocol=TCP localport=8080
+On some systems, when you wish to connect to the server using a client running on the same machine as the server is running on, you will need to exempt the Minecraft client from UWP loopback restrictions:
 
-# Allow Minecraft server port (19132)
-netsh advfirewall firewall add rule name="Minecraft Bedrock Server" dir=in action=allow protocol=UDP localport=19132
+```powershell
+CheckNetIsolation.exe LoopbackExempt -a -p=S-1-15-2-1958404141-86561845-1752920682-3514627264-368642714-62675701-733520436
 ```
 
 Ensure the following ports are open in the firewall:
@@ -227,7 +224,7 @@ Ensure the following ports are open in the firewall:
 - ✅ Real-time Bedrock server log viewing
 - ✅ Direct command execution to Bedrock server through web interface
 - 🔄 Player online status monitoring
-- 🔄 Server performance monitoring
+- ✅ Server performance monitoring
 - 🔄 Automatic world backup functionality
 - ✅ Multi-language interface support
 - 🔄 Java Server Support - Support for Minecraft Java Edition servers
