@@ -8,6 +8,7 @@ import (
 	"minecraft-easyserver/config"
 	"minecraft-easyserver/routes"
 	"minecraft-easyserver/services"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -106,6 +107,26 @@ func main() {
 
 	// Setup API routes
 	routes.SetupRoutes(r)
+
+	// Catch-all route for SPA - serve index.html for all non-API routes
+	// This must be placed after API routes to avoid conflicts
+	r.NoRoute(func(c *gin.Context) {
+		// Skip API routes
+		if strings.HasPrefix(c.Request.URL.Path, "/api/") {
+			c.JSON(404, gin.H{"error": "API endpoint not found"})
+			return
+		}
+		
+		// Serve index.html for all other routes (SPA routing)
+		indexFile, err := webSubFS.Open("index.html")
+		if err != nil {
+			log.Printf("Error serving index.html for SPA route %s: %v", c.Request.URL.Path, err)
+			c.String(500, "Failed to load index.html")
+			return
+		}
+		defer indexFile.Close()
+		c.DataFromReader(200, -1, "text/html; charset=utf-8", indexFile, nil)
+	})
 
 	// Start server
 	serverAddr := config.AppConfig.GetServerAddress()
