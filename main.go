@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"net/http"
-
 	"minecraft-easyserver/config"
 	"minecraft-easyserver/routes"
 	"minecraft-easyserver/services"
+	"strings"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed web/*
+//go:embed web/dist/*
 var webFS embed.FS
 
 func main() {	
@@ -54,19 +54,37 @@ func main() {
 	// Create Gin engine
 	r := gin.Default()
 
+	// Setup CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3001", "http://127.0.0.1:3001"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	// Setup embedded static files
-	webSubFS, err := fs.Sub(webFS, "web")
+	webSubFS, err := fs.Sub(webFS, "web/dist")
 	if err != nil {
 		log.Fatalf("Failed to create web sub filesystem: %v\nThis indicates an issue with embedded files compilation.", err)
 	}
 
 	// Static file service using embedded files
-	// Create a sub filesystem for assets
-	assetsFS, err := fs.Sub(webSubFS, "assets")
-	if err != nil {
-		log.Fatalf("Failed to create assets sub filesystem: %v\nThis indicates missing assets directory in embedded files.", err)
-	}
-	r.StaticFS("/assets", http.FS(assetsFS))
+	// Serve all static files (including bundle.js, images, etc.)
+	// r.StaticFS("/static", http.FS(webSubFS))
+
+	// Serve bundle.js directly
+	r.GET("/bundle.js", func(c *gin.Context) {
+		bundleFile, err := webSubFS.Open("bundle.js")
+		if err != nil {
+			log.Printf("Error serving bundle.js: %v", err)
+			c.String(404, "bundle.js not found")
+			return
+		}
+		defer bundleFile.Close()
+		c.DataFromReader(200, -1, "application/javascript", bundleFile, nil)
+	})
+
 
 	// Load HTML template from embedded files
 	tmpl, err := webSubFS.Open("index.html")
@@ -87,13 +105,28 @@ func main() {
 		c.DataFromReader(200, -1, "text/html; charset=utf-8", indexFile, nil)
 	})
 
-	// Handle vite dev server client requests to avoid 404 errors
-	r.GET("/@vite/client", func(c *gin.Context) {
-		c.Status(204) // Return 204 No Content
-	})
-
 	// Setup API routes
 	routes.SetupRoutes(r)
+
+	// Catch-all route for SPA - serve index.html for all non-API routes
+	// This must be placed after API routes to avoid conflicts
+	r.NoRoute(func(c *gin.Context) {
+		// Skip API routes
+		if strings.HasPrefix(c.Request.URL.Path, "/api/") {
+			c.JSON(404, gin.H{"error": "API endpoint not found"})
+			return
+		}
+		
+		// Serve index.html for all other routes (SPA routing)
+		indexFile, err := webSubFS.Open("index.html")
+		if err != nil {
+			log.Printf("Error serving index.html for SPA route %s: %v", c.Request.URL.Path, err)
+			c.String(500, "Failed to load index.html")
+			return
+		}
+		defer indexFile.Close()
+		c.DataFromReader(200, -1, "text/html; charset=utf-8", indexFile, nil)
+	})
 
 	// Start server
 	serverAddr := config.AppConfig.GetServerAddress()

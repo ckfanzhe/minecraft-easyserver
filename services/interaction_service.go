@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -127,11 +128,37 @@ func (is *InteractionService) ValidateCommand(command string) error {
 		return fmt.Errorf("command cannot be empty")
 	}
 
-	// Add basic validation for dangerous commands
-	dangerousCommands := []string{"stop", "restart", "shutdown"}
+	// 检查命令长度
+	if len(command) > 256 {
+		return fmt.Errorf("command too long (max 256 characters)")
+	}
+
+	// 危险命令黑名单
+	dangerousCommands := []string{
+		"stop", "restart", "shutdown", "exit", "quit",
+		"reload", "op", "deop", "ban", "ban-ip",
+		"pardon", "pardon-ip", "whitelist",
+	}
+	
+	// 检查完整命令匹配
 	for _, dangerous := range dangerousCommands {
 		if command == dangerous {
 			return fmt.Errorf("command '%s' is not allowed through web interface", command)
+		}
+	}
+	
+	// 检查命令前缀匹配（防止参数绕过）
+	for _, dangerous := range dangerousCommands {
+		if len(command) > len(dangerous) && command[:len(dangerous)+1] == dangerous+" " {
+			return fmt.Errorf("command '%s' is not allowed through web interface", dangerous)
+		}
+	}
+
+	// 检查特殊字符，防止命令注入
+	forbiddenChars := []string{";", "&", "|", "`", "$", "(", ")", "<", ">"}
+	for _, char := range forbiddenChars {
+		if strings.Contains(command, char) {
+			return fmt.Errorf("command contains forbidden character: %s", char)
 		}
 	}
 

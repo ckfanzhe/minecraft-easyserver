@@ -3,6 +3,7 @@ package handlers
 import (
 	"strings"
 
+	"minecraft-easyserver/models"
 	"minecraft-easyserver/services"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,8 @@ func (h *AllowlistHandler) GetAllowlist(c *gin.Context) {
 // AddToAllowlist adds to allowlist
 func (h *AllowlistHandler) AddToAllowlist(c *gin.Context) {
 	var request struct {
-		Name string `json:"name"`
+		Name               string `json:"name"`
+		IgnoresPlayerLimit bool   `json:"ignoresPlayerLimit"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -41,7 +43,12 @@ func (h *AllowlistHandler) AddToAllowlist(c *gin.Context) {
 		return
 	}
 
-	if err := h.allowlistService.AddToAllowlist(request.Name); err != nil {
+	entry := models.AllowlistEntry{
+		Name:               request.Name,
+		IgnoresPlayerLimit: request.IgnoresPlayerLimit,
+	}
+
+	if err := h.allowlistService.AddToAllowlist(entry); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

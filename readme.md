@@ -146,21 +146,44 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 
 ### Build from Source (For Developers)
 
-1. **Prerequisites**: Go 1.21 or higher
+1. **Prerequisites**: 
+   - Go 1.21 or higher
+   - Node.js 16+ and npm (for frontend compilation)
+
 2. **Clone Repository**:
    ```bash
    git clone https://github.com/ckfanzhe/bedrock-easy-server.git
    cd minecraft-easy-server
    ```
-3. **Build All Platforms**:
+
+3. **Build All Platforms (Recommended)**:
    ```bash
    chmod +x build.sh
    ./build.sh
    ```
-4. **Or Build Single Platform**:
+   This script will:
+   - Install frontend dependencies (`npm install`)
+   - Build the Vue.js frontend (`npm run build`)
+   - Copy built assets to the embed directory
+   - Compile Go binaries for all platforms with embedded frontend
+
+4. **Manual Build Steps** (if you prefer step-by-step):
    ```bash
+   # Build frontend first
+   cd minecraft-easyserver-web
+   npm install
+   npm run build
+   cd ..
+   
+   # Copy frontend build output
+   rm -rf web/*
+   cp -r minecraft-easyserver-web/dist/* web/
+   
+   # Build Go binary
    go build -o minecraft-server-manager
    ```
+
+**Note**: The build process now includes frontend compilation using webpack, which bundles all Vue.js components, styles, and assets into optimized files that are then embedded into the Go binary for single-file deployment.
 
 ## 🚀 Usage Guide
 
