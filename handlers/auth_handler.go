@@ -40,3 +40,29 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+// ChangePassword handles password change requests
+func (h *AuthHandler) ChangePassword(c *gin.Context) {
+	var req models.ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request format",
+		})
+		return
+	}
+
+	response, err := h.authService.ChangePassword(req.CurrentPassword, req.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if !response.Success {
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}

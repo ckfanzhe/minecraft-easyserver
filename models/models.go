@@ -7,8 +7,21 @@ type LoginRequest struct {
 
 // LoginResponse login response structure
 type LoginResponse struct {
-	Token   string `json:"token"`
+	Token              string `json:"token"`
+	Message            string `json:"message"`
+	RequirePasswordChange bool   `json:"requirePasswordChange"`
+}
+
+// ChangePasswordRequest change password request structure
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"current_password" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required"`
+}
+
+// ChangePasswordResponse change password response structure
+type ChangePasswordResponse struct {
 	Message string `json:"message"`
+	Success bool   `json:"success"`
 }
 
 // JWTClaims JWT claims structure

@@ -40,7 +40,8 @@ POST /api/auth/login
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "message": "Login successful"
+  "message": "Login successful",
+  "requirePasswordChange": false
 }
 ```
 
@@ -55,6 +56,47 @@ POST /api/auth/login
 - 密码在服务器配置文件 `config.yml` 中的 `auth.password` 字段设置
 - 返回的 token 有效期为 24 小时
 - 后续请求需要在 Authorization 头中携带此 token
+- `requirePasswordChange` 字段表示是否需要强制修改密码（当使用默认密码 `admin123` 时为 `true`）
+
+#### 0.2 修改密码
+
+```http
+POST /api/auth/change-password
+```
+
+**请求头**:
+```http
+Authorization: Bearer <your-jwt-token>
+```
+
+**请求体**:
+```json
+{
+  "current_password": "admin123",
+  "new_password": "NewSecure123!"
+}
+```
+
+**响应示例**:
+```json
+{
+  "message": "密码修改成功",
+  "success": true
+}
+```
+
+**错误响应**:
+```json
+{
+  "message": "当前密码不正确",
+  "success": false
+}
+```
+
+**说明**:
+- 需要提供当前密码进行验证
+- 新密码必须满足强度要求：至少8位，包含大小写字母、数字和特殊字符
+- 修改成功后需要重新登录
 
 ### 1. 服务器控制
 

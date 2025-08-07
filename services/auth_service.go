@@ -2,11 +2,15 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"minecraft-easyserver/config"
 	"minecraft-easyserver/models"
+	"os"
+	"regexp"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"gopkg.in/yaml.v3"
 )
 
 // AuthService handles authentication operations
@@ -30,9 +34,13 @@ func (s *AuthService) Login(password string) (*models.LoginResponse, error) {
 		return nil, err
 	}
 
+	// Check if using default password
+	requirePasswordChange := password == "admin123"
+
 	return &models.LoginResponse{
-		Token:   token,
-		Message: "Login successful",
+		Token:                 token,
+		Message:               "Login successful",
+		RequirePasswordChange: requirePasswordChange,
 	}, nil
 }
 
@@ -88,4 +96,107 @@ func (s *AuthService) ValidateJWT(tokenString string) (*models.JWTClaims, error)
 	}
 
 	return nil, errors.New("invalid token")
+}
+
+// ValidatePasswordStrength validates password strength
+func (s *AuthService) ValidatePasswordStrength(password string) error {
+	if len(password) < 8 {
+		return errors.New("密码长度至少需要8位")
+	}
+
+	// Check for uppercase letter
+	hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
+	if !hasUpper {
+		return errors.New("密码必须包含至少一个大写字母")
+	}
+
+	// Check for lowercase letter
+	hasLower := regexp.MustCompile(`[a-z]`).MatchString(password)
+	if !hasLower {
+		return errors.New("密码必须包含至少一个小写字母")
+	}
+
+	// Check for digit
+	hasDigit := regexp.MustCompile(`[0-9]`).MatchString(password)
+	if !hasDigit {
+		return errors.New("密码必须包含至少一个数字")
+	}
+
+	// Check for special character
+	hasSpecial := regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~` + "`" + `]`).MatchString(password)
+	if !hasSpecial {
+		return errors.New("密码必须包含至少一个特殊字符")
+	}
+
+	return nil
+}
+
+// ChangePassword changes the user password
+func (s *AuthService) ChangePassword(currentPassword, newPassword string) (*models.ChangePasswordResponse, error) {
+	// Validate current password
+	if currentPassword != config.AppConfig.Auth.Password {
+		return &models.ChangePasswordResponse{
+			Message: "当前密码不正确",
+			Success: false,
+		}, nil
+	}
+
+	// Validate new password strength
+	if err := s.ValidatePasswordStrength(newPassword); err != nil {
+		return &models.ChangePasswordResponse{
+			Message: err.Error(),
+			Success: false,
+		}, nil
+	}
+
+	// Update password in config
+	if err := s.updatePasswordInConfig(newPassword); err != nil {
+		return &models.ChangePasswordResponse{
+			Message: "更新密码失败: " + err.Error(),
+			Success: false,
+		}, nil
+	}
+
+	return &models.ChangePasswordResponse{
+		Message: "密码修改成功",
+		Success: true,
+	}, nil
+}
+
+// updatePasswordInConfig updates password in config file
+func (s *AuthService) updatePasswordInConfig(newPassword string) error {
+	// Read current config file
+	configPath := "config.yml"
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return fmt.Errorf("failed to read config file: %v", err)
+	}
+
+	// Parse config
+	var configData map[string]interface{}
+	if err := yaml.Unmarshal(data, &configData); err != nil {
+		return fmt.Errorf("failed to parse config file: %v", err)
+	}
+
+	// Update password
+	if auth, ok := configData["auth"].(map[string]interface{}); ok {
+		auth["password"] = newPassword
+	} else {
+		return fmt.Errorf("auth section not found in config")
+	}
+
+	// Write back to file
+	updatedData, err := yaml.Marshal(configData)
+	if err != nil {
+		return fmt.Errorf("failed to marshal config: %v", err)
+	}
+
+	if err := os.WriteFile(configPath, updatedData, 0644); err != nil {
+		return fmt.Errorf("failed to write config file: %v", err)
+	}
+
+	// Update in-memory config
+	config.AppConfig.Auth.Password = newPassword
+
+	return nil
 }

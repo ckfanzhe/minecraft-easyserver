@@ -29,6 +29,13 @@ func SetupRoutes(r *gin.Engine) {
 		// Public routes (no authentication required)
 		api.POST("/auth/login", authHandler.Login)
 		
+		// Auth routes (authentication required)
+		auth := api.Group("/auth")
+		auth.Use(middleware.JWTAuthMiddleware())
+		{
+			auth.POST("/change-password", authHandler.ChangePassword)
+		}
+		
 		// WebSocket route with built-in authentication (must be before protected routes)
 		api.GET("/websocket/logs", logHandler.HandleWebSocketWithAuth)
 		
