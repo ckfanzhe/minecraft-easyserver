@@ -1,5 +1,23 @@
 package models
 
+// LoginRequest login request structure
+type LoginRequest struct {
+	Password string `json:"password" binding:"required"`
+}
+
+// LoginResponse login response structure
+type LoginResponse struct {
+	Token   string `json:"token"`
+	Message string `json:"message"`
+}
+
+// JWTClaims JWT claims structure
+type JWTClaims struct {
+	Authorized bool   `json:"authorized"`
+	Exp        int64  `json:"exp"`
+	Iat        int64  `json:"iat"`
+}
+
 // ServerConfig server configuration structure
 type ServerConfig struct {
 	ServerName              string `json:"server-name"`

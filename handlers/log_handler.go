@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -43,5 +44,37 @@ func (h *LogHandler) ClearLogs(c *gin.Context) {
 
 // HandleWebSocket handles WebSocket connections for real-time logs
 func (h *LogHandler) HandleWebSocket(c *gin.Context) {
+	// Token validation is already done by middleware
+	// Just proceed with WebSocket upgrade
+	h.logService.HandleWebSocket(c.Writer, c.Request)
+}
+
+// HandleWebSocketWithAuth handles WebSocket connections with JWT authentication
+func (h *LogHandler) HandleWebSocketWithAuth(c *gin.Context) {
+	log.Printf("=== HandleWebSocketWithAuth called ===")
+	// Get token from query parameter
+	tokenString := c.Query("token")
+	log.Printf("WebSocket auth: received token: %s", tokenString[:20]+"...")
+	if tokenString == "" {
+		log.Printf("WebSocket auth: no token provided")
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Token required in query parameter",
+		})
+		return
+	}
+
+	// Validate the token using auth service
+	authService := services.NewAuthService()
+	claims, err := authService.ValidateJWT(tokenString)
+	if err != nil {
+		log.Printf("WebSocket auth: token validation failed: %v", err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid or expired token: " + err.Error(),
+		})
+		return
+	}
+
+	log.Printf("WebSocket auth: token validated successfully for claims: %+v", claims)
+	// If token is valid, proceed with WebSocket upgrade
 	h.logService.HandleWebSocket(c.Writer, c.Request)
 }

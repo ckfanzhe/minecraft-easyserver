@@ -9,8 +9,52 @@ Minecraft Easy Server 提供了一套完整的 RESTful API 来管理 Minecraft B
 - **基础 URL**: `http://localhost:8080/api`
 - **内容类型**: `application/json`
 - **WebSocket 端点**: `ws://localhost:8080/api/logs/ws`
+- **认证方式**: JWT Bearer Token
+
+## 认证
+
+除了登录接口外，所有 API 端点都需要 JWT 认证。请在请求头中包含有效的 Bearer Token：
+
+```http
+Authorization: Bearer <your-jwt-token>
+```
 
 ## API 端点
+
+### 0. 认证
+
+#### 0.1 用户登录
+
+```http
+POST /api/auth/login
+```
+
+**请求体**:
+```json
+{
+  "password": "your-password"
+}
+```
+
+**响应示例**:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "message": "Login successful"
+}
+```
+
+**错误响应**:
+```json
+{
+  "error": "invalid password"
+}
+```
+
+**说明**:
+- 密码在服务器配置文件 `config.yml` 中的 `auth.password` 字段设置
+- 返回的 token 有效期为 24 小时
+- 后续请求需要在 Authorization 头中携带此 token
 
 ### 1. 服务器控制
 

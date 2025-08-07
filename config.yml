@@ -9,6 +9,9 @@ server:
   debug: false
   host: localhost
   port: 8080
+auth:
+  password: "admin123"
+  jwt_secret: "your-secret-key-change-this-in-production"
 web:
   static_dir: ./web/assets
   template_file: ./web/index.html

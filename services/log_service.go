@@ -96,6 +96,8 @@ func (ls *LogService) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	log.Printf("WebSocket connection established from %s", r.RemoteAddr)
+
 	// Add client
 	ls.clientsMux.Lock()
 	ls.clients[conn] = true

@@ -17,6 +17,11 @@ type Config struct {
 		Debug bool   `yaml:"debug"`
 	} `yaml:"server"`
 
+	Auth struct {
+		Password  string `yaml:"password"`
+		JWTSecret string `yaml:"jwt_secret"`
+	} `yaml:"auth"`
+
 	Bedrock struct {
 		Path       string `yaml:"path"`
 		Executable string `yaml:"executable"`
