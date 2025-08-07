@@ -21,8 +21,6 @@ RUN npm run build
 # Go build stage
 FROM golang:1.23.11 AS go-builder
 
-# Install build dependencies
-RUN apk add --no-cache git ca-certificates
 
 # Set working directory
 WORKDIR /app
