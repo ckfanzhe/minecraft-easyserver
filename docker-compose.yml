@@ -1,6 +1,6 @@
 services:
   minecraft-easyserver:
-    build: .
+    image: ifanzhe/minecraft-easyserver:latest
     container_name: minecraft-easyserver
     ports:
       - "8080:8080"     # Web management panel
