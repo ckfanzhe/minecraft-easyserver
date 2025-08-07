@@ -430,12 +430,15 @@ GET /api/server-versions/{version}/progress
 **响应示例**:
 ```json
 {
-  "version": "1.20.1.02",
-  "progress": 75.5,
-  "status": "downloading",
-  "message": "Downloading...",
-  "total_bytes": 104857600,
-  "downloaded_bytes": 79165440
+  "success": true,
+  "data": {
+    "version": "1.20.1.02",
+    "progress": 75.5,
+    "status": "downloading",
+    "message": "Downloading...",
+    "total_bytes": 104857600,
+    "downloaded_bytes": 79165440
+  }
 }
 ```
 

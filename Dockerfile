@@ -1,10 +1,28 @@
 # Multi-stage build Dockerfile for Minecraft Server Manager
 
 # Build stage
-FROM golang:1.23.11 AS builder
+FROM node:18-alpine AS frontend-builder
 
-# # Install build dependencies
-# RUN apk add --no-cache git ca-certificates tzdata
+# Set working directory for frontend
+WORKDIR /app/minecraft-easyserver-web
+
+# Copy frontend package files
+COPY minecraft-easyserver-web/package*.json ./
+
+# Install frontend dependencies
+RUN npm ci --only=production
+
+# Copy frontend source code
+COPY minecraft-easyserver-web/ ./
+
+# Build frontend
+RUN npm run build
+
+# Go build stage
+FROM golang:1.23.11 AS go-builder
+
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates
 
 # Set working directory
 WORKDIR /app
@@ -22,6 +40,9 @@ RUN go mod download
 
 # Copy source code
 COPY . .
+
+# Copy frontend build artifacts
+COPY --from=frontend-builder /app/minecraft-easyserver-web/dist ./web/dist
 
 # Build the application with embedded web assets
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o minecraft-easyserver .
@@ -43,8 +64,8 @@ RUN useradd -m -u 1000 minecraft
 RUN mkdir -p /data/bedrock-server && \
     chown -R minecraft:minecraft /data
 
-# Copy the binary from builder stage
-COPY --from=builder /app/minecraft-easyserver /data/minecraft-easyserver
+# Copy the binary from go-builder stage
+COPY --from=go-builder /app/minecraft-easyserver /data/minecraft-easyserver
 
 # Set permissions
 RUN chmod +x /data/minecraft-easyserver && \

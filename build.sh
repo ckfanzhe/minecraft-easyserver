@@ -21,7 +21,8 @@ cd ..
 # Copy frontend build output to web directory
 echo "📁 Copying frontend build output..."
 rm -rf web/*
-cp -r minecraft-easyserver-web/dist/* web/
+mkdir -p web/dist
+cp -r minecraft-easyserver-web/dist/* web/dist/
 
 # Build current platform version
 echo "📦 Building current platform version..."

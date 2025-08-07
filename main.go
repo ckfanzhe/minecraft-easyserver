@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"net/http"
-
 	"minecraft-easyserver/config"
 	"minecraft-easyserver/routes"
 	"minecraft-easyserver/services"
@@ -15,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed web/*
+//go:embed web/dist/*
 var webFS embed.FS
 
 func main() {	
@@ -65,14 +63,14 @@ func main() {
 	}))
 
 	// Setup embedded static files
-	webSubFS, err := fs.Sub(webFS, "web")
+	webSubFS, err := fs.Sub(webFS, "web/dist")
 	if err != nil {
 		log.Fatalf("Failed to create web sub filesystem: %v\nThis indicates an issue with embedded files compilation.", err)
 	}
 
 	// Static file service using embedded files
 	// Serve all static files (including bundle.js, images, etc.)
-	r.StaticFS("/static", http.FS(webSubFS))
+	// r.StaticFS("/static", http.FS(webSubFS))
 
 	// Serve bundle.js directly
 	r.GET("/bundle.js", func(c *gin.Context) {
@@ -86,11 +84,6 @@ func main() {
 		c.DataFromReader(200, -1, "application/javascript", bundleFile, nil)
 	})
 
-	// Serve images directory
-	imagesFS, err := fs.Sub(webSubFS, "images")
-	if err == nil {
-		r.StaticFS("/images", http.FS(imagesFS))
-	}
 
 	// Load HTML template from embedded files
 	tmpl, err := webSubFS.Open("index.html")
@@ -109,11 +102,6 @@ func main() {
 		}
 		defer indexFile.Close()
 		c.DataFromReader(200, -1, "text/html; charset=utf-8", indexFile, nil)
-	})
-
-	// Handle vite dev server client requests to avoid 404 errors
-	r.GET("/@vite/client", func(c *gin.Context) {
-		c.Status(204) // Return 204 No Content
 	})
 
 	// Setup API routes

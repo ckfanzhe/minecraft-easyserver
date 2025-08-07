@@ -1,5 +1,12 @@
 {
-  "versions": [
+  "versions": [  
+    {
+      "version": "1.21.100.7",
+      "download_url_windows": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.100.7.zip",
+      "download_url_linux": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.100.7.zip",
+      "release_date": "2025-08-6",
+      "description": "Latest stable release - hotfix with bug fixes and performance improvements"
+    },
     {
       "version": "1.21.95.1",
       "download_url_windows": "https://www.minecraft.net/bedrockdedicatedserver/bin-win/bedrock-server-1.21.95.1.zip",
