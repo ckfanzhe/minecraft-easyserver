@@ -1,6 +1,8 @@
 package services
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"minecraft-easyserver/config"
@@ -21,10 +23,17 @@ func NewAuthService() *AuthService {
 	return &AuthService{}
 }
 
+// hashPassword creates SHA256 hash of password
+func (s *AuthService) hashPassword(password string) string {
+	hash := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(hash[:])
+}
+
 // Login validates password and generates JWT token
 func (s *AuthService) Login(password string) (*models.LoginResponse, error) {
-	// Validate password
-	if password != config.AppConfig.Auth.Password {
+	// Hash the input password and compare with stored hash
+	hashedPassword := s.hashPassword(password)
+	if hashedPassword != config.AppConfig.Auth.Password {
 		return nil, errors.New("invalid password")
 	}
 
@@ -34,8 +43,9 @@ func (s *AuthService) Login(password string) (*models.LoginResponse, error) {
 		return nil, err
 	}
 
-	// Check if using default password
-	requirePasswordChange := password == "admin123"
+	// Check if using default password (compare with hash of "admin123")
+	defaultPasswordHash := s.hashPassword("admin123")
+	requirePasswordChange := hashedPassword == defaultPasswordHash
 
 	return &models.LoginResponse{
 		Token:                 token,
@@ -133,8 +143,9 @@ func (s *AuthService) ValidatePasswordStrength(password string) error {
 
 // ChangePassword changes the user password
 func (s *AuthService) ChangePassword(currentPassword, newPassword string) (*models.ChangePasswordResponse, error) {
-	// Validate current password
-	if currentPassword != config.AppConfig.Auth.Password {
+	// Validate current password by comparing hashes
+	currentPasswordHash := s.hashPassword(currentPassword)
+	if currentPasswordHash != config.AppConfig.Auth.Password {
 		return &models.ChangePasswordResponse{
 			Message: "当前密码不正确",
 			Success: false,
@@ -149,7 +160,7 @@ func (s *AuthService) ChangePassword(currentPassword, newPassword string) (*mode
 		}, nil
 	}
 
-	// Update password in config
+	// Update password in config (store as hash)
 	if err := s.updatePasswordInConfig(newPassword); err != nil {
 		return &models.ChangePasswordResponse{
 			Message: "更新密码失败: " + err.Error(),
@@ -165,6 +176,9 @@ func (s *AuthService) ChangePassword(currentPassword, newPassword string) (*mode
 
 // updatePasswordInConfig updates password in config file
 func (s *AuthService) updatePasswordInConfig(newPassword string) error {
+	// Hash the new password before storing
+	hashedPassword := s.hashPassword(newPassword)
+
 	// Read current config file
 	configPath := "config.yml"
 	data, err := os.ReadFile(configPath)
@@ -178,9 +192,9 @@ func (s *AuthService) updatePasswordInConfig(newPassword string) error {
 		return fmt.Errorf("failed to parse config file: %v", err)
 	}
 
-	// Update password
+	// Update password with hash
 	if auth, ok := configData["auth"].(map[string]interface{}); ok {
-		auth["password"] = newPassword
+		auth["password"] = hashedPassword
 	} else {
 		return fmt.Errorf("auth section not found in config")
 	}
@@ -195,8 +209,8 @@ func (s *AuthService) updatePasswordInConfig(newPassword string) error {
 		return fmt.Errorf("failed to write config file: %v", err)
 	}
 
-	// Update in-memory config
-	config.AppConfig.Auth.Password = newPassword
+	// Update in-memory config with hash
+	config.AppConfig.Auth.Password = hashedPassword
 
 	return nil
 }

@@ -1,6 +1,6 @@
 auth:
-    jwt_secret: your-secret-key-change-this-in-production
-    password: Admin1234..
+    jwt_secret: 48b47e5ceb4c5f20521d95a97e7e4031b1d9ca1f50b6acd30d465bbdaea0504a
+    password: c4f5d360cb05ca868d4be1adb24f2d7239a33fc3a2b4a7d6f7b08c61e6431f59
 bedrock:
     executable: bedrock_server
     path: ./bedrock-server/bedrock-server-1.21.95.1
