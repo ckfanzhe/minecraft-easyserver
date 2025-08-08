@@ -54,16 +54,15 @@
 - **自动滚动** 可选择自动滚动到最新的日志条目
 
 ### 💻 命令执行
-- **直接命令输入** 通过Web界面直接执行Minecraft服务器命令
-- **命令历史** 查看和重用之前执行过的命令
-- **快捷命令** 通过分类的快速访问按钮使用常用命令
+- **直接命令输入** 直接从Web界面执行Minecraft服务器命令
+- **命令历史** 查看和重用之前执行的命令
+- **快捷命令** 通过分类的快捷访问按钮使用常用命令
 
-## 👀 管理端预览
-![主页预览](resources/screenshot-zh-status.png)
-![管理主页预览](resources/screenshot-zh-manage.png)
-![服务器下载面板预览](resources/screenshot-zh-version.png)
-![Cmd and Log 预览](resources/screenshot-zh-cmd-exec.png)
-![快速命令预览](resources/screenshot-zh-cmd-quick.png)
+### 🔐 身份验证与安全
+- **登录系统** 通过密码认证安全访问管理面板
+- **会话管理** 基于安全令牌的自动会话处理
+- **访问控制** 保护服务器管理功能免受未授权访问
+
 
 ## 📋 系统要求
 
@@ -107,6 +106,7 @@
      -p 19132:19132/udp \
      -p 19133:19133/udp \
      -v ./data:/data/bedrock-server \
+     -v ./config:/data/config \
      ifanzhe/minecraft-easyserver:latest
    ```
 
@@ -125,6 +125,7 @@
          - "19133:19133/udp"
        volumes:
          - ./data:/data/bedrock-server
+         - ./config:/data/config
        environment:
          - TZ=Asia/Shanghai
        restart: unless-stopped
@@ -256,3 +257,12 @@ CheckNetIsolation.exe LoopbackExempt -a -p=S-1-15-2-1958404141-86561845-17529206
 - [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
 - [Font Awesome](https://fontawesome.com/) - 图标库
 - [Minecraft Bedrock](https://www.minecraft.net/) - 游戏服务器
+
+## 👀 管理端预览
+> 提供部分功能的截图预览，更多的功能欢迎下载体验
+
+![主页预览](resources/screenshot-zh-status.png)
+![管理主页预览](resources/screenshot-zh-manage.png)
+![服务器下载面板预览](resources/screenshot-zh-version.png)
+![Cmd and Log 预览](resources/screenshot-zh-cmd-exec.png)
+![快速命令预览](resources/screenshot-zh-cmd-quick.png)

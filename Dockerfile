@@ -1,7 +1,7 @@
 # Multi-stage build Dockerfile for Minecraft Server Manager
 
 # Build stage
-FROM node:18-alpine AS frontend-builder
+FROM node:22.18-alpine AS frontend-builder
 
 # Set working directory for frontend
 WORKDIR /app/minecraft-easyserver-web
@@ -50,27 +50,19 @@ FROM ubuntu:22.04
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
-    ca-certificates \
+    ca-certificates libcurl4-openssl-dev \
     wget \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN useradd -m -u 1000 minecraft
-
 # Create directories
-RUN mkdir -p /data/bedrock-server && \
-    chown -R minecraft:minecraft /data
+RUN mkdir -p /data/bedrock-server
 
 # Copy the binary from go-builder stage
 COPY --from=go-builder /app/minecraft-easyserver /data/minecraft-easyserver
 
 # Set permissions
-RUN chmod +x /data/minecraft-easyserver && \
-    chown minecraft:minecraft /data/minecraft-easyserver
-
-# Switch to non-root user
-USER minecraft
+RUN chmod +x /data/minecraft-easyserver
 
 # Set working directory
 WORKDIR /data

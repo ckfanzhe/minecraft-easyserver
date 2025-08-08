@@ -1,0 +1,18 @@
+auth:
+  jwt_secret: 9c46eeb58d30a555f0ce5a3b410faa474473b682c33f4a597d692c4a8bfc7d97
+  password: 925427659676ada68e35f680a1f4c8da1cee5955d9bd014772d4b798c5bae13a
+bedrock:
+  executable: bedrock_server
+  path: ./bedrock-server/bedrock-server-1.21.100.7
+logging:
+  file_output: false
+  file_path: ./logs/server.log
+  level: info
+server:
+  debug: false
+  host: localhost
+  port: 8080
+web:
+  static_dir: ./web
+  template_file: ./web/index.html
+  webfonts_dir: ./web/webfonts

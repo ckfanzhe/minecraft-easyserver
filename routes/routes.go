@@ -2,6 +2,7 @@ package routes
 
 import (
 	"minecraft-easyserver/handlers"
+	"minecraft-easyserver/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,42 +21,61 @@ func SetupRoutes(r *gin.Engine) {
 	interactionHandler := handlers.NewInteractionHandler()
 	commandHandler := handlers.NewCommandHandler()
 	performanceMonitoringHandler := handlers.NewPerformanceMonitoringHandler()
+	authHandler := handlers.NewAuthHandler()
 
 	// API routes
 	api := r.Group("/api")
 	{
-		// Server control routes
-		setupServerRoutes(api, serverHandler)
+		// Public routes (no authentication required)
+		api.POST("/auth/login", authHandler.Login)
 		
-		// Configuration routes
-		setupConfigRoutes(api, configHandler)
+		// Auth routes (authentication required)
+		auth := api.Group("/auth")
+		auth.Use(middleware.JWTAuthMiddleware())
+		{
+			auth.POST("/change-password", authHandler.ChangePassword)
+		}
 		
-		// Allowlist routes
-		setupAllowlistRoutes(api, allowlistHandler)
+		// WebSocket route with built-in authentication (must be before protected routes)
+		api.GET("/websocket/logs", logHandler.HandleWebSocketWithAuth)
 		
-		// Permission routes
-		setupPermissionRoutes(api, permissionHandler)
-		
-		// World routes
-		setupWorldRoutes(api, worldHandler)
-		
-		// Resource pack routes
-		setupResourcePackRoutes(api, resourcePackHandler)
-		
-		// Server version routes
-		setupServerVersionRoutes(api, serverVersionHandler)
-		
-		// Log routes
-		setupLogRoutes(api, logHandler)
-		
-		// Interaction routes
-		setupInteractionRoutes(api, interactionHandler)
-		
-		// Command routes
-		setupCommandRoutes(api, commandHandler)
+		// Protected routes (authentication required)
+		protected := api.Group("/")
+		protected.Use(middleware.JWTAuthMiddleware())
+		{
+			// Server control routes
+			setupServerRoutes(protected, serverHandler)
+			
+			// Configuration routes
+			setupConfigRoutes(protected, configHandler)
+			
+			// Allowlist routes
+			setupAllowlistRoutes(protected, allowlistHandler)
+			
+			// Permission routes
+			setupPermissionRoutes(protected, permissionHandler)
+			
+			// World routes
+			setupWorldRoutes(protected, worldHandler)
+			
+			// Resource pack routes
+			setupResourcePackRoutes(protected, resourcePackHandler)
+			
+			// Server version routes
+			setupServerVersionRoutes(protected, serverVersionHandler)
+			
+			// Log routes
+			setupLogRoutes(protected, logHandler)
+			
+			// Interaction routes
+			setupInteractionRoutes(protected, interactionHandler)
+			
+			// Command routes
+			setupCommandRoutes(protected, commandHandler)
 
-		// Performace monitoring routes
-		setupPerformanceMonitoringRoutes(api, performanceMonitoringHandler)
+			// Performace monitoring routes
+			setupPerformanceMonitoringRoutes(protected, performanceMonitoringHandler)
+		}
 	}
 }
 
@@ -109,7 +129,7 @@ func setupServerVersionRoutes(api *gin.RouterGroup, handler *handlers.ServerVers
 	api.GET("/server-versions", handler.GetVersions)
 	api.POST("/server-versions/:version/download", handler.DownloadVersion)
 	api.GET("/server-versions/:version/progress", handler.GetDownloadProgress)
-	api.PUT("/server-versions/:version/activate", handler.ActivateVersion)
+	api.POST("/server-versions/:version/activate", handler.ActivateVersion)
 	api.POST("/server-versions/update-config", handler.UpdateVersionConfig)
 }
 
@@ -117,7 +137,6 @@ func setupServerVersionRoutes(api *gin.RouterGroup, handler *handlers.ServerVers
 func setupLogRoutes(api *gin.RouterGroup, handler *handlers.LogHandler) {
 	api.GET("/logs", handler.GetLogs)
 	api.DELETE("/logs", handler.ClearLogs)
-	api.GET("/logs/ws", handler.HandleWebSocket)
 }
 
 // setupInteractionRoutes sets up interaction routes

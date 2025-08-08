@@ -23,6 +23,12 @@ func ExtractZip(src, dest string) error {
 
 	// Extract files
 	for _, f := range r.File {
+		// Skip problematic system files that may cause permission issues
+		fileName := filepath.Base(f.Name)
+		if strings.ToLower(fileName) == "desktop.ini" || strings.ToLower(fileName) == "thumbs.db" {
+			continue
+		}
+
 		// Construct file path
 		path := filepath.Join(dest, f.Name)
 
@@ -32,8 +38,8 @@ func ExtractZip(src, dest string) error {
 		}
 
 		if f.FileInfo().IsDir() {
-			// Create directory
-			os.MkdirAll(path, f.FileInfo().Mode())
+			// Create directory with safe permissions
+			os.MkdirAll(path, 0755)
 			continue
 		}
 
@@ -49,7 +55,9 @@ func ExtractZip(src, dest string) error {
 		}
 		defer fileReader.Close()
 
-		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.FileInfo().Mode())
+		// Use safe file permissions instead of preserving original permissions
+		// This prevents permission issues with files from different operating systems
+		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			return err
 		}

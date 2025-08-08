@@ -1,6 +1,9 @@
 package config
 
 import (
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,6 +19,11 @@ type Config struct {
 		Port  int    `yaml:"port"`
 		Debug bool   `yaml:"debug"`
 	} `yaml:"server"`
+
+	Auth struct {
+		Password  string `yaml:"password"`
+		JWTSecret string `yaml:"jwt_secret"`
+	} `yaml:"auth"`
 
 	Bedrock struct {
 		Path       string `yaml:"path"`
@@ -34,6 +42,11 @@ type Config struct {
 		FilePath   string `yaml:"file_path"`
 	} `yaml:"logging"`
 }
+
+const (
+	// DefaultConfigPath default configuration file path
+	DefaultConfigPath = "config/config.yml"
+)
 
 var (
 	// AppConfig global configuration instance
@@ -68,6 +81,22 @@ func LoadConfig(configPath string) error {
 	return nil
 }
 
+// generateRandomSecret generates a random secret key
+func generateRandomSecret(length int) (string, error) {
+	bytes := make([]byte, length)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
+}
+
+// hashPassword creates SHA256 hash of password
+func hashPassword(password string) string {
+	hash := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(hash[:])
+}
+
 // createDefaultConfig creates default configuration file
 func createDefaultConfig(configPath string) error {
 	defaultConfig := &Config{}
@@ -76,6 +105,17 @@ func createDefaultConfig(configPath string) error {
 	defaultConfig.Server.Host = "localhost"
 	defaultConfig.Server.Port = 8080
 	defaultConfig.Server.Debug = false
+
+	// Generate random JWT secret
+	jwtSecret, err := generateRandomSecret(32) // 32 bytes = 64 hex characters
+	if err != nil {
+		return fmt.Errorf("failed to generate JWT secret: %v", err)
+	}
+	defaultConfig.Auth.JWTSecret = jwtSecret
+
+	// Set default password (hashed)
+	defaultPassword := "admin123"
+	defaultConfig.Auth.Password = hashPassword(defaultPassword)
 
 	defaultConfig.Bedrock.Path = ""
 	// Set executable name based on operating system

@@ -18,9 +18,9 @@ import (
 var webFS embed.FS
 
 func main() {	
-	// Load configuration file
-	if err := config.LoadConfig("config.yml"); err != nil {
-		log.Fatalf("Failed to load configuration file 'config.yml': %v\nPlease ensure the config.yml file exists and is properly formatted.", err)
+	// Load configuration
+	if err := config.LoadConfig(config.DefaultConfigPath); err != nil {
+		log.Fatalf("Failed to load configuration file 'config/config.yml': %v\nPlease ensure the config/config.yml file exists and is properly formatted.", err)
 	}
 	log.Printf("Configuration loaded successfully. Server will run on port %d, debug mode: %v", 
 		config.AppConfig.Server.Port, config.AppConfig.Server.Debug)
@@ -58,7 +58,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3001", "http://127.0.0.1:3001"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With", "Upgrade", "Connection", "Sec-WebSocket-Key", "Sec-WebSocket-Version", "Sec-WebSocket-Protocol"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
