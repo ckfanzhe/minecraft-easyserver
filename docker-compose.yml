@@ -8,6 +8,7 @@ services:
       - "19133:19133/udp" # Minecraft Bedrock server IPv6
     volumes:
       - ./data:/data/bedrock-server  # Persistent data storage
+      - ./config:/data/config        # Config storage
     environment:
       - TZ=UTC
     restart: unless-stopped
