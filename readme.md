@@ -60,12 +60,12 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
 - **Command History** View and reuse previously executed commands
 - **Quick Commands** Access frequently used commands through categorized quick access buttons
 
-## 👀 Management Panel Preview
-![Dashboard Preview](docs/resources/screenshot-en-status.png)
-![Management Panel Preview](docs/resources/screenshot-en-manage.png)
-![Server Download Panel Preview](docs/resources/screenshot-en-version.png)
-![Cmd and Log Preview](docs/resources/screenshot-en-cmd-exec.png)
-![Quick Commands Preview](docs/resources/screenshot-en-cmd-quick.png)
+### 🔐 Authentication & Security
+- **Login System** Secure access to the management panel with password authentication
+- **Session Management** Automatic session handling with secure token-based authentication
+- **Access Control** Protect server management functions from unauthorized access
+
+
 
 ## 📋 System Requirements
 
@@ -259,3 +259,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 - [Font Awesome](https://fontawesome.com/) - Icon library
 - [Minecraft Bedrock](https://www.minecraft.net/) - Game server
+
+## 👀 Management Panel Preview
+> Screenshots of some features, more features are welcome to be experienced in person.
+
+![Login Panel Preview](docs/resources/en-login.png)
+![Dashboard Panel Preview](docs/resources/en-dashboard.png)
+![Performance Panel Preview](docs/resources/en-performance.png)
+![Server Download Panel Preview](docs/resources/en-version.png)
+![Resource Panel Preview](docs/resources/en-resource.png)
+![Worlds Panel Preview](docs/resources/en-worlds.png)
+![Cmd Panel Preview](docs/resources/en-cmd.png)
+![Server Config Panel Preview](docs/resources/en-server-config.png)
