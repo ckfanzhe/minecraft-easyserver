@@ -63,12 +63,6 @@
 - **会话管理** 基于安全令牌的自动会话处理
 - **访问控制** 保护服务器管理功能免受未授权访问
 
-## 👀 管理端预览
-![主页预览](resources/screenshot-zh-status.png)
-![管理主页预览](resources/screenshot-zh-manage.png)
-![服务器下载面板预览](resources/screenshot-zh-version.png)
-![Cmd and Log 预览](resources/screenshot-zh-cmd-exec.png)
-![快速命令预览](resources/screenshot-zh-cmd-quick.png)
 
 ## 📋 系统要求
 
@@ -261,3 +255,12 @@ CheckNetIsolation.exe LoopbackExempt -a -p=S-1-15-2-1958404141-86561845-17529206
 - [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
 - [Font Awesome](https://fontawesome.com/) - 图标库
 - [Minecraft Bedrock](https://www.minecraft.net/) - 游戏服务器
+
+## 👀 管理端预览
+> 提供部分功能的截图预览，更多的功能欢迎下载体验
+
+![主页预览](resources/screenshot-zh-status.png)
+![管理主页预览](resources/screenshot-zh-manage.png)
+![服务器下载面板预览](resources/screenshot-zh-version.png)
+![Cmd and Log 预览](resources/screenshot-zh-cmd-exec.png)
+![快速命令预览](resources/screenshot-zh-cmd-quick.png)
