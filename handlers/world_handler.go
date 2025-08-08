@@ -54,13 +54,12 @@ func (h *WorldHandler) UploadWorld(c *gin.Context) {
 		return
 	}
 
-	// Get bedrock path
-	wd, err := os.Getwd()
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to get working directory: " + err.Error()})
+	// Check if any server version is active
+	bedrockPath := services.GetBedrockPath()
+	if bedrockPath == "" {
+		c.JSON(500, gin.H{"error": "No server version is currently active. Please download and activate a server version first"})
 		return
 	}
-	bedrockPath := filepath.Join(wd, "bedrock-server", "bedrock-server-1.21.95.1")
 
 	// Save uploaded file
 	worldsPath := filepath.Join(bedrockPath, "worlds")

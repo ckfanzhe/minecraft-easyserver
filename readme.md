@@ -108,6 +108,7 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
      -p 19132:19132/udp \
      -p 19133:19133/udp \
      -v ./data:/data/bedrock-server \
+     -v ./config:/data/config \
      ifanzhe/minecraft-easyserver:latest
    ```
 
@@ -126,6 +127,7 @@ A **lightweight** Minecraft server web management panel with modern UI and compr
          - "19133:19133/udp"
        volumes:
          - ./data:/data/bedrock-server
+         - ./config:/data/config
        environment:
          - TZ=Asia/Shanghai
        restart: unless-stopped
