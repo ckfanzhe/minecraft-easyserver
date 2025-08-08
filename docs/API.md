@@ -53,7 +53,7 @@ POST /api/auth/login
 ```
 
 **说明**:
-- 密码在服务器配置文件 `config.yml` 中的 `auth.password` 字段设置
+- 密码在服务器配置文件 `config/config.yml` 中的 `auth.password` 字段设置
 - 返回的 token 有效期为 24 小时
 - 后续请求需要在 Authorization 头中携带此 token
 - `requirePasswordChange` 字段表示是否需要强制修改密码（当使用默认密码 `admin123` 时为 `true`）

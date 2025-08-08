@@ -180,7 +180,7 @@ func (s *AuthService) updatePasswordInConfig(newPassword string) error {
 	hashedPassword := s.hashPassword(newPassword)
 
 	// Read current config file
-	configPath := "config.yml"
+	configPath := config.DefaultConfigPath
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return fmt.Errorf("failed to read config file: %v", err)

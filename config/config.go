@@ -43,6 +43,11 @@ type Config struct {
 	} `yaml:"logging"`
 }
 
+const (
+	// DefaultConfigPath default configuration file path
+	DefaultConfigPath = "config/config.yml"
+)
+
 var (
 	// AppConfig global configuration instance
 	AppConfig *Config

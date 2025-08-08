@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"minecraft-easyserver/config"
 	"minecraft-easyserver/models"
 	"net/http"
 	"os"
@@ -130,7 +131,7 @@ func (s *ServerVersionService) ActivateVersion(version string) error {
 	versionPath := fmt.Sprintf("./bedrock-server/bedrock-server-%s", version)
 
 	// Update config.yml
-	configPath := "./config.yml"
+	configPath := "./" + config.DefaultConfigPath
 	config, err := s.loadConfig(configPath)
 	if err != nil {
 		return fmt.Errorf("failed to load config: %v", err)
@@ -324,7 +325,7 @@ func (s *ServerVersionService) isVersionDownloaded(version string) bool {
 
 // isVersionActive checks if a version is currently active
 func (s *ServerVersionService) isVersionActive(version string) bool {
-	config, err := s.loadConfig("./config.yml")
+	config, err := s.loadConfig("./" + config.DefaultConfigPath)
 	if err != nil {
 		return false
 	}

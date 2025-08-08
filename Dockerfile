@@ -1,7 +1,7 @@
 # Multi-stage build Dockerfile for Minecraft Server Manager
 
 # Build stage
-FROM node:18-alpine AS frontend-builder
+FROM node:22.18-alpine AS frontend-builder
 
 # Set working directory for frontend
 WORKDIR /app/minecraft-easyserver-web
