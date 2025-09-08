@@ -28,11 +28,10 @@
       </div>
     </div>
   </details>
+
 </div>
 
 # Minecraft Server Web Management Panel
-
-**[中文版本 (Chinese Version)](docs/README_CN.md)**
 
 A **lightweight** Minecraft server web management panel with modern UI and comprehensive server management features.
 
