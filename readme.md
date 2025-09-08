@@ -1,35 +1,5 @@
 
-<div align="right">
-  <details>
-    <summary >🌐 Language</summary>
-    <div>
-      <div align="center">
-        <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=en">English</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=zh-CN">简体中文</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=zh-TW">繁體中文</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=ja">日本語</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=ko">한국어</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=hi">हिन्दी</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=th">ไทย</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=fr">Français</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=de">Deutsch</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=es">Español</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=it">Italiano</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=ru">Русский</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=pt">Português</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=nl">Nederlands</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=pl">Polski</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=ar">العربية</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=fa">فارسی</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=tr">Türkçe</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=vi">Tiếng Việt</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=id">Bahasa Indonesia</a>
-        | <a href="https://openaitx.github.io/view.html?user=ckfanzhe&project=minecraft-easyserver&lang=as">অসমীয়া</
-      </div>
-    </div>
-  </details>
-
-</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;"><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=en"><img src="https://img.shields.io/badge/EN-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=zh-CN"><img src="https://img.shields.io/badge/简中-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=zh-TW"><img src="https://img.shields.io/badge/繁中-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=ja"><img src="https://img.shields.io/badge/日本語-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=ko"><img src="https://img.shields.io/badge/한국어-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=th"><img src="https://img.shields.io/badge/ไทย-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=fr"><img src="https://img.shields.io/badge/Français-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=de"><img src="https://img.shields.io/badge/Deutsch-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=es"><img src="https://img.shields.io/badge/Español-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=it"><img src="https://img.shields.io/badge/Italiano-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=ru"><img src="https://img.shields.io/badge/Русский-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=pt"><img src="https://img.shields.io/badge/Português-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=nl"><img src="https://img.shields.io/badge/Nederlands-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=pl"><img src="https://img.shields.io/badge/Polski-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=ar"><img src="https://img.shields.io/badge/العربية-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=tr"><img src="https://img.shields.io/badge/Türkçe-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=vi"><img src="https://img.shields.io/badge/Tiếng Việt-white" alt="version"></a><a href="https://openaitx.github.io/#/view?user=ckfanzhe&project=minecraft-easyserver&lang=as"><img src="https://img.shields.io/badge/অসমীয়া-white" alt="version"></a></div>
 
 # Minecraft Server Web Management Panel
 
@@ -302,3 +272,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ![Worlds Panel Preview](docs/resources/en-worlds.png)
 ![Cmd Panel Preview](docs/resources/en-cmd.png)
 ![Server Config Panel Preview](docs/resources/en-server-config.png)
+
